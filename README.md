@@ -17,7 +17,7 @@ To build a wheel from the sources:
 
 
 ## Examples
-Some examples are available [https://github.com/dfir-iris/iris-client/tree/master/examples](here).
+Some examples are available [here](https://github.com/dfir-iris/iris-client/tree/master/examples).
 
 ## Documentation 
-The documentation is available in the [https://dfir-iris.github.io/python_client/modules.html](documentation).
+The documentation is available in the [documentation](https://dfir-iris.github.io/python_client/modules.html#).
