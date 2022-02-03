@@ -19,7 +19,7 @@ session = ClientSession(apikey=os.environ.get('IRIS_API_KEY'),
 # Initialize the case instance with the session
 case = Case(session=session)
 
-# Create a new case. The create_customer creates the customer if it doesn't exists, otherwise the method
+# Create a new case. The create_customer creates the customer if it doesn't exist, otherwise the method
 # would turn an error. This implies the calling user has administrative role.
 status = case.add_case(case_name='A new case',
                        case_description='Short initial description, or really long '
@@ -29,9 +29,11 @@ status = case.add_case(case_name='A new case',
                        create_customer=True)
 
 # Always check the status as most of the methods do not raise exceptions. Setting soft_fail = False tells the client
-# to raise an exception if the request failed
+# to raise an exception if the request fails
 assert_api_resp(status, soft_fail=False)
 
+# All the methods are simply overlays of the API itself, so to know exactly what a method answers, one can either try
+# it or head to the API reference documentation and lookup the corresponding endpoint.
 # The case ID is returned by the server in case of success. We need this case ID for the next steps
 # Status are ApiResponse objects, and contains answers from the server.
 # While the ID could be retrieved with status.get_data().get('case_id'), it is preferable to use
@@ -41,19 +43,19 @@ case_id = parse_api_data(case_data, 'case_id')
 
 log.info(f'Created case ID {case_id}')
 
-# Set the case instance with the new case ID. From now one, every action done with a method of the case instance
-# will be done under this case ID.
-# This can be used to directly modify existing cases etc
+# Set the case instance with the new case ID. From now on, every action done with a method of the case instance
+# will be done under this case ID, except if the CID is explicitly provided on the method itself.
+# This can be used to directly modify existing cases etc.
 case.set_cid(case_id)
 
 
 # Let's add an IOC to our case
 # As in the GUI, not all attributes are mandatory. For instance here we have omitted everything not mandatory
-# Most of the methods autor esolve the types names. Here we set an IOC as AS directly, without specifying which ID is
-# and IOC AS type
+# Most of the methods auto resolve the types names. Here we set an IOC as AS directly, without specifying which ID is
+# the IOC AS type
 status_ioc = case.add_ioc(value='API IOC AS', ioc_type='AS')
 
-# We keep to ioc ID so we can add it to an asset later
+# We keep the ioc ID so we can add it to an asset later
 ioc_data = get_data_from_resp(status_ioc)
 ioc_id = parse_api_data(ioc_data, 'ioc_id')
 
@@ -64,7 +66,7 @@ status_asset = case.add_asset(name='API asset', asset_type='Windows - Computer',
                               description='A comprehensive description', compromised=True, analysis_status='Started')
 assert_api_resp(status_asset, soft_fail=False)
 
-# We keep to asset ID so we can add it
+# We keep the asset ID so we can update it
 asset_data = get_data_from_resp(status_asset)
 asset_id = parse_api_data(asset_data, 'asset_id')
 

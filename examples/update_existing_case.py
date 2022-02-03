@@ -21,13 +21,15 @@ case = Case(session=session)
 
 # Fetch the case from its ID. Let's use the initial demo case and improve it
 if not case.case_id_exists(cid=1):
-    # This should never happens, the srever refuses to delete this case for consistency
+    # This should never happen, the server refuses to delete this case for consistency
     raise Exception('Case ID 1 not found !')
 
 # Attribute the cid to the case instance
 case.set_cid(cid=1)
 
-# We can now modify the case. Let's add some tasks
+# We can now modify the case. Let's add some tasks.
+# Again task status and assignee are attribute being looked up before issuing the task addition request.
+# For efficiency and avoid unnecessary requests, the IDs can also be provided if they are known.
 status = case.add_task(title='Analysis of laptop X',
                        description='Plaso the laptop',
                        assignee='administrator',
@@ -63,6 +65,6 @@ if len(timeline) < 25:
         log.info(f'Added event {i}')
 
 
-status = case.add_task_log("Hey tehre")
+status = case.add_task_log("Started analysis of computer X")
 if not status:
     status.log_error()
