@@ -29,7 +29,6 @@ class CaseTest(unittest.TestCase):
     def setUp(self):
         session = new_session()
         self.case = Case(session)
-        self.adm = AdminHelper(session)
         self.ch = Customer(session)
         self.case.set_cid(1)
 
@@ -84,7 +83,8 @@ class CaseTest(unittest.TestCase):
         ret = self.case.delete_case(case_id)
         assert bool(assert_api_resp(ret)) is True
 
-        ret = self.adm.delete_customer(customer="Dummy dummy 123")
+        adm = AdminHelper(self.ch._s)
+        ret = adm.delete_customer(customer="Dummy dummy 123")
         assert bool(assert_api_resp(ret)) is True
 
     def test_get_case_by_id(self):
