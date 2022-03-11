@@ -12,7 +12,7 @@ The Python client version follows the API versions (until the patch level). Mean
 To build a wheel from the sources:
 
 1. `pip3 install wheel`
-2. `python setup.py bdist_wheel --universal`
+2. `python setup.py bdist_wheel`
 3. `pip3 install build/XXX.whl`
 
 

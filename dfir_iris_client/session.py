@@ -30,7 +30,7 @@ The API version is not directly correlated with Iris version.
 Server has an endpoint /api/versions which should returns the API compatible versions 
 it can handles. 
 """
-API_VERSION = "1.0.1"
+API_VERSION = "1.0.2"
 
 """client_session
 Defines a global session, accessible by all classes. client_session is of type ClientSession.
@@ -101,9 +101,9 @@ class ClientSession(object):
         :raises: Exception if not API compatible
         :return: bool
         """
-        resp = self.pi_get('api/versions')
+        resp = self.pi_get('api/versions', cid=1)
         if resp.is_error():
-            raise Exception('Unable to contact endpoint api/versions')
+            raise Exception(f'Unable to contact endpoint api/versions. {resp.get_msg()}')
 
         versions = resp.get_data()
         min_ver = versions.get('api_min')
@@ -128,9 +128,9 @@ class ClientSession(object):
         if not self._apikey:
             raise ValueError('API key can not be an empty string')
 
-        resp = self.pi_get('api/ping')
+        resp = self.pi_get('api/ping', cid=1)
         if resp.is_error():
-            raise ValueError('Invalid API key')
+            raise ValueError(f'Invalid API key. {resp.get_msg()}')
 
         return True
 

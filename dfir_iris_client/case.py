@@ -43,7 +43,8 @@ class Case(object):
 
         :return: ApiResponse
         """
-        return self._s.pi_get('manage/cases/list')
+        cid = self._assert_cid(cid=1)
+        return self._s.pi_get('manage/cases/list', cid=cid)
 
     def get_case(self, cid: int) -> ApiResponse:
         """
