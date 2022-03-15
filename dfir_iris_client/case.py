@@ -98,7 +98,7 @@ class Case(object):
 
             case_customer = c_id.get_data().get('customer_id')
 
-        if not isinstance(custom_attributes, dict):
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
             return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
         body = {
@@ -287,29 +287,40 @@ class Case(object):
         return self._s.pi_get(f'case/notes/{note_id}', cid=cid)
 
     def update_note(self, note_id: int, note_title: str = None, note_content: str = None,
-                    cid: int = None) -> ApiResponse:
+                    custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """
         Updates a note. note_id needs to be a valid existing note in the target case.
         Only the content of the set fields is replaced.
 
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
 
         :param cid: Case ID
         :param note_id: Name of the note to update
         :param note_content: Content of the note
         :param note_title: Title of the note
+        :param custom_attributes: Custom attributes of the note
         :return: APIResponse object
         """
         cid = self._assert_cid(cid)
 
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         note_req = self.get_note(note_id=note_id, cid=cid)
         if note_req.is_error():
             return ClientApiError(f'Unable to fetch note #{note_id} for update', msg=note_req.get_msg())
+
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
         note = note_req.get_data()
 
         body = {
             "note_title": note_title if note_title else note.get('note_title'),
             "note_content": note_content if note_content else note.get('note_content'),
+            "custom_attributes": custom_attributes,
             "cid": cid
         }
 
@@ -327,22 +338,32 @@ class Case(object):
 
         return self._s.pi_get(f'case/notes/delete/{note_id}', cid=cid)
 
-    def add_note(self, note_title: str, note_content: str, group_id: int, cid: int = None) -> ApiResponse:
+    def add_note(self, note_title: str, note_content: str, group_id: int, custom_attributes: dict = None,
+                 cid: int = None) -> ApiResponse:
         """
-         Creates a new note. Case ID and group note ID need to match the case in which the note is stored.
+        Creates a new note. Case ID and group note ID need to match the case in which the note is stored.
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
 
         :param cid: Case ID
         :param note_title: Title of the note
         :param note_content: Content of the note
         :param group_id: Target group to attach the note to
+        :param custom_attributes: Custom attributes of the note
         :return: APIResponse object
         """
         cid = self._assert_cid(cid)
+
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
         body = {
             "note_title": note_title,
             "note_content": note_content,
             "group_id": group_id,
+            "custom_attributes": custom_attributes,
             "cid": cid
         }
 
@@ -381,13 +402,17 @@ class Case(object):
     def add_asset(self, name: str, asset_type: Union[str, int], analysis_status: Union[str, int],
                   compromised: bool = None, tags: List[str] = None,
                   description: str = None, domain: str = None, ip: str = None, additional_info: str = None,
-                  ioc_links: List[int] = None, cid: int = None) -> ApiResponse:
+                  ioc_links: List[int] = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """
         Adds an asset to the target case id.
 
         If they are strings, asset_types and analysis_status are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
 
         :param name: Name of the asset to add
         :param asset_type: Name or ID of the asset type
@@ -399,6 +424,7 @@ class Case(object):
         :param compromised: Set to true if asset is compromised
         :param tags: List of tags
         :param ioc_links: List of IOC to link to this asset
+        :param custom_attributes: Custom attributes of the asset
         :param cid: int - Case ID
         :return: APIResponse
         """
@@ -424,6 +450,9 @@ class Case(object):
             else:
                 analysis_status = analysis_status_r
 
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         body = {
             "asset_name": name,
             "asset_type_id": asset_type,
@@ -445,6 +474,8 @@ class Case(object):
             body['asset_compromised'] = compromised
         if tags is not None:
             body['asset_tags'] = ','.join(tags)
+        if tags is not None:
+            body['custom_attributes'] = custom_attributes
 
         return self._s.pi_post(f'case/assets/add', data=body)
 
@@ -477,13 +508,17 @@ class Case(object):
     def update_asset(self, asset_id: int, name: str = None, asset_type: Union[str, int] = None, tags: List[str] = None,
                      analysis_status: Union[str, int] = None, description: str = None, domain: str = None,
                      ip: str = None, additional_info: str = None, ioc_links: List[int] = None, compromised: bool = None,
-                     cid: int = None, no_sync = False) -> ApiResponse:
+                     custom_attributes: dict = None, cid: int = None, no_sync = False) -> ApiResponse:
         """
         Updates an asset. asset_id needs to be an existing asset in the target case cid.
 
         If they are strings, asset_types and analysis_status are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
 
         :param asset_id: ID of the asset to update
         :param name: Name of the asset
@@ -496,6 +531,7 @@ class Case(object):
         :param analysis_status: Status of the analysis
         :param ioc_links: List of IOC to link to this asset
         :param compromised: True is asset is compromised
+        :param custom_attributes: Custom attributes of the asset
         :param cid: int - Case ID
         :return: APIResponse
         """
@@ -535,6 +571,9 @@ class Case(object):
                 if ioc.is_error():
                     return ClientApiError(msg=f"IOC {link} was not found", error=ioc.get_data())
 
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         body = {
             "asset_name": name if name is not None or no_sync else asset.get('asset_name'),
             "asset_type_id": asset_type if asset_type is not None or no_sync else int(asset.get('asset_type_id')),
@@ -545,6 +584,7 @@ class Case(object):
             "asset_info": additional_info if additional_info is not None or no_sync else asset.get('asset_info'),
             "asset_compromised": compromised if compromised is not None or no_sync else asset.get('asset_compromise'),
             "asset_tags": ','.join(tags) if tags is not None or no_sync else asset.get('asset_tags'),
+            "custom_attributes": custom_attributes if custom_attributes else asset.get('custom_attributes'),
             "cid": cid
         }
 
@@ -577,7 +617,8 @@ class Case(object):
         return self._s.pi_get('case/ioc/list', cid=cid)
 
     def add_ioc(self, value: str, ioc_type: Union[str, int], description: str = None,
-                ioc_tlp: Union[str, int] = None, ioc_tags: list = None, cid: int = None) -> ApiResponse:
+                ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
+                cid: int = None) -> ApiResponse:
         """
         Adds an ioc to the target case id.
 
@@ -585,11 +626,16 @@ class Case(object):
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
 
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
+
         :param value: Value of the IOC
         :param ioc_type: Type of IOC, either name or type ID
         :param description: Optional - Description of the IOC
         :param ioc_tlp: TLP name or tlp ID. Default is orange
         :param ioc_tags: List of tags to add
+        :param custom_attributes: Custom attributes of the ioc
         :param cid: Case ID
         :return: APIResponse
         """
@@ -616,10 +662,14 @@ class Case(object):
         if ioc_tags and not isinstance(ioc_tags, list):
             return ClientApiError(f"IOC tags must be a list of str")
 
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         body = {
             "ioc_value": value,
             "ioc_tlp_id": ioc_tlp if ioc_tlp else 2,
             "ioc_type_id": ioc_type,
+            "custom_attributes": custom_attributes,
             "cid": cid
         }
 
@@ -643,7 +693,8 @@ class Case(object):
         return self._s.pi_get(f'case/ioc/{ioc_id}', cid=cid)
 
     def update_ioc(self, ioc_id: int, value: str = None, ioc_type: Union[str, int] = None, description: str = None,
-                    ioc_tlp: Union[str, int] = None, ioc_tags: list = None, cid: int = None) -> ApiResponse:
+                    ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
+                   cid: int = None) -> ApiResponse:
         """
         Updates an existing IOC. ioc_id needs to be an existing ioc in the provided case ID.
 
@@ -656,7 +707,8 @@ class Case(object):
         :param ioc_type: Type of IOC, either name or type ID
         :param description: Description of the IOC
         :param ioc_tlp: TLP name or tlp ID. Default is orange
-        :param ioc_tags: List of tags to add
+        :param ioc_tags: List of tags to add,
+        :param custom_attributes: Custom attributes of the IOC
         :param cid: Case ID
         :return: APIResponse object
         """
@@ -689,12 +741,16 @@ class Case(object):
         if ioc_tags and not isinstance(ioc_tags, list):
             return ClientApiError(f"IOC tags must be a list of str")
 
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         body = {
             "ioc_value": value if value else ioc.get('ioc_value'),
             "ioc_tlp_id": ioc_tlp if ioc_tlp else int(ioc.get('ioc_tlp_id')),
             "ioc_type_id": ioc_type if ioc_type else int(ioc.get('ioc_type_id')),
             "ioc_description": description if description else ioc.get('ioc_description'),
             "ioc_tags": ",".join(ioc_tags) if ioc_tags else ioc.get('ioc_tags'),
+            "custom_attributes": custom_attributes if custom_attributes else ioc.get('custom_attributes'),
             "cid": cid
         }
 
