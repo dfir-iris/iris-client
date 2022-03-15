@@ -47,7 +47,8 @@ class CaseTest(unittest.TestCase):
 
     def test_add_rm_case_with_existing_customer_name(self):
         ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer="IrisInitialClient", soc_id='dummy', create_customer=False)
+                                 case_customer="IrisInitialClient", soc_id='dummy', custom_attributes={},
+                                 create_customer=False)
 
         assert bool(assert_api_resp(ret)) is True
 
@@ -60,19 +61,21 @@ class CaseTest(unittest.TestCase):
 
     def test_add_case_with_faulty_customer_id(self):
         ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer=15551115, soc_id='dummy', create_customer=False)
+                                 case_customer=15551115, soc_id='dummy',  custom_attributes={}, create_customer=False)
 
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_case_with_faulty_customer_name(self):
         ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer="Dummy dummy 123", soc_id='dummy', create_customer=False)
+                                 case_customer="Dummy dummy 123", soc_id='dummy', custom_attributes={},
+                                 create_customer=False)
 
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_case_create_customer_name(self):
         ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer="Dummy dummy 123", soc_id='dummy', create_customer=True)
+                                 case_customer="Dummy dummy 123",  custom_attributes={"Test":{"Test":"Test"}},
+                                 soc_id='dummy', create_customer=True)
 
         assert bool(assert_api_resp(ret)) is True
 
@@ -164,7 +167,7 @@ class CaseTest(unittest.TestCase):
         group_id = parse_api_data(data, 'group_id')
         assert type(group_id) == int
 
-        ret = self.case.add_note(note_title=note_title, note_content=note_content,
+        ret = self.case.add_note(note_title=note_title, note_content=note_content, custom_attributes={},
                                  group_id=group_id)
         assert bool(assert_api_resp(ret)) is True
 
@@ -176,7 +179,8 @@ class CaseTest(unittest.TestCase):
         assert type(parse_api_data(data, 'note_creationdate')) == str
         assert type(parse_api_data(data, 'note_lastupdate')) == str
 
-        ret = self.case.update_note(note_id=note_id, note_title='New dummy', note_content='New dummy content')
+        ret = self.case.update_note(note_id=note_id, note_title='New dummy', note_content='New dummy content',
+                                    custom_attributes={"Test":{"Test":"Test"}})
         assert bool(assert_api_resp(ret)) is True
 
         ret = self.case.get_note(note_id=note_id)
@@ -204,11 +208,12 @@ class CaseTest(unittest.TestCase):
         note_content = "# Dummy content with markdown\n## Very dummy"
 
         ret = self.case.add_note(note_title=note_title, note_content=note_content,
-                                 group_id=111555411)
+                                 custom_attributes={"Test": {"Test":"Test"}}, group_id=111555411)
         assert bool(assert_api_resp(ret)) is False
 
     def test_update_note_invalid_id(self):
-        ret = self.case.update_note(note_id=111555411, note_title="Dummy title", note_content="Dummy content")
+        ret = self.case.update_note(note_id=111555411, note_title="Dummy title",
+                                    custom_attributes={"Test": {"Test":"Test"}}, note_content="Dummy content")
         assert bool(assert_api_resp(ret)) is False
 
     def test_delete_note_invalid_id(self):
@@ -253,7 +258,8 @@ class CaseTest(unittest.TestCase):
     def test_add_rm_asset_valid(self):
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='Unspecified',
                                   compromised=True, tags=['tag1', 'tag2'], description='dummy desc',
-                                  domain='dummy domain', ip='dummy IP', additional_info='dummy info', ioc_links=[])
+                                  domain='dummy domain', ip='dummy IP', additional_info='dummy info', ioc_links=[],
+                                  custom_attributes={})
 
         assert bool(assert_api_resp(ret)) is True
         data = get_data_from_resp(ret)
@@ -268,6 +274,7 @@ class CaseTest(unittest.TestCase):
         assert parse_api_data(data, 'asset_ip') == "dummy IP"
         assert parse_api_data(data, 'asset_name') == "Dummy asset"
         assert parse_api_data(data, 'asset_tags') == "tag1,tag2"
+        assert parse_api_data(data, 'custom_attributes') == {}
         assert type(parse_api_data(data, 'asset_type_id')) is int
 
         ret = self.case.delete_asset(parse_api_data(data, 'asset_id'))
@@ -289,6 +296,7 @@ class CaseTest(unittest.TestCase):
         assert parse_api_data(data, 'asset_ip') is None
         assert parse_api_data(data, 'asset_name') == "Dummy asset"
         assert parse_api_data(data, 'asset_tags') is None
+        assert parse_api_data(data, 'custom_attributes') == {}
         assert type(parse_api_data(data, 'asset_type_id')) is int
 
         ret = self.case.delete_asset(parse_api_data(data, 'asset_id'))
