@@ -56,15 +56,21 @@ class Case(object):
         return self._s.pi_get(f'manage/cases/{cid}')
 
     def add_case(self, case_name: str, case_description: str,
-                 case_customer: Union[str, int], soc_id: str, create_customer=False) -> ApiResponse:
+                 case_customer: Union[str, int], soc_id: str, custom_attributes: dict = None,
+                 create_customer=False) -> ApiResponse:
         """
         Creates a new case. If create_customer is set to true and the customer doesn't exist,
         it is created. Otherwise an error is returned.
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
 
         :param case_name: case_name
         :param case_description: Description of the case
         :param case_customer: Name or ID of the customer
         :param soc_id: SOC Number
+        :param custom_attributes: Custom attributes of the case
         :param create_customer: Set to true to create the customer is doesn't exists.
         :return: ApiResponse object
         """
@@ -92,11 +98,15 @@ class Case(object):
 
             case_customer = c_id.get_data().get('customer_id')
 
+        if not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         body = {
             "case_name": case_name,
             "case_customer": case_customer,
             "case_soc_id": soc_id,
-            "case_description": case_description
+            "case_description": case_description,
+            "custom_attributes": custom_attributes
         }
         resp = self._s.pi_post('manage/cases/add', data=body)
 
