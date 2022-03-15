@@ -702,6 +702,10 @@ class Case(object):
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
 
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
+
         :param ioc_id: IOC ID to update
         :param value: Value of the IOC
         :param ioc_type: Type of IOC, either name or type ID
@@ -795,14 +799,18 @@ class Case(object):
 
     def add_event(self, title:str, date_time: datetime, content: str = None, raw_content: str = None,
                   source: str = None, linked_assets: list = None, category: Union[int, str] = None, tags: list = None,
-                  color: str = None, display_in_graph: bool = None,
-                  display_in_summary: bool = None, cid: int = None, timezone_string: str = None) -> ApiResponse:
+                  color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
+                  custom_attributes: str = None, cid: int = None, timezone_string: str = None) -> ApiResponse:
         """
         Adds a new event to the timeline.
 
         If it is a string, category is lookup-ed up before the addition request is issued.
         it can be either a name or an ID. For performances prefer an ID as it is used directly in the request
         without prior lookup.
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
 
         :param title: Title of the event 
         :param date_time: Datetime of the event, including timezone
@@ -815,6 +823,7 @@ class Case(object):
         :param display_in_graph: Set to true to display in graph page - Default to true
         :param display_in_summary: Set to true to display in Summary - Default to false
         :param tags: A list of strings to add as tags
+        :param custom_attributes: Custom attributes of the event
         :param timezone_string: Timezone in format +XX:XX or -XX:XX. If none, +00:00 is used
         :param cid: Case ID
         :return: APIResponse object
@@ -836,6 +845,9 @@ class Case(object):
         if tags and not isinstance(tags, list):
             return ClientApiError(msg=f"Expected list object for tags but got {type(tags)}")
 
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         body = {
             "event_title": title,
             "event_in_graph": display_in_graph if display_in_graph is not None else True,
@@ -849,22 +861,28 @@ class Case(object):
             "event_date": date_time.strftime('%Y-%m-%dT%H:%M:%S.%f'),
             "event_tags": ','.join(tags) if tags else '',
             "event_tz": timezone_string if timezone_string else "+00:00",
+            "custom_attributes": custom_attributes,
             "cid": cid
         }
 
         return self._s.pi_post(f'case/timeline/events/add', data=body)
 
-    def update_event(self, event_id: int, title: str=None, date_time: datetime = None, content: str = None,
+    def update_event(self, event_id: int, title: str = None, date_time: datetime = None, content: str = None,
                      raw_content: str = None, source: str = None, linked_assets: list = None,
                      category: Union[int, str] = None, tags: list = None,
-                     color: str = None, display_in_graph: bool = None,
-                     display_in_summary: bool = None, cid: int = None, timezone_string: str = None) -> ApiResponse:
+                     color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
+                     custom_attributes: dict = None, cid: int = None, timezone_string: str = None) -> ApiResponse:
         """
         Updates an event of the timeline. event_id needs to be an existing event in the target case.
 
         If it is a string, category is lookup-ed up before the addition request is issued.
         it can be either a name or an ID. For performances prefer an ID as it is used directly in the request
         without prior lookup.
+
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
 
         :param event_id: Event ID to update
         :param title: Title of the event
@@ -878,6 +896,7 @@ class Case(object):
         :param display_in_graph: Set to true to display in graph page - Default to true
         :param display_in_summary: Set to true to display in Summary - Default to false
         :param tags: A list of strings to add as tags
+        :param custom_attributes: Custom attributes of the event
         :param timezone_string: Timezone in format +XX:XX or -XX:XX. If none, +00:00 is used
         :param cid: Case ID
         :return: APIResponse object
@@ -905,6 +924,9 @@ class Case(object):
         if tags and not isinstance(tags, list):
             return ClientApiError(msg=f"Expected list object for tags but got {type(tags)}")
 
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         body = {
             "event_title": title if title else event.get('event_title'),
             "event_in_graph": display_in_graph if display_in_graph is not None else event.get('event_in_graph'),
@@ -918,6 +940,7 @@ class Case(object):
             "event_date": date_time.strftime('%Y-%m-%dT%H:%M:%S.%f') if date_time else event.get('event_date'),
             "event_tags": ','.join(tags) if tags else event.get('event_tags'),
             "event_tz": timezone_string if timezone_string else event.get('event_tz'),
+            "custom_attributes": custom_attributes if custom_attributes else event.get('custom_attributes'),
             "cid": cid
         }
 
@@ -975,7 +998,7 @@ class Case(object):
         return self._s.pi_get(f'case/tasks/{task_id}', cid=cid)
 
     def add_task(self, title: str, status: Union[str, int], assignee: Union[str, int], description: str = None,
-                 tags: list = None, cid: int = None) -> ApiResponse:
+                 tags: list = None, custom_attributes :dict = None, cid: int = None) -> ApiResponse:
         """
         Adds a new task to the target case.
 
@@ -983,12 +1006,18 @@ class Case(object):
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
 
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
+
+
         :param title: Title of the task
         :param description: Description of the task
         :param assignee: Assignee ID or username
         :param cid: Case ID
         :param tags: Tags of the task
         :param status: String or status ID, need to be a valid status
+        :param custom_attributes: Custom attributes of the task
         :return: APIResponse object
         """
         cid = self._assert_cid(cid)
@@ -1013,26 +1042,34 @@ class Case(object):
                 return ClientApiError(msg=f'Invalid task status {status}')
             status = tsh_r
 
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         body = {
             "task_assignee_id": assignee,
             "task_description": description if description else "",
             "task_status_id": status,
             "task_tags": ','.join(tags) if tags else "",
             "task_title":  title,
+            "custom_attributes": custom_attributes,
             "cid": cid
         }
 
         return self._s.pi_post(f'case/tasks/add', data=body)
 
     def update_task(self, task_id: int, title: str = None, status: Union[str, int] = None,
-                    assignee: Union[int, str] = None, description: str = None,
-                    tags: list = None, cid: int = None) -> ApiResponse:
+                    assignee: Union[int, str] = None, description: str = None, tags: list = None,
+                    custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """
         Updates a task. task_id needs to be a valid task in the target case.
 
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
 
         :param task_id: ID of the task to update
         :param title: Title of the task
@@ -1041,6 +1078,7 @@ class Case(object):
         :param cid: Case ID
         :param tags: Tags of the task
         :param status: String status, need to be a valid status
+        :param custom_attributes: Custom attributes of the task
         :return: APIResponse object
         """
         cid = self._assert_cid(cid)
@@ -1070,6 +1108,9 @@ class Case(object):
                 return ClientApiError(msg=f'Invalid task status {status}')
             status = tsh_r
 
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         task = task_req.get_data()
 
         body = {
@@ -1078,6 +1119,7 @@ class Case(object):
             "task_status_id": status if status else task.get('task_status_id'),
             "task_tags": ",".join(tags) if tags else task.get('task_tags'),
             "task_title":  title if title else task.get('task_title'),
+            "custom_attributes": custom_attributes if custom_attributes else task.get('custom_attributes'),
             "cid": cid
         }
 
