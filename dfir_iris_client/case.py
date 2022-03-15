@@ -1161,39 +1161,53 @@ class Case(object):
         return self._s.pi_get(f'case/evidences/{evidence_id}', cid=cid)
 
     def add_evidence(self, filename: str, file_size: int, description: str = None,
-                     file_hash: str = None, cid: int = None) -> ApiResponse:
+                     file_hash: str = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """
         Adds a new evidence to the target case.
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
 
         :param filename: name of the evidence
         :param file_size: Size of the file
         :param description: Description of the evidence
         :param file_hash: hash of the evidence
+        :param custom_attributes: Custom attributes of the evidences
         :param cid: Case ID
         :return: APIResponse object
         """
         cid = self._assert_cid(cid)
+
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
         body = {
             "filename": filename,
             "file_size": file_size,
             "file_description": description,
             "file_hash": file_hash,
+            "custom_attributes": custom_attributes,
             "cid": cid
         }
 
         return self._s.pi_post(f'case/evidences/add', data=body)
 
     def update_evidence(self, evidence_id: int, filename: str = None, file_size: int = None, description: str = None,
-                        file_hash: str = None, cid: int = None) -> ApiResponse:
+                        file_hash: str = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """
         Updates an evidence of the matching case. evidence_id needs to be an existing evidence in the target case.
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
 
         :param evidence_id: ID of the evidence
         :param filename: name of the evidence
         :param file_size: Size of the file
         :param description: Description of the evidence
         :param file_hash: hash of the evidence
+        :param custom_attributes: custom attributes of the evidences
         :param cid: Case ID
         :return: APIResponse object
         """
@@ -1206,11 +1220,15 @@ class Case(object):
 
         evidence = evidence_req.get_data()
 
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
         body = {
             "filename": filename if filename else evidence.get('filename'),
             "file_size": file_size if file_size else evidence.get('file_size'),
             "file_description": description if description else evidence.get('file_description'),
             "file_hash": file_hash if file_hash else evidence.get('file_hash'),
+            "custom_attributes": custom_attributes if custom_attributes else evidence.get("custom_attributes"),
             "cid": cid
         }
 
