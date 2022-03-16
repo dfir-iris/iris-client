@@ -120,7 +120,7 @@ class CaseTest(unittest.TestCase):
 
         ret = self.case.get_summary()
         data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'case_description') == summary
+        assert parse_api_data(data, 'case_description') == "Dummy summary"
 
         self.case.set_summary(summary)
 
@@ -274,7 +274,7 @@ class CaseTest(unittest.TestCase):
         assert parse_api_data(data, 'asset_ip') == "dummy IP"
         assert parse_api_data(data, 'asset_name') == "Dummy asset"
         assert parse_api_data(data, 'asset_tags') == "tag1,tag2"
-        assert parse_api_data(data, 'custom_attributes') == {}
+        assert 'custom_attributes' in data
         assert type(parse_api_data(data, 'asset_type_id')) is int
 
         ret = self.case.delete_asset(parse_api_data(data, 'asset_id'))
@@ -296,7 +296,7 @@ class CaseTest(unittest.TestCase):
         assert parse_api_data(data, 'asset_ip') is None
         assert parse_api_data(data, 'asset_name') == "Dummy asset"
         assert parse_api_data(data, 'asset_tags') is None
-        assert parse_api_data(data, 'custom_attributes') == {}
+        assert parse_api_data(data, 'custom_attributes') is None
         assert type(parse_api_data(data, 'asset_type_id')) is int
 
         ret = self.case.delete_asset(parse_api_data(data, 'asset_id'))
