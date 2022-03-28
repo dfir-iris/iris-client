@@ -363,7 +363,7 @@ class Case(object):
             "note_title": note_title,
             "note_content": note_content,
             "group_id": group_id,
-            "custom_attributes": custom_attributes,
+            "custom_attributes": custom_attributes if custom_attributes else {},
             "cid": cid
         }
 
@@ -474,7 +474,7 @@ class Case(object):
             body['asset_compromised'] = compromised
         if tags is not None:
             body['asset_tags'] = ','.join(tags)
-        if tags is not None:
+        if custom_attributes is not None:
             body['custom_attributes'] = custom_attributes
 
         return self._s.pi_post(f'case/assets/add', data=body)
@@ -669,7 +669,7 @@ class Case(object):
             "ioc_value": value,
             "ioc_tlp_id": ioc_tlp if ioc_tlp else 2,
             "ioc_type_id": ioc_type,
-            "custom_attributes": custom_attributes,
+            "custom_attributes": custom_attributes if custom_attributes else {},
             "cid": cid
         }
 
@@ -861,7 +861,7 @@ class Case(object):
             "event_date": date_time.strftime('%Y-%m-%dT%H:%M:%S.%f'),
             "event_tags": ','.join(tags) if tags else '',
             "event_tz": timezone_string if timezone_string else "+00:00",
-            "custom_attributes": custom_attributes,
+            "custom_attributes": custom_attributes if custom_attributes else {},
             "cid": cid
         }
 
@@ -1051,7 +1051,7 @@ class Case(object):
             "task_status_id": status,
             "task_tags": ','.join(tags) if tags else "",
             "task_title":  title,
-            "custom_attributes": custom_attributes,
+            "custom_attributes": custom_attributes if custom_attributes else {},
             "cid": cid
         }
 
@@ -1187,7 +1187,7 @@ class Case(object):
             "file_size": file_size,
             "file_description": description,
             "file_hash": file_hash,
-            "custom_attributes": custom_attributes,
+            "custom_attributes": custom_attributes if custom_attributes else {},
             "cid": cid
         }
 
