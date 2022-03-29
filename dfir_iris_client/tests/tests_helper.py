@@ -20,6 +20,7 @@ from dfir_iris_client.session import ClientSession
 
 
 def new_session():
+    """ """
     session = ClientSession(apikey=os.getenv('APIKEY'),
                             host='http://localhost:8000', ssl_verify=False)
 
@@ -27,6 +28,7 @@ def new_session():
 
 
 def new_adm_session():
+    """ """
     session = ClientSession(apikey=os.getenv('APIKEY'),
                             host='http://localhost:8000', ssl_verify=False)
 

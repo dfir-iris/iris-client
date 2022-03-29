@@ -26,13 +26,16 @@ from dfir_iris_client.tests.tests_helper import new_session
 
 
 class CaseTest(unittest.TestCase):
+    """ """
     def setUp(self):
+        """ """
         session = new_session()
         self.case = Case(session)
         self.ch = Customer(session)
         self.case.set_cid(1)
 
     def test_add_rm_case_with_existing_customer_id(self):
+        """ """
         ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
                                  case_customer=1, soc_id='dummy', create_customer=False)
 
@@ -46,6 +49,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is True
 
     def test_add_rm_case_with_existing_customer_name(self):
+        """ """
         ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
                                  case_customer="IrisInitialClient", soc_id='dummy', custom_attributes={},
                                  create_customer=False)
@@ -60,12 +64,14 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is True
 
     def test_add_case_with_faulty_customer_id(self):
+        """ """
         ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
                                  case_customer=15551115, soc_id='dummy',  custom_attributes={}, create_customer=False)
 
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_case_with_faulty_customer_name(self):
+        """ """
         ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
                                  case_customer="Dummy dummy 123", soc_id='dummy', custom_attributes={},
                                  create_customer=False)
@@ -73,6 +79,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_case_create_customer_name(self):
+        """ """
         ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
                                  case_customer="Dummy dummy 123",  custom_attributes={"Test":{"Test":"Test"}},
                                  soc_id='dummy', create_customer=True)
@@ -91,6 +98,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is True
 
     def test_get_case_by_id(self):
+        """ """
         cid = 1
         ret = self.case.get_case(cid=cid)
 
@@ -101,6 +109,7 @@ class CaseTest(unittest.TestCase):
         assert case_id == cid
 
     def test_case_id_exists(self):
+        """ """
         ret = self.case.case_id_exists(cid=1)
         assert ret is True
 
@@ -108,6 +117,7 @@ class CaseTest(unittest.TestCase):
         assert ret is False
 
     def test_case_summary(self):
+        """ """
 
         ret = self.case.get_summary()
         assert bool(assert_api_resp(ret)) is True
@@ -125,6 +135,7 @@ class CaseTest(unittest.TestCase):
         self.case.set_summary(summary)
 
     def test_list_get_notes_groups(self):
+        """ """
 
         ret = self.case.list_notes_groups()
         assert bool(assert_api_resp(ret)) is True
@@ -136,6 +147,7 @@ class CaseTest(unittest.TestCase):
         assert type(parse_api_data(groups[0], 'notes')) == list
 
     def test_add_update_rm_notes_group(self):
+        """ """
         ret = self.case.add_notes_group("Dummy title")
         assert bool(assert_api_resp(ret)) is True
 
@@ -158,6 +170,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_update_delete_note_valid_group_id(self):
+        """ """
         note_title = "Dummy title"
         note_content = "# Dummy content with markdown\n## Very dummy"
         ret = self.case.add_notes_group("Dummy title")
@@ -204,6 +217,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is True
 
     def test_add_note_invalid_group(self):
+        """ """
         note_title = "Dummy title"
         note_content = "# Dummy content with markdown\n## Very dummy"
 
@@ -212,21 +226,25 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
     def test_update_note_invalid_id(self):
+        """ """
         ret = self.case.update_note(note_id=111555411, note_title="Dummy title",
                                     custom_attributes={"Test": {"Test":"Test"}}, note_content="Dummy content")
         assert bool(assert_api_resp(ret)) is False
 
     def test_delete_note_invalid_id(self):
+        """ """
         ret = self.case.delete_note(note_id=111555411)
         assert bool(assert_api_resp(ret)) is False
 
     def test_delete_note_invalid_cid(self):
+        """ """
         ret = self.case.delete_note(note_id=111555411, cid=111555411)
         assert bool(assert_api_resp(ret)) is False
         message = ret.get_msg()
         assert "invalid case id" in message.lower()
 
     def test_search_notes(self):
+        """ """
         ret = self.case.search_notes("%")
         assert bool(assert_api_resp(ret)) is True
 
@@ -234,6 +252,7 @@ class CaseTest(unittest.TestCase):
         assert type(data) == list
 
     def test_list_assets(self):
+        """ """
         ret = self.case.list_assets()
         assert bool(assert_api_resp(ret)) is True
 
@@ -256,6 +275,7 @@ class CaseTest(unittest.TestCase):
             assert type(parse_api_data(asset, 'link')) is list
 
     def test_add_rm_asset_valid(self):
+        """ """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='Unspecified',
                                   compromised=True, tags=['tag1', 'tag2'], description='dummy desc',
                                   domain='dummy domain', ip='dummy IP', additional_info='dummy info', ioc_links=[],
@@ -281,6 +301,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is True
 
     def test_add_rm_asset_partial_valid(self):
+        """ """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='Unspecified')
 
         assert bool(assert_api_resp(ret)) is True
@@ -306,6 +327,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_asset_partial_invalid_asset_type(self):
+        """ """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Dummy Account', analysis_status='Unspecified')
 
         assert bool(assert_api_resp(ret)) is False
@@ -320,6 +342,7 @@ class CaseTest(unittest.TestCase):
         assert "Invalid" in asset_type_id[0]
 
     def test_add_asset_partial_invalid_analysis_status(self):
+        """ """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='dummy analysis status')
 
         assert bool(assert_api_resp(ret)) is False
@@ -334,6 +357,7 @@ class CaseTest(unittest.TestCase):
         assert "Invalid" in asset_type_id[0]
 
     def test_get_asset_valid(self):
+        """ """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='Unspecified')
 
         assert bool(assert_api_resp(ret)) is True
@@ -363,16 +387,19 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is True
 
     def test_get_asset_invalid_id(self):
+        """ """
         ret = self.case.get_asset(asset_id=111155551111)
         assert bool(assert_api_resp(ret)) is False
 
         assert 'Invalid asset ID' in ret.get_msg()
 
     def test_asset_exists_invalid(self):
+        """ """
         ret = self.case.asset_exists(asset_id=111155551111)
         assert ret is False
 
     def test_update_asset_full_valid(self):
+        """ """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='Unspecified')
 
         assert bool(assert_api_resp(ret)) is True
@@ -402,6 +429,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is True
 
     def test_update_asset_invalid_asset_id(self):
+        """ """
         ret = self.case.update_asset(asset_id=111155551111, name='Dummy asset',
                                      asset_type='Account', analysis_status='Unspecified',
                                      compromised=True, tags=['tag1', 'tag2'], description='dummy desc',
@@ -411,6 +439,14 @@ class CaseTest(unittest.TestCase):
         assert 'Invalid asset ID' in ret.get_msg()
 
     def test_update_asset_invalid_multi(self, no_sync=False):
+        """
+
+        Args:
+          no_sync:  (Default value = False)
+
+        Returns:
+
+        """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='Unspecified')
 
         assert bool(assert_api_resp(ret)) is True
@@ -440,15 +476,18 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is True
 
     def test_update_asset_invalid_multi_no_sync(self):
+        """ """
         self.test_update_asset_invalid_multi(no_sync=True)
 
     def test_delete_asset_invalid_asset_id(self):
+        """ """
         ret = self.case.delete_asset(asset_id=111155551111)
 
         assert bool(assert_api_resp(ret)) is False
         assert 'Invalid asset ID' in ret.get_msg()
 
     def test_list_iocs(self):
+        """ """
         ret = self.case.list_iocs()
 
         assert bool(assert_api_resp(ret)) is True
@@ -465,12 +504,14 @@ class CaseTest(unittest.TestCase):
             assert type(parse_api_data(ioc, 'ioc_value')) is str
 
     def test_get_ioc_invalid(self):
+        """ """
         ret = self.case.get_ioc(ioc_id=111155551111)
 
         assert bool(assert_api_resp(ret)) is False
         assert 'Invalid IOC ID' in ret.get_msg()
 
     def test_add_ioc_full_valid(self):
+        """ """
         ret = self.case.add_ioc(value="dummy ioc", description="dummy description", ioc_type='AS', ioc_tlp='amber',
                                 ioc_tags=['tag1', 'tag2'])
 
@@ -491,6 +532,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_ioc_partial_valid(self):
+        """ """
         ret = self.case.add_ioc(value="dummy ioc", ioc_type='AS', ioc_tlp='amber')
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -510,6 +552,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_ioc_partial_invalid_ioc_type(self):
+        """ """
         ret = self.case.add_ioc(value="dummy ioc", ioc_type='dummy AS', ioc_tlp='amber')
 
         assert bool(assert_api_resp(ret)) is False
@@ -522,6 +565,7 @@ class CaseTest(unittest.TestCase):
         assert 'Invalid ioc type ID' in ioc_type
 
     def test_add_ioc_partial_invalid_ioc_tlp(self):
+        """ """
         ret = self.case.add_ioc(value="dummy ioc", ioc_type='AS', ioc_tlp='dummy amber')
 
         assert bool(assert_api_resp(ret)) is False
@@ -534,6 +578,7 @@ class CaseTest(unittest.TestCase):
         assert 'Invalid TLP ID' in ioc_type[0]
 
     def test_update_ioc_full_valid(self):
+        """ """
         ret = self.case.add_ioc(value="dummy ioc", ioc_type='AS', ioc_tlp='amber')
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -560,6 +605,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_ioc_full_invalid_ioc_type(self):
+        """ """
         ret = self.case.add_ioc(value="dummy ioc", ioc_type='AS', ioc_tlp='amber')
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -582,6 +628,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_ioc_full_invalid_ioc_tlp(self):
+        """ """
         ret = self.case.add_ioc(value="dummy ioc", ioc_type='AS', ioc_tlp='amber')
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -604,12 +651,21 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_delete_ioc_invalid_ioc_id(self):
+        """ """
         ret = self.case.delete_ioc(ioc_id=111155551111)
 
         assert bool(assert_api_resp(ret)) is False
         assert 'Not a valid IOC' in ret.get_msg()
 
     def test_list_events_no_filters(self, filter=0):
+        """
+
+        Args:
+          filter:  (Default value = 0)
+
+        Returns:
+
+        """
         ret = self.case.list_events(filter_by_asset=filter)
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -633,12 +689,15 @@ class CaseTest(unittest.TestCase):
             assert type(parse_api_data(event, 'event_tz')) is str
 
     def test_list_events_filter_asset(self):
+        """ """
         self.test_list_events_no_filters(1)
 
     def test_list_events_filter_asset_invalid(self):
+        """ """
         self.test_list_events_no_filters(111155551111)
 
     def test_add_event_full_valid(self):
+        """ """
         ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now(), content='dummy content',
                                   raw_content='dummy raw content', source='dummy source', linked_assets=[],
                                   category='Execution', color=EventWhite, display_in_graph=False,
@@ -667,6 +726,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_event_partial_valid(self):
+        """ """
         ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now())
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -692,12 +752,14 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_event_invalid_date(self):
+        """ """
         ret = self.case.add_event(title='dummy event', date_time="not a date")
 
         assert bool(assert_api_resp(ret)) is False
         assert 'Expected datetime' in ret.get_msg()
 
     def test_add_event_invalid_category(self):
+        """ """
         ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now(), category='dummy cat')
 
         assert bool(assert_api_resp(ret)) is False
@@ -711,6 +773,7 @@ class CaseTest(unittest.TestCase):
         assert 'Invalid event category' in cat[0]
 
     def test_update_event_valid(self):
+        """ """
         ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now())
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -746,12 +809,14 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_event_invalid_event_id(self):
+        """ """
         ret = self.case.update_event(event_id=111155551111)
         assert bool(assert_api_resp(ret)) is False
 
         assert "Invalid event ID" in ret.get_msg()
 
     def test_update_event_invalid_event_cat(self):
+        """ """
         ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now())
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -767,6 +832,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_event_invalid_event_date(self):
+        """ """
         ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now())
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -782,12 +848,14 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_delete_event_invalid_event_id(self):
+        """ """
         ret = self.case.delete_event(event_id=111155551111)
         assert bool(assert_api_resp(ret)) is False
 
         assert 'Not a valid event ID' in ret.get_msg()
 
     def test_list_tasks(self):
+        """ """
         ret = self.case.list_tasks()
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -807,6 +875,7 @@ class CaseTest(unittest.TestCase):
             assert type(parse_api_data(task, 'task_status_id')) is int
 
     def test_add_task_valid(self):
+        """ """
         ret = self.case.add_task(title="dummy title", status='To do', description='dummy description',
                                  assignee='administrator', tags=['tag1', 'tag2'])
         assert assert_api_resp(ret, soft_fail=False)
@@ -832,6 +901,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_task_partial_valid(self):
+        """ """
         ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -856,6 +926,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_task_partial_invalid_status(self):
+        """ """
         ret = self.case.add_task(title="dummy title", status='dummy status', assignee='administrator')
         assert bool(assert_api_resp(ret)) is False
 
@@ -865,6 +936,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_task_partial_invalid_assignee(self):
+        """ """
         ret = self.case.add_task(title="dummy title", status='To do', assignee='dummy user')
         assert bool(assert_api_resp(ret)) is False
 
@@ -874,6 +946,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
     def test_update_task_full(self):
+        """ """
         ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -908,6 +981,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_task_invalid_status(self):
+        """ """
         ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -925,6 +999,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_task_invalid_assignee(self):
+        """ """
         ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -942,10 +1017,12 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_delete_task_invalid(self):
+        """ """
         ret = self.case.delete_task(task_id=111155551111)
         assert bool(assert_api_resp(ret)) is False
 
     def test_list_gtasks(self):
+        """ """
         ret = self.case.list_global_tasks()
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -964,6 +1041,7 @@ class CaseTest(unittest.TestCase):
             assert type(parse_api_data(task, 'task_status_id')) is int
 
     def test_add_gtask_valid(self):
+        """ """
         ret = self.case.add_global_task(title="dummy title", status='To do', description='dummy description',
                                         assignee='administrator', tags=['tag1', 'tag2'])
         assert assert_api_resp(ret, soft_fail=False)
@@ -988,6 +1066,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_gtask_partial_valid(self):
+        """ """
         ret = self.case.add_global_task(title="dummy title", status='To do', assignee='administrator')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1011,6 +1090,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_gtask_partial_invalid_status(self):
+        """ """
         ret = self.case.add_global_task(title="dummy title", status='dummy status', assignee='administrator')
         assert bool(assert_api_resp(ret)) is False
 
@@ -1020,6 +1100,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_gtask_partial_invalid_assignee(self):
+        """ """
         ret = self.case.add_global_task(title="dummy title", status='To do', assignee='dummy user')
         assert bool(assert_api_resp(ret)) is False
 
@@ -1029,6 +1110,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
     def test_update_gtask_full(self):
+        """ """
         ret = self.case.add_global_task(title="dummy title", status='To do', assignee='administrator')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1062,6 +1144,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_gtask_invalid_status(self):
+        """ """
         ret = self.case.add_global_task(title="dummy title", status='To do', assignee='administrator')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1079,6 +1162,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_gtask_invalid_assignee(self):
+        """ """
         ret = self.case.add_global_task(title="dummy title", status='To do', assignee='administrator')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1096,10 +1180,12 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_delete_gtask_invalid(self):
+        """ """
         ret = self.case.delete_global_task(task_id=111155551111)
         assert bool(assert_api_resp(ret)) is False
 
     def test_list_evidences(self):
+        """ """
         ret = self.case.list_evidences()
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1117,6 +1203,7 @@ class CaseTest(unittest.TestCase):
             assert type(parse_api_data(evidence, 'username')) is str
 
     def test_add_evidence_full_valid(self):
+        """ """
         ret = self.case.add_evidence(filename="dummy evidence", file_size=478, description="dummy description",
                                      file_hash="dummy hash")
         assert assert_api_resp(ret, soft_fail=False)
@@ -1133,6 +1220,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_evidence_partial_valid(self):
+        """ """
         ret = self.case.add_evidence(filename="dummy evidence", file_size=478)
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1148,10 +1236,12 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_evidence_partial_invalid_size(self):
+        """ """
         ret = self.case.add_evidence(filename="dummy evidence", file_size="dummy_size")
         assert assert_api_resp(ret).is_success() is False
 
     def test_update_evidence_valid(self):
+        """ """
         ret = self.case.add_evidence(filename="dummy evidence", file_size=478)
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1173,6 +1263,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_evidence_invalid_size(self):
+        """ """
         ret = self.case.add_evidence(filename="dummy evidence", file_size=478)
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1186,6 +1277,7 @@ class CaseTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_delete_evidence_invalid_id(self):
+        """ """
         ret = self.case.delete_evidence(evidence_id=111155551111)
         assert assert_api_resp(ret).is_success() is False
 

@@ -18,59 +18,71 @@ from dfir_iris_client.helper.utils import ApiResponse
 
 
 class User(object):
-    """
-    Handles the users type methods
-    """
+    """Handles the users type methods"""
     def __init__(self, session):
         self._s = session
 
     def user_id_exists(self, user_id: int) -> bool:
-        """
-        Returns True if the user ID exists, else false
+        """Returns True if the user ID exists, else false
 
-        :param user_id: User ID to verify
-        :return: bool - Asset type ID matching provided asset type name
+        Args:
+          user_id: User ID to verify
+
+        Returns:
+          bool - Asset type ID matching provided asset type name
+
         """
         req = self.get_user(user_id=user_id)
 
         return req.is_success()
 
     def username_exists(self, username: str) -> bool:
-        """
-        Returns True if the username (login) exists, else false.
+        """Returns True if the username (login) exists, else false.
         This is equivalent to calling lookup_username() and getting the results.
 
-        :param username: User name (login) to lookup
-        :return: True if exists else false
+        Args:
+          username: User name (login) to lookup
+
+        Returns:
+          True if exists else false
+
         """
         req = self.lookup_username(username=username)
 
         return req.is_success()
 
     def lookup_username(self, username: str) -> ApiResponse:
-        """
-        Returns a user ID corresponding to the username, else None
+        """Returns a user ID corresponding to the username, else None
 
-        :param username: User name to lookup
-        :return: ApiResponse
+        Args:
+          username: User name to lookup
+
+        Returns:
+          ApiResponse
+
         """
 
         return self._s.pi_get(f'manage/users/lookup/login/{username}')
 
     def get_user(self, user_id: int) -> ApiResponse:
-        """
-        Return a user data
+        """Return a user data
 
-        :param user_id: USer ID to verify
-        :return: bool - Asset type ID matching provided asset type name
+        Args:
+          user_id: USer ID to verify
+
+        Returns:
+          bool - Asset type ID matching provided asset type name
+
         """
 
         return self._s.pi_get(f'manage/users/lookup/id/{user_id}')
 
-    def list_users(self):
-        """
-        Returns a list of the users with a restricted view so it can be called by unprivileged users.
+    def list_users(self) -> ApiResponse:
+        """Returns a list of the users with a restricted view so it can be called by unprivileged users.
 
-        :return: ApiResponse
+        Args:
+
+        Returns:
+            ApiResponse object
         """
         return self._s.pi_get(f'manage/users/restricted/list')

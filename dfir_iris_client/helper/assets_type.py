@@ -23,36 +23,43 @@ log = logger.getLogger(__name__)
 
 
 class AssetTypeHelper(object):
-    """
-    Handles the assets type methods
-    """
+    """Handles the assets type methods"""
     def __init__(self, session):
         self._s = session
 
     def list_asset_types(self) -> ApiResponse:
-        """
-        Returns a list of all assets types available
+        """Returns a list of all assets types available
 
-        :return: APIResponse object
+        Args:
+
+        Returns:
+            APIResponse object
         """
         return self._s.pi_get('manage/asset-type/list')
 
     def get_asset_type(self, asset_type_id: int) -> ApiResponse:
-        """
-        Returns an asset type data from its id
+        """Returns an asset type data from its id
 
-        :param asset_type_id: ID of asset type to fetch
-        :return: ApiResponses
+        Args:
+          asset_type_id: ID of asset type to fetch
+
+        Returns:
+          ApiResponse
+
         """
         return self._s.pi_get(f'manage/asset-type/{asset_type_id}')
 
     def lookup_asset_type_name(self, asset_type_name:str) -> Union[int, None]:
-        """
-        Returns an asset type ID from its name otherwise None
-
+        """Returns an asset type ID from its name otherwise None
+        
         :raise: Exception if server data is invalid
-        :param asset_type_name: Name of the asset type to lookup
-        :return: Asset type ID matching provided asset type name
+
+        Args:
+          asset_type_name: Name of the asset type to lookup
+
+        Returns:
+           Union[int, None]: Asset type ID matching provided asset type name
+
         """
         ast_list = self.list_asset_types()
         for ast in ast_list.get_data():

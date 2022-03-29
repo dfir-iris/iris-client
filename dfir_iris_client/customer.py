@@ -19,19 +19,20 @@ from dfir_iris_client.helper.utils import ClientApiError, ApiResponse, ClientApi
 
 
 class Customer(object):
-    """
-    Handles the customer methods
-    """
+    """Handles the customer methods"""
     def __init__(self, session):
         self._s = session
 
     def lookup_customer(self, customer_name) -> ApiResponse:
-        """
-        Returns a customer ID if customer name is found. Customer names are unique in the database.
+        """Returns a customer ID if customer name is found. Customer names are unique in the database.
         Customer ID is in the data section of the API response aka id = parse_api_data(resp.get_data(), 'customer_id')
 
-        :param: Customer name
-        :return: ApiResponse object
+        Args:
+          customer_name: Name of the customer to lookup
+
+        Returns:
+          ApiResponse object
+
         """
         resp = self._s.pi_get('/manage/customers/list')
 
@@ -47,21 +48,28 @@ class Customer(object):
         return ClientApiError(f"Customer {customer_name} not found")
 
     def get_customer_by_id(self, customer_id: int) -> ApiResponse:
-        """
-        Returns a customer from its ID
+        """Returns a customer from its ID
 
-        :param customer_id: Customer ID to look up
-        :return: ApiResponse object
+        Args:
+          customer_id: Customer ID to look up
+
+        Returns:
+          ApiResponse object
+
         """
         resp = self._s.pi_get(f'/manage/customers/{customer_id}')
 
         return resp
 
     def list_customers(self) -> ApiResponse:
-        """
-        Returns a list of the available customers
-
+        """Returns a list of the available customers
+        
         :return: ApiResponse object
+
+        Args:
+
+        Returns:
+            ApiResponse object
         """
 
         return self._s.pi_get(f'/manage/customers/list')

@@ -23,11 +23,14 @@ from dfir_iris_client.tests.tests_helper import new_session
 
 
 class IocTypesTest(unittest.TestCase):
+    """ """
     def setUp(self):
+        """ """
         session = new_session()
         self.ioct = IocTypeHelper(session)
 
     def test_list_ioc_types(self):
+        """ """
         ret = self.ioct.list_ioc_types()
 
         assert assert_api_resp(ret)
@@ -39,6 +42,7 @@ class IocTypesTest(unittest.TestCase):
         parse_api_data(data[0], 'type_id')
 
     def test_get_ioc_types_by_id(self):
+        """ """
         ret = self.ioct.list_ioc_types()
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -53,6 +57,7 @@ class IocTypesTest(unittest.TestCase):
         parse_api_data(data, 'type_taxonomy')
 
     def test_get_analysis_status_by_name(self):
+        """ """
         ret = self.ioct.list_ioc_types()
 
         assert assert_api_resp(ret, soft_fail=False)

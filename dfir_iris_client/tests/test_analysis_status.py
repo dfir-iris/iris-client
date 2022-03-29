@@ -23,11 +23,14 @@ from dfir_iris_client.tests.tests_helper import new_session
 
 
 class AnalysisStatusTest(unittest.TestCase):
+    """ """
     def setUp(self):
+        """ """
         session = new_session()
         self.asset_type = AnalysisStatusHelper(session)
 
     def test_list_analysis_status(self):
+        """ """
         ret = self.asset_type.list_analysis_status_types()
 
         assert assert_api_resp(ret)
@@ -37,6 +40,7 @@ class AnalysisStatusTest(unittest.TestCase):
         assert parse_api_data(data[0], 'name') is not None
 
     def test_get_analysis_status_by_id(self):
+        """ """
         ret = self.asset_type.list_analysis_status_types()
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -50,6 +54,7 @@ class AnalysisStatusTest(unittest.TestCase):
         assert parse_api_data(data, 'name') is not None
 
     def test_get_analysis_status_by_name(self):
+        """ """
         ret = self.asset_type.list_analysis_status_types()
 
         assert assert_api_resp(ret, soft_fail=False)

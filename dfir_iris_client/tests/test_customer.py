@@ -23,11 +23,14 @@ from dfir_iris_client.tests.tests_helper import new_session
 
 
 class CustomerTest(unittest.TestCase):
+    """ """
     def setUp(self):
+        """ """
         session = new_session()
         self.customers = Customer(session)
 
     def test_list_customers(self):
+        """ """
         ret = self.customers.list_customers()
 
         assert assert_api_resp(ret)
@@ -37,6 +40,7 @@ class CustomerTest(unittest.TestCase):
         assert parse_api_data(data[0], 'customer_name') is not None
 
     def test_get_customer_by_id(self):
+        """ """
         ret = self.customers.list_customers()
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -50,6 +54,7 @@ class CustomerTest(unittest.TestCase):
         assert parse_api_data(data, 'customer_name') is not None
 
     def test_get_customer_by_name(self):
+        """ """
         ret = self.customers.list_customers()
 
         assert assert_api_resp(ret, soft_fail=False)

@@ -23,11 +23,14 @@ from dfir_iris_client.tests.tests_helper import new_session
 
 
 class TaskStatusTest(unittest.TestCase):
+    """ """
     def setUp(self):
+        """ """
         session = new_session()
         self.tsh = TaskStatusHelper(session)
 
     def test_list_task_status(self):
+        """ """
         ret = self.tsh.list_task_status_types()
 
         assert assert_api_resp(ret)
@@ -39,6 +42,7 @@ class TaskStatusTest(unittest.TestCase):
         assert parse_api_data(data[0], 'status_bscolor') is not None
 
     def test_get_task_status_by_id(self):
+        """ """
         ret = self.tsh.list_task_status_types()
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -54,6 +58,7 @@ class TaskStatusTest(unittest.TestCase):
         assert parse_api_data(data, 'status_bscolor') is not None
 
     def test_get_analysis_status_by_name(self):
+        """ """
         ret = self.tsh.list_task_status_types()
 
         assert assert_api_resp(ret, soft_fail=False)

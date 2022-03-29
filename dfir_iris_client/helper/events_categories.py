@@ -20,26 +20,29 @@ from dfir_iris_client.helper.utils import ApiResponse
 
 
 class EventCategoryHelper(object):
-    """
-    Handles the event category methods
-    """
+    """Handles the event category methods"""
     def __init__(self, session):
         self._s = session
 
     def list_events_categories(self) -> ApiResponse:
-        """
-        Returns a list of all events categories available
+        """Returns a list of all events categories available
 
-        :return: ApiResponse object
+        Args:
+
+        Returns:
+            ApiResponse object
         """
         return self._s.pi_get('manage/event-categories/list')
 
     def lookup_event_category_name(self, event_category: str) -> Union[None, int]:
-        """
-        Returns an event category ID from its name otherwise None
+        """Returns an event category ID from its name otherwise None
 
-        :param event_category: Name of the event to lookup
-        :return: Event category ID matching provided event_category name
+        Args:
+          event_category: Name of the event to lookup
+
+        Returns:
+          Union[None, int]: Event category ID matching provided event_category name
+
         """
         evt_list = self.list_events_categories()
         if evt_list:
@@ -50,10 +53,13 @@ class EventCategoryHelper(object):
         return None
 
     def get_event_category(self, event_category_id: int) -> ApiResponse:
-        """
-        Returns an event category from its ID
+        """Returns an event category from its ID
 
-        :param event_category_id: Event category to lookup
-        :return: ApiResponse object
+        Args:
+          event_category_id: Event category to lookup
+
+        Returns:
+          ApiResponse object
+
         """
         return self._s.pi_get(f'manage/event-categories/{event_category_id}')

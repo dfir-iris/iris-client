@@ -23,11 +23,14 @@ from dfir_iris_client.tests.tests_helper import new_session
 
 
 class AssetTypeTest(unittest.TestCase):
+    """ """
     def setUp(self):
+        """ """
         session = new_session()
         self.asset_type = AssetTypeHelper(session)
 
     def test_list_asset_types(self):
+        """ """
         ret = self.asset_type.list_asset_types()
 
         assert assert_api_resp(ret)
@@ -38,6 +41,7 @@ class AssetTypeTest(unittest.TestCase):
         assert parse_api_data(data[0], 'asset_name') is not None
 
     def test_get_asset_type_by_id(self):
+        """ """
         ret = self.asset_type.get_asset_type(1)
 
         assert assert_api_resp(ret)
@@ -48,6 +52,7 @@ class AssetTypeTest(unittest.TestCase):
         assert parse_api_data(data, 'asset_name') is not None
 
     def test_get_asset_type_by_name(self):
+        """ """
         ret = self.asset_type.lookup_asset_type_name('Account')
 
         assert ret is not None
