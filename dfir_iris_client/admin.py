@@ -33,7 +33,7 @@ class AdminHelper(object):
             ClientApiError if unprivileged user
 
         Args:
-         session: ClientSession object
+            session: ClientSession object
 
         """
         self._s = session
