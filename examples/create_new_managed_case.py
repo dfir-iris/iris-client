@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 # Initiate a session with our API key and host. Session stays the same during all the script run.
 session = ClientSession(apikey=os.environ.get('IRIS_API_KEY'),
-                        host='https://127.0.0.1:4433', ssl_verify=False)
+                        host='http://127.0.0.1:8000', ssl_verify=False)
 
 # Initialize the case instance with the session
 case = Case(session=session)

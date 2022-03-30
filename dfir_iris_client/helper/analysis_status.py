@@ -20,27 +20,29 @@ from dfir_iris_client.helper.utils import ApiResponse
 
 
 class AnalysisStatusHelper(object):
-    """
-    Handles the analysis status methods
-    """
+    """Handles the analysis status methods"""
     def __init__(self, session):
         self._s = session
 
     def list_analysis_status_types(self) -> ApiResponse:
-        """
-        Returns a list of all analysis statuses
+        """Returns a list of all analysis statuses
 
-        :return: APIResponse object
+        Args:
+
+        Returns:
+            APIResponse object
         """
         return self._s.pi_get('manage/analysis-status/list')
 
     def lookup_analysis_status_name(self, analysis_status_name: str) -> Union[int, None]:
-        """
-        Returns an analysis status ID from its name otherwise None
+        """Returns an analysis status ID from its name otherwise None
 
-        :param: analysis_status_name: Name to lookup. go
+        Args:
+          analysis_status_name: str: 
 
-        :return: [int, None] - analysis status ID matching provided analysis status name or None if not found
+        Returns:
+          Union[int, None] - analysis status ID matching provided analysis status name or None if not found
+
         """
         ast_list = self.list_analysis_status_types()
         for ast in ast_list.get_data():
@@ -50,11 +52,14 @@ class AnalysisStatusHelper(object):
         return None
 
     def get_analysis_status(self, analysis_status_id: int) -> ApiResponse:
-        """
-        Returns an analysis status from its ID
+        """Returns an analysis status from its ID
 
-        :param: analysis_status_id: int : ID to fetch
-        :return: ApiResponse object
+        Args:
+          analysis_status_id: Status ID to lookup
+
+        Returns:
+          ApiResponse object
+
         """
 
         return self._s.pi_get(f'manage/analysis-status/{analysis_status_id}')

@@ -20,12 +20,15 @@ from dfir_iris_client.session import ClientSession
 
 
 def global_search_ioc(session: ClientSession, search_term: str) -> ApiResponse:
-    """
-    Searches an IOC across all investigation
+    """Searches an IOC across all investigation
 
-    :param session: Client Session to use for request
-    :param search_term: Search term to search for IOC
-    :return: ApiResponse object
+    Args:
+      session: Client Session to use for request
+      search_term: Search term to search for IOC
+
+    Returns:
+      ApiResponse object
+
     """
     if not session:
         return ClientApiError(msg=f'session is not a valid. Expected ClientSession got {type(session)}')
@@ -43,12 +46,15 @@ def global_search_ioc(session: ClientSession, search_term: str) -> ApiResponse:
 
 
 def global_search_notes(session: ClientSession, search_term: str) -> ApiResponse:
-    """
-    Searches in note contents across all investigation
+    """Searches in note contents across all investigation
 
-    :param session: Client Session to use for request
-    :param search_term: Search term to search for notes
-    :return: ApiResponse object
+    Args:
+      session: Client Session to use for request
+      search_term: Search term to search for notes
+
+    Returns:
+      ApiResponse object
+
     """
     if not session:
         return ClientApiError(msg=f'session is not a valid. Expected ClientSession got {type(session)}')

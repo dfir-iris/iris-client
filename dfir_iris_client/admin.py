@@ -23,16 +23,18 @@ from dfir_iris_client.helper.utils import ApiResponse, ClientApiError, get_data_
 
 
 class AdminHelper(object):
-    """
-    Handles administrative tasks
-    """
+    """Handles administrative tasks"""
     def __init__(self, session):
         """
         Overlay offering administrative tasks. Initialisation of the class checks if the calling user
         has admin rights. If the user doesn't, a ClientApiError exception is raised.
 
-        :raises: ClientApiError if unprivileged user
-        :param session: ClientSession object
+        Raise:
+            ClientApiError if unprivileged user
+
+        Args:
+            session: ClientSession object
+
         """
         self._s = session
 
@@ -40,20 +42,26 @@ class AdminHelper(object):
             raise Exception(ClientApiError('Only administrators can use AdminHelper'))
 
     def is_user_admin(self) -> bool:
-        """
-        Returns True if the calling user is administrator
+        """Returns True if the calling user is administrator
 
-        :return: Bool - true if the calling is administrator
+        Args:
+
+        Returns:
+            Bool - true if the calling is administrator
+
         """
         req = self._s.pi_get('user/is-admin')
         return req.is_success()
 
     def get_user(self, login: str) -> ApiResponse:
-        """
-        Returns a user by its login. Login names are unique in Iris.
+        """Returns a user by its login. Login names are unique in Iris.
 
-        :param login: username to lookup
-        :return: ApiResponse
+        Args:
+          login: username to lookup
+
+        Returns:
+          ApiResponse
+
         """
 
         user_lookup_r = self._s.pi_get(f'manage/users/lookup/login/{login}', cid=1)
@@ -65,21 +73,24 @@ class AdminHelper(object):
         return self._s.pi_get(f'manage/users/{user_id}')
 
     def add_user(self, login: str, name: str, password: str, email: str, is_admin: bool= False) -> ApiResponse:
-        """
-        Adds a new user. A new user can be successfully added if
+        """Adds a new user. A new user can be successfully added if
+        
+        - login is unique
+        - email is unique
+        - password meets the requirements of IRIS
+        
+        !!! tip Requires admin rights
 
-            - login is unique
-            - email is unique
-            - password meets the requirements of IRIS
+        Args:
+          login: Username (login name) of the user to add
+          name: Full name of the user
+          password: Password of the user
+          email: Email of the user
+          is_admin: Set to true if user is admin
 
-        .. warning:: Requires admin rights
+        Returns:
+          ApiResponse
 
-        :param login: Username (login name) of the user to add
-        :param name: Full name of the user
-        :param password: Password of the user
-        :param email: Email of the user
-        :param is_admin: Set to true if user is admin
-        :return: ApiResponse
         """
         body = {
             "user_login": login,
@@ -95,12 +106,17 @@ class AdminHelper(object):
         return self._s.pi_post(f'manage/users/add', data=body)
 
     def deactivate_user(self, user_id: int = None) -> ApiResponse:
-        """
-        Deactivate a user from its user ID. Disabled users can't login interactively nor user their API keys.
+        """Deactivate a user from its user ID. Disabled users can't login interactively nor user their API keys.
         They do not appears in proposed user lists.
 
-        :param user_id: User ID to deactivate
-        :return: ApiResponse object
+        !!! tip Requires admin rights
+
+        Args:
+          user_id: User ID to deactivate
+
+        Returns:
+          ApiResponse object
+
         """
         return self._s.pi_get(f'manage/users/deactivate/{user_id}')
 
@@ -109,23 +125,26 @@ class AdminHelper(object):
                     password: str = None,
                     email: str = None,
                     is_admin: bool = None) -> ApiResponse:
-        """
-        Updates a user. The user can be updated if :
-
-            - login is unique
-            - email is unique
-            - password meets the requirements of IRIS
-
+        """Updates a user. The user can be updated if :
+        
+        - login is unique
+        - email is unique
+        - password meets the requirements of IRIS
+        
         Password can be left empty to update other attributes.
+        
+        !!! tip Requires admin rights
 
-        .. warning:: Requires admin rights
+        Args:
+          login: Username (login name) of the user to update
+          name: Full name of the user
+          password: Password of the user
+          email: Email of the user
+          is_admin: Set to true if user is admin
 
-        :param login: Username (login name) of the user to update
-        :param name: Full name of the user
-        :param password: Password of the user
-        :param email: Email of the user
-        :param is_admin: Set to true if user is admin
-        :return: ApiResponse
+        Returns:
+          ApiResponse
+
         """
 
         user_req = self.get_user(login=login)
@@ -149,14 +168,17 @@ class AdminHelper(object):
         return self._s.pi_post(f'manage/users/update/{user.get("user_id")}', data=body)
 
     def delete_user(self, login: str) -> ApiResponse:
-        """
-        Deletes a user based on its login. A user can only be deleted if it does not have any
+        """Deletes a user based on its login. A user can only be deleted if it does not have any
         activities in IRIS. This is to maintain coherence in the database.
+        
+        !!! tip Requires admin rights
 
-        .. warning:: Requires admin rights
+        Args:
+          login: Username (login name) of the user to delete
 
-        :param login: Username (login name) of the user to delete
-        :return: ApiResponse
+        Returns:
+          ApiResponse
+
         """
         user_req = self.get_user(login=login)
         if user_req.is_error():
@@ -168,28 +190,34 @@ class AdminHelper(object):
         return self.delete_user_by_id(user_id=user.get('user_id'))
 
     def delete_user_by_id(self, user_id: int) -> ApiResponse:
-        """
-        Delete a user based on its ID. A user can only be deleted if it does not have any
+        """Delete a user based on its ID. A user can only be deleted if it does not have any
         activities in IRIS. This is to maintain coherence in the database.
+        
+        !!! tip Requires admin rights
 
-        .. warning:: Requires admin rights
+        Args:
+          user_id: UserID of the user to delete
 
-        :param user_id: UserID of the user to delete
-        :return: ApiResponse
+        Returns:
+          ApiResponse
+
         """
 
         return self._s.pi_get(f'manage/users/delete/{user_id}')
 
     def add_ioc_type(self, name: str, description: str, taxonomy: str = None) -> ApiResponse:
-        """
-        Add a new IOC Type.
+        """Add a new IOC Type.
+        
+        !!! tip Requires admin rights
 
-        .. warning:: Requires admin rights
+        Args:
+          name: Name of the IOC type
+          description: Description of the IOC type
+          taxonomy: Taxonomy of the IOC Type
 
-        :param name: Name of the IOC type
-        :param description: Description of the IOC type
-        :param taxonomy: Taxonomy of the IOC Type
-        :return: ApiResponse
+        Returns:
+          ApiResponse
+
         """
         body = {
             "type_name": name,
@@ -200,28 +228,34 @@ class AdminHelper(object):
         return self._s.pi_post(f'manage/ioc-types/add', data=body)
 
     def delete_ioc_type(self, ioc_type_id: int) -> ApiResponse:
-        """
-        Delete an existing IOC Type by its ID.
+        """Delete an existing IOC Type by its ID.
+        
+        !!! tip Requires admin rights
 
-        .. warning:: Requires admin rights
+        Args:
+          ioc_type_id: IOC type to delete
 
-        :param ioc_type_id: IOC type to delete
-        :return: ApiResponse
+        Returns:
+          ApiResponse
+
         """
         return self._s.pi_get(f'manage/ioc-types/delete/{ioc_type_id}')
 
     def update_ioc_type(self, ioc_type_id: int, name: str = None,
                         description: str = None, taxonomy: str = None) -> ApiResponse:
-        """
-        Updates an IOC type. `ioc_type_id` needs to be a valid existing IocType ID.
+        """Updates an IOC type. `ioc_type_id` needs to be a valid existing IocType ID.
+        
+        !!! tip Requires admin rights
 
-        .. warning:: Requires admin rights
+        Args:
+          ioc_type_id: IOC type to update
+          name: Name of the IOC type
+          description: Description of the IOC type
+          taxonomy: Taxonomy of the IOC Type
 
-        :param ioc_type_id: IOC type to update
-        :param name: Name of the IOC type
-        :param description: Description of the IOC type
-        :param taxonomy: Taxonomy of the IOC Type
-        :return: ApiResponse
+        Returns:
+          ApiResponse
+
         """
 
         ioc_type = IocTypeHelper(session=self._s)
@@ -241,14 +275,17 @@ class AdminHelper(object):
         return self._s.pi_post(f'manage/ioc-types/update/{ioc_type_id}', data=body)
 
     def add_asset_type(self, name: str, description: str) -> ApiResponse:
-        """
-        Add a new Asset Type.
+        """Add a new Asset Type.
+        
+        !!! tip Requires admin rights
 
-        .. warning:: Requires admin rights
+        Args:
+          name: Name of the Asset type
+          description: Description of the Asset type
 
-        :param name: Name of the Asset type
-        :param description: Description of the Asset type
-        :return: ApiResponse
+        Returns:
+          ApiResponse
+
         """
         body = {
             "asset_name": name,
@@ -258,27 +295,33 @@ class AdminHelper(object):
         return self._s.pi_post(f'manage/asset-type/add', data=body)
 
     def delete_asset_type(self, asset_type_id: int) -> ApiResponse:
-        """
-        Delete an existing asset type by its ID.
+        """Delete an existing asset type by its ID.
+        
+        !!! tip Requires admin rights
 
-        .. warning:: Requires admin rights
+        Args:
+          asset_type_id: Asset type to delete
 
-        :param asset_type_id: Asset type to delete
-        :return: ApiResponse
+        Returns:
+          ApiResponse
+
         """
         return self._s.pi_get(f'manage/asset-type/delete/{asset_type_id}')
 
     def update_asset_type(self, asset_type_id: int, name: str = None,
                           description: str = None) -> ApiResponse:
-        """
-        Updates an Asset type. `asset_type_id` needs to be a valid existing AssetType ID.
+        """Updates an Asset type. `asset_type_id` needs to be a valid existing AssetType ID.
+        
+        !!! tip Requires admin rights
 
-        .. warning:: Requires admin rights
+        Args:
+          asset_type_id: Asset type to update
+          name: Name of the IOC type
+          description: Description of the IOC type
 
-        :param asset_type_id: Asset type to update
-        :param name: Name of the IOC type
-        :param description: Description of the IOC type
-        :return: ApiResponse
+        Returns:
+          ApiResponse
+
         """
 
         asset_type = AssetTypeHelper(session=self._s)
@@ -297,15 +340,17 @@ class AdminHelper(object):
         return self._s.pi_post(f'manage/asset-type/update/{asset_type_id}', data=body)
 
     def add_customer(self, customer_name: str):
-        """
-        Creates a new customer. A new customer can be added if:
+        """Creates a new customer. A new customer can be added if:
+        
+        - customer_name is unique
+        
+        !!! tip Requires admin rights
+        Args:
+          customer_name: Name of the customer to add.
 
-            - customer_name is unique
+        Returns:
+          ApiResponse object
 
-        .. warning:: Requires admin rights
-
-        :param: str: Customer name
-        :return: ApiResponse object
         """
         body = {
             "customer_name": customer_name.lower()
@@ -315,17 +360,20 @@ class AdminHelper(object):
         return resp
 
     def update_customer(self, customer_id: int, customer_name: str):
-        """
-        Updates an existing customer. A customer can be updated if :
+        """Updates an existing customer. A customer can be updated if :
+        
+        - `customer_id` is a know customer ID in IRIS
+        - `customer_name` is unique
+        
+        !!! tip Requires admin rights
 
-            - `customer_id` is a know customer ID in IRIS
-            - `customer_name` is unique
+        Args:
+          customer_id: ID of the customer to update
+          customer_name: Customer name
 
-        .. warning:: Requires admin rights
+        Returns:
+          ApiResponse object
 
-        :param customer_id: ID of the customer to update
-        :param customer_name: Customer name
-        :return: ApiResponse object
         """
         body = {
             "customer_name": customer_name.lower()
@@ -335,13 +383,16 @@ class AdminHelper(object):
         return resp
 
     def delete_customer(self, customer: Union[str, int]) -> ApiResponse:
-        """
-        Deletes a customer from its ID or name.
+        """Deletes a customer from its ID or name.
+        
+        !!! tip Requires admin rights
 
-        .. warning:: Requires admin rights
+        Args:
+          customer: Customer name or customer ID
 
-        :param customer: Customer name or customer ID
-        :return: ApiResponse object
+        Returns:
+          ApiResponse object
+
         """
         if isinstance(customer, str):
 

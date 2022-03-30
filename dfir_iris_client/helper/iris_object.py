@@ -27,10 +27,14 @@ For future use only
 
 
 class iris_obj_property(object):
-    """
-    Defines a custom property allowing to automatically flip the sync state of an IrisObject.
+    """Defines a custom property allowing to automatically flip the sync state of an IrisObject.
     When a iris_obj_property property is set, the corresponding IrisObject is set to desync state.
     This allows to keep tracks of changes committed to the server.
+
+    Args:
+
+    Returns:
+
     """
     def __init__(self, field, fget=None, fset=None):
         self.field = field
@@ -45,9 +49,12 @@ class iris_obj_property(object):
 
         For example, getting the value of case.name results in the attribute case._name being returned.
 
-        :param instance: IrisObject instance
-        :param field: Field to return.
-        :return: The attribute
+        Args:
+            instance: IrisObject instance
+            field: Field to return.
+
+        Returns:
+            The attribute
         """
         if self.fget:
             return self.fget(instance, field)
@@ -63,9 +70,12 @@ class iris_obj_property(object):
 
         Once the set is done, the instance._set_unsynced() is called to flip the sync state of the IrisObject.
 
-        :param instance: IrisObject instance
-        :param value: Value to set the attribute with
-        :return: None
+        Args:
+            instance: IrisObject instance
+            value: Value to set the attribute with
+
+        Returns:
+            None
         """
         if self.fset:
             return self.fset(instance, value)
@@ -74,25 +84,38 @@ class iris_obj_property(object):
         instance._set_unsynced()
 
     def getter(self, fget):
-        """Setter of the getter"""
+        """Setter of the getter
+
+        Args:
+          fget: Getter method
+
+        Returns:
+            None
+        """
         return type(self)(self.field, fget, self.fset)
 
     def setter(self, fset):
-        """Setter of the setter"""
+        """Setter of the setter
+
+        Args:
+          fset: Setter method
+
+        Returns:
+            None
+        """
         return type(self)(self.field, self.fget, fset)
 
 
 class iris_dynamic_property(object):
-    """
-    Defines a custom property similar to `iris_obj_property`, allowing to automatically
+    """Defines a custom property similar to `iris_obj_property`, allowing to automatically
     flip the sync state of an IrisObject. In addition, it allows the handling of partially loaded instances.
-
+    
     Here is why partial IrisObjects (called IrisDynamicObject) are necessary.
     Let's say a user list all events with case.timeline. This will results of the loading of all events.
     However, events contains a link to assets. And assets a link to iocs. So loading the timeline would results in
     the loading and instanciation of almost all data of the case. This could be fine, but if the user only deals with
     a few events like changing the category, then all the data would have been loaded for nothing.
-
+    
     timeline
         + event 1  - fully loaded by default
             + asset 1 - fully loaded by default
@@ -104,18 +127,18 @@ class iris_dynamic_property(object):
             + asset 3 - fully loaded by default
                 + ioc 5 - fully loaded by default
             + asset 4 - fully loaded by default
-
-
+    
+    
     If the user wants to get the asset 4 of event 2, it has to load everything (or get the event itself only but some
     people might just do it this way).
-
+    
     To avoid that, IrisDynamicObject implement partial loading thanks to iris_dynamic_property properties.
     In the above example, this results in all events being initialised, but each events will only partially load
     the level of children. It actually only loads the data needed to load the child in case it is accessed (usually name
     and object ID).
     If a child is accessed, then it's fully loaded and in turn partially load its own children,
     etc. The above schema to access asset 3 of event 2 results then in the following.
-
+    
     timeline
     + event 1  - fully loaded by default
         + asset 1 - partially loaded
@@ -124,9 +147,14 @@ class iris_dynamic_property(object):
         + asset 3 - fully loaded upon user access
             + ioc 5 - partially loaded
         + asset 4 - partially loaded
-
+    
     As for iris_obj_property, when a property is set, the corresponding IrisObject is set to the desync state.
     This allows to keep tracks of changes to committed to the server.
+
+    Args:
+
+    Returns:
+
     """
     def __init__(self, field, fget=None, fset=None):
         self.field = field
@@ -148,9 +176,12 @@ class iris_dynamic_property(object):
 
         For example, getting the value of case.name results in the attribute case._name being returned.
 
-        :param instance: IrisObject instance
-        :param field: Field to return.
-        :return: The attribute
+        Args:
+            instance: IrisObject instance
+            field: Field to return
+
+        Returns:
+            The attribute
         """
         if self.fget:
             return self.fget(instance)
@@ -178,9 +209,12 @@ class iris_dynamic_property(object):
 
         Once the set is done, the instance._set_unsynced() is called to flip the sync state of the IrisObject.
 
-        :param instance: IrisObject instance
-        :param value: Value to set the attribute with
-        :return: None
+        Args:
+            instance: IrisObject instance
+            value: Value to set the attribute with
+
+        Returns:
+            None
         """
         if self.fset:
             return self.fset(instance, value)
@@ -194,19 +228,37 @@ class iris_dynamic_property(object):
         instance._set_unsynced()
 
     def getter(self, fget):
-        """Setter of the getter"""
+        """Setter of the getter
+
+        Args:
+          fget: Getter
+
+        Returns:
+
+        """
         return type(self)(self.field, fget, self.fset)
 
     def setter(self, fset):
-        """Setter of the setter"""
+        """Setter of the setter
+
+        Args:
+          fset: Setter
+
+        Returns:
+
+        """
         return type(self)(self.field, self.fget, fset)
 
 
 class IrisObject(object):
-    """
-    Defines a standard IrisObject. These are used by the abstraction layer of the client.
+    """Defines a standard IrisObject. These are used by the abstraction layer of the client.
     They automatically find the ClientSession and implement the basic attributes and methods
     allowing the abstraction layer to function.
+
+    Args:
+
+    Returns:
+
     """
     object_name = "base"
 
@@ -218,7 +270,6 @@ class IrisObject(object):
         with which case it needs to talk to.
         By default, objects are initiated in an unsynced state.
 
-        :param cid: Case ID
         """
         from dfir_iris_client.session import ClientSession
         self._s: ClientSession = get_iris_session()
@@ -232,11 +283,14 @@ class IrisObject(object):
         return self._id
 
     def set_cid(self, cid: int) -> IrisStatus:
-        """
-        Set the case ID and propagate to the helper class
+        """Set the case ID and propagate to the helper class
 
-        :param cid: Case ID
-        :return: IrisStatus object
+        Args:
+          cid: Case ID
+
+        Returns:
+          IrisStatus object
+
         """
         self._cid = cid
         self._ch.set_cid(cid)
@@ -244,16 +298,20 @@ class IrisObject(object):
         return BaseOperationSuccess
 
     def set_id(self, id: int) -> None:
-        """
-        Set the ID of the IrisObject instance. This represents the ID of the corresponding object on the server.
+        """Set the ID of the IrisObject instance. This represents the ID of the corresponding object on the server.
 
-        :param id: ID of the object
-        :return: None
+        Args:
+          id: ID of the object
+
+        Returns:
+          None
+
         """
         self._id = id
 
     @property
     def id(self) -> int:
+        """ """
         return self._id
 
     @property
@@ -262,7 +320,14 @@ class IrisObject(object):
         return self._is_synced
 
     def _set_sync_state(self, state: bool) -> None:
-        """Internal method to flip the sync state"""
+        """Internal method to flip the sync state
+
+        Args:
+          state: bool: Sync state to set
+
+        Returns:
+            IrisStatus
+        """
         self._is_synced = state
 
     def _set_unsynced(self):
@@ -270,20 +335,36 @@ class IrisObject(object):
         self._is_synced = False
 
     def init_from_id(self, id: int = None) -> IrisStatus:
-        """Every object need to implement this initialisation method. Failing to do so results in exception"""
+        """Every object need to implement this initialisation method. Failing to do so results in exception
+
+        Args:
+          id: int:  ID of object to init (Default value = None)
+
+        Returns:
+            IrisStatus
+        """
         raise Exception(OperationFailure('Operation not implemented'))
 
     def init_from_data(self, data: dict) -> IrisStatus:
-        """Every object need to implement this initialisation method. Failing to do so results in exception"""
+        """Every object need to implement this initialisation method. Failing to do so results in exception
+
+        Args:
+          data: dict: Init data
+
+        Returns:
+            IrisStatus
+        """
         raise Exception(OperationFailure('Operation not implemented'))
 
     def sync(self) -> IrisStatus:
-        """
-        Force the synchronization of the object with the server.
+        """Force the synchronization of the object with the server.
+        
+        !!! warning Any local unsaved changes will be erase
 
-        .. warning:: Caution - any local unsaved changes will be erase
+        Args:
 
-        :return: IrisStatus
+        Returns:
+            IrisStatus
         """
         self.reset(keep_id=True, keep_cid=True)
 
@@ -293,13 +374,14 @@ class IrisObject(object):
         return ret
 
     def reset(self, keep_id=False, keep_cid=False):
-        """
-        Resets an IRIS object. Acts as a new object.
+        """Resets an IRIS object. Acts as a new object.
 
+        Args:
+          keep_id: If set, the object will keep its current ID. (Default value = False)
+          keep_cid: If set, the object will keep its current Case ID cid. (Default value = False)
 
-        :param keep_id: If set, the object will keep its current ID.
-        :param keep_cid: If set, the object will keep its current Case ID cid.
-        :return:
+        Returns:
+
         """
         id = self.id if keep_id else None
         cid = self._cid if keep_cid else None
@@ -310,9 +392,7 @@ class IrisObject(object):
 
 
 class IrisDynamicObject(IrisObject):
-    """
-    Defines an overlay of IrisObject, by providing additional attribute needed to keep track of the partial state
-    """
+    """Defines an overlay of IrisObject, by providing additional attribute needed to keep track of the partial state"""
 
     def __init__(self,  cid: int = None):
         """Call IrisObject init and set partial state by default"""
@@ -321,15 +401,19 @@ class IrisDynamicObject(IrisObject):
 
     @property
     def is_partial(self) -> bool:
+        """ """
         return self._is_partial
 
     def init_from_data(self, data: dict, partial: bool = False) -> IrisStatus:
-        """
-        Init the object from an API data response. Set the sync state according to the init operation return.
+        """Init the object from an API data response. Set the sync state according to the init operation return.
 
-        :param data: API data response
-        :param partial: Partial load of the object
-        :return: IrisStatus
+        Args:
+          data: API data response
+          partial: Partial load of the object
+
+        Returns:
+          IrisStatus
+
         """
         self._is_partial = partial
         ret = map_object(self, data)

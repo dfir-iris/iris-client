@@ -24,7 +24,7 @@ import setuptools
 
 setuptools.setup(
      name='dfir_iris_client',
-     version='1.0.1',
+     version='1.0.2',
      packages=['dfir_iris_client', 'dfir_iris_client.helper', 'dfir_iris_client.tests'],
      author="DFIR-IRIS",
      author_email="contact@dfir-iris.org",

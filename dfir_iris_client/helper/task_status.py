@@ -20,26 +20,29 @@ from dfir_iris_client.helper.utils import ApiResponse
 
 
 class TaskStatusHelper(object):
-    """
-    Handles the analysis status methods
-    """
+    """Handles the analysis status methods"""
     def __init__(self, session):
         self._s = session
 
     def list_task_status_types(self) -> ApiResponse:
-        """
-        Returns a list of all tasks statuses
+        """Returns a list of all tasks statuses
 
-        :return: APIResponse object
+        Args:
+
+        Returns:
+            ApiResponse
         """
         return self._s.pi_get('manage/task-status/list')
 
     def lookup_task_status_name(self, task_status_name: str) -> Union[int, None]:
-        """
-        Returns a task status ID from its name otherwise None
+        """Returns a task status ID from its name otherwise None
 
-        :param: task_status_name: str : Name to lookup
-        :return: [int, None] - task status ID matching provided task status name
+        Args:
+          task_status_name: str: Task name to lookup
+
+        Returns:
+          Union[int, None] - task status ID matching provided task status name
+
         """
         ast_list = self.list_task_status_types()
         if ast_list:
@@ -50,11 +53,14 @@ class TaskStatusHelper(object):
         return None
 
     def get_task_status(self, task_status_id: int) -> ApiResponse:
-        """
-        Returns a task status from its ID
+        """Returns a task status from its ID
 
-        :param: task_status_id: int : ID to fetch
-        :return: ApiResponse object
+        Args:
+          task_status_id: int: Task ID to lookup
+
+        Returns:
+          ApiResponse object
+
         """
 
         return self._s.pi_get(f'manage/task-status/{task_status_id}')

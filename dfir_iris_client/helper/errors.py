@@ -16,17 +16,23 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class IrisStatus(object):
-    """
-    Defines a custom status class, used by the abstraction layer
+    """Defines a custom status class, used by the abstraction layer
     to communicate about API and operations feedbacks
+
+    Args:
+
+    Returns:
+
     """
     def __init__(self, message=None, data=None, uri=None, is_error=False):
         """
          Mimics the JSON feedback returned by the API
-        :param message: Message from the server about the request
-        :param data: Data from the server
-        :param uri: URI that was requested
-        :param is_error: True if the status is an error, else False
+
+         Args:
+            message: Message from the server about the request
+            data: Data from the server
+            uri: URI that was requested
+            is_error: True if the status is an error, else False
         """
         self.message = message
         self.data = data
@@ -54,34 +60,44 @@ class IrisStatus(object):
         return msg
 
     def is_error(self) -> bool:
-        """
-        Simply return true if status is an error
+        """Simply return true if status is an error
 
-        :return: True if status is error
+        Args:
+
+        Returns:
+            bool
         """
         return self._is_error
 
-    def is_success(self):
-        """
-        Simply return true if status is a success
-
+    def is_success(self) -> bool:
+        """Simply return true if status is a success
+        
         :return: True if status is a success
+
+        Args:
+
+        Returns:
+            bool
         """
         return not self._is_error
 
     def set_error(self) -> None:
-        """
-        Force the status to error
+        """Force the status to error
 
-        :return: None
+        Args:
+
+        Returns:
+            None
         """
         self._is_error = True
 
     def set_success(self) -> None:
-        """
-        Force the status to success
+        """Force the status to success
 
-        :return: None
+        Args:
+
+        Returns:
+            None
         """
         self._is_error = False
 
@@ -101,6 +117,7 @@ class IrisStatusSuccess(IrisStatus):
 
 
 class OperationSuccess(IrisStatusSuccess):
+    """ """
     pass
 
 
@@ -108,44 +125,55 @@ BaseOperationSuccess = OperationSuccess()
 
 
 class OperationFailure(IrisStatusError):
+    """ """
     pass
 
 
 class InvalidObjectMapping(IrisStatusError):
+    """ """
     pass
 
 
 class InvalidCaseId(IrisStatusError):
+    """ """
     pass
 
 
 class InvalidObjectId(IrisStatusError):
+    """ """
     pass
 
 
 class ObjectNotFound(IrisStatusError):
+    """ """
     pass
 
 
 class InvalidObjectType(IrisStatusError):
+    """ """
     pass
 
 
 class CaseNotInitialized(IrisStatusError):
+    """ """
     pass
 
 
 class ApiRequestFailure(IrisStatusError):
+    """ """
     pass
 
 
 class InvalidApiResponse(IrisStatusError):
+    """ """
     pass
 
 
 class ObjectNotInitialized(IrisStatusError):
+    """ """
     pass
 
 
 class ObjectAlreadyInitialized(IrisStatusError):
+    """ """
     pass

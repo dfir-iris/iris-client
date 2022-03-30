@@ -20,15 +20,17 @@ from dfir_iris_client.session import ClientSession
 
 
 def new_session():
+    """ """
     session = ClientSession(apikey=os.getenv('APIKEY'),
-                            host='https://localhost:4433', ssl_verify=False)
+                            host='http://localhost:8000', ssl_verify=False)
 
     return session
 
 
 def new_adm_session():
+    """ """
     session = ClientSession(apikey=os.getenv('APIKEY'),
-                            host='https://localhost:4433', ssl_verify=False)
+                            host='http://localhost:8000', ssl_verify=False)
 
     return session
 

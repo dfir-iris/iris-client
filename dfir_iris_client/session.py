@@ -30,7 +30,7 @@ The API version is not directly correlated with Iris version.
 Server has an endpoint /api/versions which should returns the API compatible versions 
 it can handles. 
 """
-API_VERSION = "1.0.1"
+API_VERSION = "1.0.2"
 
 """client_session
 Defines a global session, accessible by all classes. client_session is of type ClientSession.
@@ -39,9 +39,13 @@ client_session = None
 
 
 class ClientSession(object):
-    """
-    Represents a client that can interacts with Iris. It is basic wrapper handling authentication and the requests
+    """Represents a client that can interacts with Iris. It is basic wrapper handling authentication and the requests
     to the server.
+
+    Args:
+
+    Returns:
+
     """
     def __init__(self, apikey, host=None, agent="iris-client", ssl_verify=True, proxy=None, timeout=120):
         """
@@ -54,12 +58,13 @@ class ClientSession(object):
 
         Once successfully initialized, the session become available through global var client_session.
 
-        :param apikey: A valid API key. It can be fetched from My profile > API Key
-        :param host: Target IRIS server full URL eg https://iris.local:9443
-        :param agent: User agent to issue the requests with
-        :param ssl_verify: Set or unset SSL verification
-        :param proxy: Proxy parameters - For future use only
-        :param timeout: Default timeout for requests
+        Args:
+            apikey: A valid API key. It can be fetched from My profile > API Key
+            host: Target IRIS server full URL eg https://iris.local:9443
+            agent: User agent to issue the requests with
+            ssl_verify: Set or unset SSL verification
+            proxy: Proxy parameters - For future use only
+            timeout: Default timeout for requests
         """
         self._apikey = apikey
         self._host = host
@@ -79,31 +84,35 @@ class ClientSession(object):
         client_session = self
 
     def preload_base_objects(self) -> None:
-        """
-        Preload the base objects most commonly used. This simply init the BaseObjects
+        """Preload the base objects most commonly used. This simply init the BaseObjects
         class, which in turns requests and build all the most common objects such as
         AnalysisStatus, EventCategory, EventType, etc.
-
+        
         For future use only
 
-        :return: None
+        Args:
+
+        Returns:
+
         """
         pass
 
     def _check_api_compatibility(self) -> bool:
-        """
-        Checks that the server and client can work together.
+        """Checks that the server and client can work together.
         The methods expects the following :
         `Version(server_min_api_version) <= Version(client_api_version) <= Version(server_max_api_version)`
-
+        
         If API is not compatible, an exception is raised.
 
-        :raises: Exception if not API compatible
-        :return: bool
+        Args:
+
+        Returns:
+          bool
+
         """
-        resp = self.pi_get('api/versions')
+        resp = self.pi_get('api/versions', cid=1)
         if resp.is_error():
-            raise Exception('Unable to contact endpoint api/versions')
+            raise Exception(f'Unable to contact endpoint api/versions. {resp.get_msg()}')
 
         versions = resp.get_data()
         min_ver = versions.get('api_min')
@@ -115,12 +124,14 @@ class ClientSession(object):
         raise Exception(f'Incompatible API version. Server expects {min_ver} -> {max_ver} but client is {API_VERSION}')
 
     def _check_apikey_validity(self) -> bool:
-        """
-        Checks the validity of the provided API key (emptiness, string and authorized).
+        """Checks the validity of the provided API key (emptiness, string and authorized).
         If the key is invalid, a ValueError exception is raised.
 
-        :raises: ValueError if the API key is invalid
-        :return: bool
+        Args:
+
+        Returns:
+          bool
+
         """
         if not isinstance(self._apikey, str):
             raise ValueError('API key must be a string')
@@ -128,29 +139,33 @@ class ClientSession(object):
         if not self._apikey:
             raise ValueError('API key can not be an empty string')
 
-        resp = self.pi_get('api/ping')
+        resp = self.pi_get('api/ping', cid=1)
         if resp.is_error():
-            raise ValueError('Invalid API key')
+            raise ValueError(f'Invalid API key. {resp.get_msg()}')
 
         return True
 
     def _pi_uri(self, uri: str = None):
-        """
-        Wraps the provided uri around the URL.
+        """Wraps the provided uri around the URL.
 
-        :param uri: URI to request
-        :return: Str - URL to request
+        Args:
+          uri: URI to request
+
+        Returns:
+          Str - URL to request
         """
         return self._host + '/' + uri
 
     def pi_get(self, uri: str, cid: int = None) -> ApiResponse:
-        """
-        Adds the CID information needed by the server when issuing GET requests
+        """Adds the CID information needed by the server when issuing GET requests
         and then issue the request itself.
 
-        :param uri: URI endpoint to request
-        :param cid: Target case ID
-        :return: ApiResponse object
+        Args:
+          uri: URI endpoint to request
+          cid: Target case ID
+
+        Returns:
+          ApiResponse object
         """
         if cid:
             uri = f"{uri}?cid={cid}"
@@ -158,24 +173,29 @@ class ClientSession(object):
         return self._pi_request(uri, type='GET')
 
     def pi_post(self, uri: str, data: dict) -> ApiResponse:
-        """
-        Issues a POSt request with the provided data. Simple wrapper around _pi_request
+        """Issues a POSt request with the provided data. Simple wrapper around _pi_request
 
-        :param uri: URI endpoint to request
-        :param data: data to be posted. Expect a dict
-        :return: ApiResponse object
+        Args:
+          uri: URI endpoint to request
+          data: data to be posted. Expect a dict
+
+        Returns:
+          ApiResponse object
+
         """
         return self._pi_request(uri, type='POST', data=data)
 
     def _pi_request(self, uri: str, type: str = None, data: dict = None) -> ApiResponse:
-        """
-        Make a request (GET or POST) and handle the errors. The authentication header is added.
+        """Make a request (GET or POST) and handle the errors. The authentication header is added.
 
-        :raises: Exception if server can't be reached or if server replied 500
-        :param uri: URI to request
-        :param type: Type of the request [POST or GET]
-        :param data: dict to send if request type is POST
-        :return: ApiResponse object
+        Args:
+          uri: URI to request
+          type: Type of the request [POST or GET]
+          data: dict to send if request type is POST
+
+        Returns:
+          ApiResponse object
+
         """
 
         try:

@@ -20,26 +20,29 @@ from dfir_iris_client.helper.utils import ApiResponse
 
 
 class IocTypeHelper(object):
-    """
-    Handles the IOC types methods
-    """
+    """Handles the IOC types methods"""
     def __init__(self, session):
         self._s = session
 
     def list_ioc_types(self) -> ApiResponse:
-        """
-        Returns a list of all ioc types
+        """Returns a list of all ioc types
 
-        :return: APIResponse object
+        Args:
+
+        Returns:
+            APIResponse object
         """
         return self._s.pi_get('manage/ioc-types/list')
 
     def lookup_ioc_type_name(self, ioc_type_name: str) -> Union[None, int]:
-        """
-        Returns an ioc_type_name from its name otherwise None
+        """Returns an ioc_type_name from its name otherwise None
 
-        :param: ioc_type_name: Name to lookup
-        :return: ioc_type_name matching provided ioc type name otherwise none
+        Args:
+          ioc_type_name: IOC type name to lookup
+
+        Returns:
+          ioc_type_name matching provided ioc type name otherwise none
+
         """
         ast_list = self.list_ioc_types()
         if ast_list:
@@ -50,10 +53,13 @@ class IocTypeHelper(object):
         return None
 
     def get_ioc_type(self, ioc_type_id: int) -> ApiResponse:
-        """
-        Returns an ioc type from its ID
+        """Returns an ioc type from its ID
 
-        :param ioc_type_id: Type ID to lookup
-        :return: ApiResponse object
+        Args:
+          ioc_type_id: Type ID to lookup
+
+        Returns:
+          ApiResponse object
+
         """
         return self._s.pi_get(f'manage/ioc-types/{ioc_type_id}')

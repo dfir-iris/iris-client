@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 # Initiate a session with our API key and host. Session stays the same during all the script run.
 session = ClientSession(apikey=os.environ.get('IRIS_API_KEY'),
-                        host='https://127.0.0.1:4433', ssl_verify=False)
+                        host='http://127.0.0.1:8000', ssl_verify=False)
 
 # Initialize the case instance with the session
 case = Case(session=session)
@@ -50,8 +50,8 @@ status = case.list_events()
 assert_api_resp(status, soft_fail=False)
 
 timeline = parse_api_data(status.get_data(), 'timeline')
-if len(timeline) < 25:
-    for i in range(0, 25):
+if len(timeline) < 85:
+    for i in range(0, 150):
         # Only title and datetime are required, but here we play with the summary and graphs too
         status = case.add_event(f'Event {i}',
                                 date_time=random_date(),

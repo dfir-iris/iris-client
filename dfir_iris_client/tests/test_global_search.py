@@ -23,10 +23,13 @@ from dfir_iris_client.tests.tests_helper import new_session
 
 
 class GlobalSearchTest(unittest.TestCase):
+    """ """
     def setUp(self):
+        """ """
         self.session = new_session()
 
     def test_search_ioc(self):
+        """ """
         ret = global_search_ioc(self.session, search_term='%')
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -37,6 +40,7 @@ class GlobalSearchTest(unittest.TestCase):
         assert parse_api_data(data[0], 'ioc_description')
 
     def test_search_notes(self):
+        """ """
         ret = global_search_notes(self.session, search_term='%')
 
         assert assert_api_resp(ret, soft_fail=False)

@@ -20,26 +20,31 @@ from dfir_iris_client.helper.utils import ApiResponse
 
 
 class TlpHelper(object):
-    """
-    Handles the TLP methods
-    """
+    """Handles the TLP methods"""
     def __init__(self, session):
         self._s = session
 
     def list_tlps(self) -> ApiResponse:
-        """
-        Returns a list of all tlps available
+        """Returns a list of all tlps available
 
-        :return: ApiResponse object
+        Args:
+
+        Returns:
+            ApiResponse object
         """
 
         return self._s.pi_get('manage/tlp/list')
 
     def lookup_tlp_name(self, tlp_name: str) -> Union[int, None]:
-        """
-        Returns a tlp ID from its name otherwise None
-
+        """Returns a tlp ID from its name otherwise None
+        
         :return: tlp ID matching provided tlp name or None
+
+        Args:
+          tlp_name: str: Name of the TLP
+
+        Returns:
+            Union[int, None]
         """
         tlp_list_req = self.list_tlps()
 
@@ -51,10 +56,13 @@ class TlpHelper(object):
         return None
 
     def get_tlp(self, tlp_id: int) -> ApiResponse:
-        """
-        Returns a tlp from its ID
+        """Returns a tlp from its ID
 
-        :param tlp_id: TLP ID to lookup
-        :return: ApiResponse object
+        Args:
+          tlp_id: TLP ID to lookup
+
+        Returns:
+          ApiResponse object
+
         """
         return self._s.pi_get(f'manage/tlp/{tlp_id}')

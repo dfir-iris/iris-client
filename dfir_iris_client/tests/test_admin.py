@@ -23,12 +23,15 @@ from dfir_iris_client.tests.tests_helper import new_session, new_adm_session
 
 
 class AdminTest(unittest.TestCase):
+    """ """
     def setUp(self):
+        """ """
         session = new_adm_session()
         self.adm = AdminHelper(session)
         self.customer = Customer(session)
 
     def test_is_user_admin_valid(self):
+        """ """
         ret = self.adm.is_user_admin()
         assert ret is True
 
@@ -36,6 +39,7 @@ class AdminTest(unittest.TestCase):
         self.failureException(AdminHelper(session_no_adm))
 
     def test_get_user_valid(self):
+        """ """
         ret = self.adm.get_user('administrator')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -47,12 +51,14 @@ class AdminTest(unittest.TestCase):
         assert type(parse_api_data(data, 'user_roles')) == list
 
     def test_get_user_invalid(self):
+        """ """
         ret = self.adm.get_user('dummy user')
         assert bool(assert_api_resp(ret)) is False
 
         assert 'Invalid login' in ret.get_msg()
 
     def test_add_ioc_type_valid(self):
+        """ """
         ret = self.adm.add_ioc_type('dummy ioc type', description='dummy description', taxonomy='dummy taxo')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -66,12 +72,14 @@ class AdminTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_ioc_type_invalid_already_exists(self):
+        """ """
         ret = self.adm.add_ioc_type('AS', description='dummy description', taxonomy='dummy taxo')
         assert bool(assert_api_resp(ret, soft_fail=True)) == False
 
         assert 'Data error' in ret.get_msg()
 
     def test_update_ioc_type_valid(self):
+        """ """
         ret = self.adm.add_ioc_type('dummy ioc type', description='dummy description', taxonomy='dummy taxo')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -95,6 +103,7 @@ class AdminTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_asset_type_valid(self):
+        """ """
         ret = self.adm.add_asset_type('dummy asset type', description='dummy description')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -107,12 +116,14 @@ class AdminTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_asset_type_invalid_already_exists(self):
+        """ """
         ret = self.adm.add_asset_type('WAF', description='dummy description')
         assert bool(assert_api_resp(ret, soft_fail=True)) is False
 
         assert 'Data error' in ret.get_msg()
 
     def test_update_asset_type_valid(self):
+        """ """
         ret = self.adm.add_asset_type('dummy asset type', description='dummy description')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -134,6 +145,7 @@ class AdminTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_customer_valid(self):
+        """ """
         ret = self.adm.add_customer('dummy customer')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -145,12 +157,14 @@ class AdminTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_customer_invalid_customer_exists(self):
+        """ """
         ret = self.adm.add_customer('IrisInitialClient')
         assert bool(assert_api_resp(ret)) is False
 
         assert 'customer_name' in ret.get_data()
 
     def test_update_customer_valid(self):
+        """ """
         ret = self.customer.lookup_customer(customer_name='IrisInitialClient')
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -163,6 +177,7 @@ class AdminTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_delete_customer_valid(self):
+        """ """
         ret = self.adm.add_customer('dummy customer')
         assert assert_api_resp(ret, soft_fail=False)
 

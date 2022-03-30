@@ -23,11 +23,14 @@ from dfir_iris_client.tests.tests_helper import new_session
 
 
 class EventCategoryTest(unittest.TestCase):
+    """ """
     def setUp(self):
+        """ """
         session = new_session()
         self.ec = EventCategoryHelper(session)
 
     def test_list_event_categories(self):
+        """ """
         ret = self.ec.list_events_categories()
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -37,6 +40,7 @@ class EventCategoryTest(unittest.TestCase):
         assert parse_api_data(data[0], 'name') is not None
 
     def test_get_event_category_by_id(self):
+        """ """
         ret = self.ec.list_events_categories()
 
         assert assert_api_resp(ret, soft_fail=False)
@@ -50,6 +54,7 @@ class EventCategoryTest(unittest.TestCase):
         assert parse_api_data(data, 'name') is not None
 
     def test_get_event_category_by_name(self):
+        """ """
         ret = self.ec.list_events_categories()
 
         assert assert_api_resp(ret, soft_fail=False)
