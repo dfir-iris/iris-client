@@ -79,7 +79,7 @@ class AdminHelper(object):
         - email is unique
         - password meets the requirements of IRIS
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           login: Username (login name) of the user to add
@@ -109,7 +109,7 @@ class AdminHelper(object):
         """Deactivate a user from its user ID. Disabled users can't login interactively nor user their API keys.
         They do not appears in proposed user lists.
 
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           user_id: User ID to deactivate
@@ -133,7 +133,7 @@ class AdminHelper(object):
         
         Password can be left empty to update other attributes.
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           login: Username (login name) of the user to update
@@ -171,7 +171,7 @@ class AdminHelper(object):
         """Deletes a user based on its login. A user can only be deleted if it does not have any
         activities in IRIS. This is to maintain coherence in the database.
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           login: Username (login name) of the user to delete
@@ -193,7 +193,7 @@ class AdminHelper(object):
         """Delete a user based on its ID. A user can only be deleted if it does not have any
         activities in IRIS. This is to maintain coherence in the database.
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           user_id: UserID of the user to delete
@@ -208,7 +208,7 @@ class AdminHelper(object):
     def add_ioc_type(self, name: str, description: str, taxonomy: str = None) -> ApiResponse:
         """Add a new IOC Type.
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           name: Name of the IOC type
@@ -230,7 +230,7 @@ class AdminHelper(object):
     def delete_ioc_type(self, ioc_type_id: int) -> ApiResponse:
         """Delete an existing IOC Type by its ID.
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           ioc_type_id: IOC type to delete
@@ -245,7 +245,7 @@ class AdminHelper(object):
                         description: str = None, taxonomy: str = None) -> ApiResponse:
         """Updates an IOC type. `ioc_type_id` needs to be a valid existing IocType ID.
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           ioc_type_id: IOC type to update
@@ -277,7 +277,7 @@ class AdminHelper(object):
     def add_asset_type(self, name: str, description: str) -> ApiResponse:
         """Add a new Asset Type.
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           name: Name of the Asset type
@@ -297,7 +297,7 @@ class AdminHelper(object):
     def delete_asset_type(self, asset_type_id: int) -> ApiResponse:
         """Delete an existing asset type by its ID.
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           asset_type_id: Asset type to delete
@@ -312,7 +312,7 @@ class AdminHelper(object):
                           description: str = None) -> ApiResponse:
         """Updates an Asset type. `asset_type_id` needs to be a valid existing AssetType ID.
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           asset_type_id: Asset type to update
@@ -344,7 +344,7 @@ class AdminHelper(object):
         
         - customer_name is unique
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
         Args:
           customer_name: Name of the customer to add.
 
@@ -365,7 +365,7 @@ class AdminHelper(object):
         - `customer_id` is a know customer ID in IRIS
         - `customer_name` is unique
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           customer_id: ID of the customer to update
@@ -385,7 +385,7 @@ class AdminHelper(object):
     def delete_customer(self, customer: Union[str, int]) -> ApiResponse:
         """Deletes a customer from its ID or name.
         
-        !!! tip Requires admin rights
+        !!! tip "Requires admin rights"
 
         Args:
           customer: Customer name or customer ID

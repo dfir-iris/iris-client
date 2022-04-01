@@ -17,10 +17,15 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+import pathlib
 
 import setuptools
 
+# The directory containing this file
+CURR_DIR = pathlib.Path(__file__).parent
+
+# The text of the README file
+README = (CURR_DIR / "README.md").read_text()
 
 setuptools.setup(
      name='dfir_iris_client',
@@ -29,8 +34,7 @@ setuptools.setup(
      author="DFIR-IRIS",
      author_email="contact@dfir-iris.org",
      description="Client for DFIR-IRIS API",
-     long_description="A Python client to communicate with the DFIR-IRIS API, "
-                      "allowing to handle almost all features via Python",
+     long_description=README,
      long_description_content_type="text/markdown",
      url="https://github.com/dfir-iris/dfir-iris-client",
      classifiers=[
