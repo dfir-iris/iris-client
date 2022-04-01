@@ -7,6 +7,11 @@ It relies exclusively on the API, which means output of the methods are the same
 ## Versions
 The Python client version follows the API versions (until the patch level). Meaning for API v1.0.1, one need to install `dfir_iris_client-1.0.1`.
 
+## Install 
+IRIS Client is now part of PyPI. You can simply install it with : 
+```
+pip3 install dfir-iris-client
+```
 
 ## Build
 To build a wheel from the sources:
