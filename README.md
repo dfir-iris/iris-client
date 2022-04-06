@@ -25,4 +25,4 @@ To build a wheel from the sources:
 Some examples are available [here](https://github.com/dfir-iris/iris-client/tree/master/examples).
 
 ## Documentation 
-The documentation is available in the [IRIS documentation](https://dfir-iris.github.io/python_client/modules/).
+The documentation is available in the [IRIS documentation](https://dfir-iris.github.io/python_client/).
