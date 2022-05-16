@@ -894,9 +894,10 @@ class Case(object):
         return self._s.pi_get(f'case/timeline/events/list/filter/{filter_by_asset}', cid=cid)
 
     def add_event(self, title:str, date_time: datetime, content: str = None, raw_content: str = None,
-                  source: str = None, linked_assets: list = None, category: Union[int, str] = None, tags: list = None,
-                  color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
-                  custom_attributes: str = None, cid: int = None, timezone_string: str = None) -> ApiResponse:
+                  source: str = None, linked_assets: list = None, linked_iocs: list = None,
+                  category: Union[int, str] = None, tags: list = None, color: str = None, display_in_graph: bool = None,
+                  display_in_summary: bool = None, custom_attributes: str = None, cid: int = None,
+                  timezone_string: str = None) -> ApiResponse:
         """Adds a new event to the timeline.
         
         If it is a string, category is lookup-ed up before the addition request is issued.
@@ -914,6 +915,7 @@ class Case(object):
           raw_content: Raw content of the event (displayed in detailed event on GUI)
           source: Source of the event
           linked_assets: List of assets to link with this event
+          linked_iocs: List of IOCs to link with this event
           category: Category of the event (MITRE ATT@CK)
           color: Left border of the event in the timeline
           display_in_graph: Set to true to display in graph page - Default to true
@@ -955,6 +957,7 @@ class Case(object):
             "event_raw": raw_content if raw_content else "",
             "event_source": source if source else "",
             "event_assets": linked_assets if linked_assets else [],
+            "event_iocs": linked_iocs if linked_iocs else [],
             "event_category_id": category if category else "1",
             "event_color": color if color else "",
             "event_date": date_time.strftime('%Y-%m-%dT%H:%M:%S.%f'),
@@ -967,7 +970,7 @@ class Case(object):
         return self._s.pi_post(f'case/timeline/events/add', data=body)
 
     def update_event(self, event_id: int, title: str = None, date_time: datetime = None, content: str = None,
-                     raw_content: str = None, source: str = None, linked_assets: list = None,
+                     raw_content: str = None, source: str = None, linked_assets: list = None, linked_iocs: list = None,
                      category: Union[int, str] = None, tags: list = None,
                      color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
                      custom_attributes: dict = None, cid: int = None, timezone_string: str = None) -> ApiResponse:
@@ -990,6 +993,7 @@ class Case(object):
           raw_content: Raw content of the event (displayed in detailed event on GUI)
           source: Source of the event
           linked_assets: List of assets to link with this event
+          linked_iocs: List of IOCs to link with this event
           category: Category of the event (MITRE ATT@CK)
           color: Left border of the event in the timeline
           display_in_graph: Set to true to display in graph page - Default to true
@@ -1037,6 +1041,7 @@ class Case(object):
             "event_raw": raw_content if raw_content else event.get('event_raw'),
             "event_source": source if source else event.get('event_source'),
             "event_assets": linked_assets if linked_assets else [],
+            "event_iocs": linked_iocs if linked_iocs else [],
             "event_category_id": category if category else event.get('event_category_id'),
             "event_color": color if color else event.get('event_color'),
             "event_date": date_time.strftime('%Y-%m-%dT%H:%M:%S.%f') if date_time else event.get('event_date'),
