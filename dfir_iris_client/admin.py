@@ -15,6 +15,7 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from typing import Union
+from deprecated import deprecated
 
 from dfir_iris_client.helper.assets_type import AssetTypeHelper
 from dfir_iris_client.customer import Customer
@@ -274,6 +275,7 @@ class AdminHelper(object):
         }
         return self._s.pi_post(f'manage/ioc-types/update/{ioc_type_id}', data=body)
 
+    @deprecated(reason='This method is deprecated in IRIS > v1.4.3', action="error")
     def add_asset_type(self, name: str, description: str) -> ApiResponse:
         """Add a new Asset Type.
         
@@ -308,6 +310,7 @@ class AdminHelper(object):
         """
         return self._s.pi_get(f'manage/asset-type/delete/{asset_type_id}')
 
+    @deprecated(reason='This method is deprecated in IRIS > v1.4.3', action="error")
     def update_asset_type(self, asset_type_id: int, name: str = None,
                           description: str = None) -> ApiResponse:
         """Updates an Asset type. `asset_type_id` needs to be a valid existing AssetType ID.
