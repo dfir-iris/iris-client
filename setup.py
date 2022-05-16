@@ -29,7 +29,7 @@ README = (CURR_DIR / "README.md").read_text()
 
 setuptools.setup(
      name='dfir_iris_client',
-     version='1.0.2',
+     version='1.0.3',
      packages=['dfir_iris_client', 'dfir_iris_client.helper', 'dfir_iris_client.tests'],
      author="DFIR-IRIS",
      author_email="contact@dfir-iris.org",
@@ -44,6 +44,7 @@ setuptools.setup(
      ],
      install_requires=[
         'requests',
-        'packaging'
+        'packaging',
+        'deprecated'
     ]
  )

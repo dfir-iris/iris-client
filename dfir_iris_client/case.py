@@ -453,12 +453,15 @@ class Case(object):
         module and processed asynchronously. The server replies immediately after queuing the task. Success feedback
         from this endpoint does not implies the hook processing was successful.
 
-        :param hook_ui_name: Hook name, as defined by the module on the UI
-        :param module_name: Module associated with the hook name
-        :param targets: List of IDs of objects to be processed
-        :param target_type: Target type of targets
-        :param cid: Case ID
-        :return: ApiResponse object
+        Args:
+            hook_ui_name: Hook name, as defined by the module on the UI
+            module_name: Module associated with the hook name
+            targets: List of IDs of objects to be processed
+            target_type: Target type of targets
+            cid: Case ID
+
+        Returns:
+            ApiResponse object
         """
 
         cid = self._assert_cid(cid)
