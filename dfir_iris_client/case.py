@@ -447,6 +447,33 @@ class Case(object):
 
         return self._s.pi_post(f'case/notes/search', data=body)
 
+    def trigger_manual_hook(self, hook_ui_name: str, module_name: str, targets: list, target_type: str,
+                            cid: int = None) -> ApiResponse:
+        """Triggers a module hook call. These can only be used with manual hooks. The request is sent to the target
+        module and processed asynchronously. The server replies immediately after queuing the task. Success feedback
+        from this endpoint does not implies the hook processing was successful.
+
+        :param hook_ui_name: Hook name, as defined by the module on the UI
+        :param module_name: Module associated with the hook name
+        :param targets: List of IDs of objects to be processed
+        :param target_type: Target type of targets
+        :param cid: Case ID
+        :return: ApiResponse object
+        """
+
+        cid = self._assert_cid(cid)
+
+        body = {
+            "hook_name": "on_manual_trigger_ioc",
+            "hook_ui_name": hook_ui_name,
+            "module_name": module_name,
+            "targets": targets,
+            "type": target_type,
+            "cid": cid
+        }
+
+        return self._s.pi_post(f'dim/hooks/call', data=body)
+
     def list_assets(self, cid: int = None) -> ApiResponse:
         """Returns a list of all assets of the target case.
 
