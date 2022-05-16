@@ -657,7 +657,7 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
         assert 'Not a valid IOC' in ret.get_msg()
 
-    def test_list_events_no_filters(self, filter=0):
+    def test_list_events_no_filters(self, filter_str=None):
         """
 
         Args:
@@ -666,7 +666,8 @@ class CaseTest(unittest.TestCase):
         Returns:
 
         """
-        ret = self.case.list_events(filter_by_asset=filter)
+        filter_str = {} if filter_str is None else filter_str
+        ret = self.case.filter_events(filter_str=filter_str)
 
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -675,10 +676,11 @@ class CaseTest(unittest.TestCase):
 
         for event in parse_api_data(data, 'timeline'):
             self.failureException(parse_api_data(event, 'assets'))
+            self.failureException(parse_api_data(event, 'iocs'))
             self.failureException(parse_api_data(event, 'category_name'))
             self.failureException(parse_api_data(event, 'event_color'))
 
-            assert type(parse_api_data(event, 'event_category_id')) is int
+            assert type(parse_api_data(event, 'category_name')) is str
             assert type(parse_api_data(event, 'event_content')) is str
             assert type(parse_api_data(event, 'event_date')) is str
             assert type(parse_api_data(event, 'event_date_wtz')) is str
@@ -690,11 +692,11 @@ class CaseTest(unittest.TestCase):
 
     def test_list_events_filter_asset(self):
         """ """
-        self.test_list_events_no_filters(1)
+        self.test_list_events_no_filters({"tag":["%"]})
 
     def test_list_events_filter_asset_invalid(self):
         """ """
-        self.test_list_events_no_filters(111155551111)
+        self.test_list_events_no_filters({"tag": ["randomrandomrandom"]})
 
     def test_add_event_full_valid(self):
         """ """

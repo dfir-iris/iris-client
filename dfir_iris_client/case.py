@@ -14,6 +14,8 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import json
+
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.helper.assets_type import AssetTypeHelper
@@ -27,6 +29,7 @@ from dfir_iris_client.helper.utils import ClientApiError, ApiResponse
 
 from typing import Union, List
 import datetime
+import urllib.parse
 
 
 class Case(object):
@@ -893,7 +896,25 @@ class Case(object):
 
         return self._s.pi_get(f'case/timeline/events/list/filter/{filter_by_asset}', cid=cid)
 
-    def add_event(self, title:str, date_time: datetime, content: str = None, raw_content: str = None,
+    def filter_events(self, filter_str: dict = None, cid: int = None) -> ApiResponse:
+        """Returns a list of events from the timeline, filtered with the same query types used in
+        the UI.
+
+        Args:
+          filter_str: Filter the timeline as in the UI
+          cid: Case ID
+
+        Returns:
+          APIResponse object
+        """
+        cid = self._assert_cid(cid)
+
+        filter_str = {} if filter_str is None else filter_str
+        filter_uri = urllib.parse.quote(json.dumps(filter_str))
+
+        return self._s.pi_get(f'case/timeline/advanced-filter?q={filter_uri}&', cid=cid)
+
+    def add_event(self, title: str, date_time: datetime, content: str = None, raw_content: str = None,
                   source: str = None, linked_assets: list = None, linked_iocs: list = None,
                   category: Union[int, str] = None, tags: list = None, color: str = None, display_in_graph: bool = None,
                   display_in_summary: bool = None, custom_attributes: str = None, cid: int = None,
