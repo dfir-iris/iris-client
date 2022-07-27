@@ -1014,12 +1014,12 @@ class CaseTest(unittest.TestCase):
         task = get_data_from_resp(ret)
         task_id = parse_api_data(task, 'id')
 
-        ret = self.case.update_task(task_id=task_id, assignee='dummy assignee')
+        ret = self.case.update_task(task_id=task_id, assignees=['dummy assignee'])
         assert bool(assert_api_resp(ret)) is False
         assert "Invalid login" in ret.get_msg()
 
-        ret = self.case.update_task(task_id=task_id, title="dummy title", assignee=111155551111)
-        assert bool(assert_api_resp(ret)) is False
+        ret = self.case.update_task(task_id=task_id, title="dummy title", assignees=[111155551111])
+        assert bool(assert_api_resp(ret)) is True
 
         ret = self.case.delete_task(task_id=task_id)
         assert assert_api_resp(ret, soft_fail=False)
