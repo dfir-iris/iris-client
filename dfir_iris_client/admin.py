@@ -19,6 +19,7 @@ from deprecated import deprecated
 
 from dfir_iris_client.helper.assets_type import AssetTypeHelper
 from dfir_iris_client.customer import Customer
+from dfir_iris_client.helper.authorization import Permissions
 from dfir_iris_client.helper.ioc_types import IocTypeHelper
 from dfir_iris_client.helper.utils import ApiResponse, ClientApiError, get_data_from_resp, parse_api_data
 
@@ -53,6 +54,19 @@ class AdminHelper(object):
 
         """
         req = self._s.pi_get('user/is-admin')
+        return req.is_success()
+
+    def has_permission(self, permission: Permissions) -> ApiResponse:
+        """ Returns true if the user has the given permissions
+        :param permission: Permission to check
+        :return: True if user has the permission
+        """
+        body = {
+            "permission_name": permission.name,
+            "permission_id": permission.value
+        }
+
+        req = self._s.pi_post('user/has-permission', data=body)
         return req.is_success()
 
     def get_user(self, login: str) -> ApiResponse:
