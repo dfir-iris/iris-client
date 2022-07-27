@@ -945,13 +945,15 @@ class CaseTest(unittest.TestCase):
 
     def test_add_task_partial_invalid_assignee(self):
         """ """
+        # Invalid as a string returns an error since it is looked up
         ret = self.case.add_task(title="dummy title", status='To do', assignees=['dummy user'])
         assert bool(assert_api_resp(ret)) is False
 
         assert "Invalid login" in ret.get_msg()
 
+        # Invalid assignee as an ID does not return an error, the task is just created without assignee
         ret = self.case.add_task(title="dummy title", status='To do', assignees=[111155551111])
-        assert bool(assert_api_resp(ret)) is False
+        assert bool(assert_api_resp(ret)) is True
 
     def test_update_task_full(self):
         """ """
