@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import random
 import unittest
 
 import pytest
@@ -175,7 +176,7 @@ class AdminTest(unittest.TestCase):
 
         customer_id = parse_api_data(ret.get_data(), 'customer_id')
 
-        ret = self.adm.update_customer(customer_id=customer_id, customer_name='IrisInitialClient2')
+        ret = self.adm.update_customer(customer_id=customer_id, customer_name=f'IrisInitialClient{random.randint(0,1000)}')
         assert assert_api_resp(ret, soft_fail=False)
 
         ret = self.adm.update_customer(customer_id=customer_id, customer_name='IrisInitialClient')
