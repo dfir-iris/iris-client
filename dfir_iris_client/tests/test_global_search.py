@@ -35,9 +35,9 @@ class GlobalSearchTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
-        assert parse_api_data(data[0], 'case_name')
-        assert parse_api_data(data[0], 'customer_name')
-        assert parse_api_data(data[0], 'ioc_description')
+        assert type(parse_api_data(data[0], 'case_name')) is str
+        assert type(parse_api_data(data[0], 'customer_name')) is str
+        assert type(parse_api_data(data[0], 'ioc_description')) is str
 
     def test_search_notes(self):
         """ """
@@ -46,7 +46,7 @@ class GlobalSearchTest(unittest.TestCase):
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
-        assert parse_api_data(data[0], 'case_name')
-        assert parse_api_data(data[0], 'client_name')
-        assert parse_api_data(data[0], 'note_id')
-        assert parse_api_data(data[0], 'note_title')
+        assert type(parse_api_data(data[0], 'case_name')) is str
+        assert type(parse_api_data(data[0], 'client_name')) is str
+        assert type(parse_api_data(data[0], 'note_id')) is int
+        assert type(parse_api_data(data[0], 'note_title')) is str
