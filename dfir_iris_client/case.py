@@ -1167,8 +1167,8 @@ class Case(object):
 
         return self._s.pi_get(f'case/tasks/{task_id}', cid=cid)
 
-    def add_task(self, title: str, status: Union[str, int], assignee: Union[str, int], description: str = None,
-                 tags: list = None, custom_attributes :dict = None, cid: int = None) -> ApiResponse:
+    def add_task(self, title: str, status: Union[str, int], assignees: List[Union[str, int]], description: str = None,
+                 tags: list = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """Adds a new task to the target case.
         
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
@@ -1182,7 +1182,7 @@ class Case(object):
         Args:
           title: Title of the task
           description: Description of the task
-          assignee: Assignee ID or username
+          assignees: List of assignees ID or username
           cid: Case ID
           tags: Tags of the task
           status: String or status ID, need to be a valid status
@@ -1193,19 +1193,23 @@ class Case(object):
 
         """
         cid = self._assert_cid(cid)
+        assignees_list = []
 
-        if isinstance(assignee, str):
-            user = User(self._s)
-            assignee_r = user.lookup_username(username=assignee)
-            if assignee_r.is_error():
-                return assignee_r
+        for assignee in assignees:
+            if isinstance(assignee, str):
+                user = User(self._s)
+                assignee_r = user.lookup_username(username=assignee)
+                if assignee_r.is_error():
+                    return assignee_r
 
-            assignee = assignee_r.get_data().get('user_id')
-            if not assignee:
-                return ClientApiError(msg=f'Error while looking up username {assignee}')
+                assignee = assignee_r.get_data().get('user_id')
+                if not assignee:
+                    return ClientApiError(msg=f'Error while looking up username {assignee}')
 
-        elif not isinstance(assignee, int):
-            return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+            elif not isinstance(assignee, int):
+                return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+
+            assignees_list.append(assignee)
 
         if isinstance(status, str):
             tsh = TaskStatusHelper(self._s)
@@ -1218,7 +1222,7 @@ class Case(object):
             return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
         body = {
-            "task_assignee_id": assignee,
+            "task_assignees_id": assignees_list,
             "task_description": description if description else "",
             "task_status_id": status,
             "task_tags": ','.join(tags) if tags else "",
@@ -1467,8 +1471,8 @@ class Case(object):
                  tags: list = None) -> ApiResponse:
         """Adds a new task.
         
-        If they are strings, status and assignee are lookup-ed up before the addition request is issued.
-        Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
+        If set as strings, status and assignee are lookup-ed up before the addition request is issued.
+        Both can be either a name or an ID. For performances prefer an ID as it is used directly in the request
         without prior lookup.
 
         Args:

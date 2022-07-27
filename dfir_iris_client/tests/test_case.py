@@ -912,7 +912,7 @@ class CaseTest(unittest.TestCase):
 
     def test_add_task_partial_valid(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=['administrator'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
@@ -1073,7 +1073,6 @@ class CaseTest(unittest.TestCase):
         assert type(parse_api_data(task, 'task_userid_update')) is int
 
         ret = self.case.delete_global_task(task_id=parse_api_data(task, 'task_id'))
-        assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_gtask_partial_valid(self):
         """ """
@@ -1097,7 +1096,6 @@ class CaseTest(unittest.TestCase):
         assert type(parse_api_data(task, 'task_userid_update')) is int
 
         ret = self.case.delete_global_task(task_id=parse_api_data(task, 'task_id'))
-        assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_gtask_partial_invalid_status(self):
         """ """
