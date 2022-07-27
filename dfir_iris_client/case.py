@@ -1234,7 +1234,7 @@ class Case(object):
         return self._s.pi_post(f'case/tasks/add', data=body)
 
     def update_task(self, task_id: int, title: str = None, status: Union[str, int] = None,
-                    assignee: Union[int, str] = None, description: str = None, tags: list = None,
+                    assignees: List[Union[int, str]] = None, description: str = None, tags: list = None,
                     custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """Updates a task. task_id needs to be a valid task in the target case.
         
@@ -1250,7 +1250,7 @@ class Case(object):
           task_id: ID of the task to update
           title: Title of the task
           description: Description of the task
-          assignee: Assignee ID or assignee username
+          assignees: List of assignee ID or assignee username
           cid: Case ID
           tags: Tags of the task
           status: String status, need to be a valid status
@@ -1267,18 +1267,23 @@ class Case(object):
         if task_req.is_error():
             return ClientApiError(msg=f'Unable to fetch task #{task_id} for update', error=task_req.get_msg())
 
-        if assignee and isinstance(assignee, str):
-            user = User(self._s)
-            assignee_r = user.lookup_username(username=assignee)
-            if assignee_r.is_error():
-                return assignee_r
+        assignees_list = []
 
-            assignee = assignee_r.get_data().get('user_id')
-            if not assignee:
-                return ClientApiError(msg=f'Error while looking up username {assignee}')
+        for assignee in assignees:
+            if assignee and isinstance(assignee, str):
+                user = User(self._s)
+                assignee_r = user.lookup_username(username=assignee)
+                if assignee_r.is_error():
+                    return assignee_r
 
-        elif assignee and not isinstance(assignee, int):
-            return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+                assignee = assignee_r.get_data().get('user_id')
+                if not assignee:
+                    return ClientApiError(msg=f'Error while looking up username {assignee}')
+
+            elif assignee and not isinstance(assignee, int):
+                return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+
+            assignees_list.append(assignee)
 
         if status and isinstance(status, str):
             tsh = TaskStatusHelper(self._s)
@@ -1292,8 +1297,9 @@ class Case(object):
 
         task = task_req.get_data()
 
+        # TODO Get user task list feedback from task
         body = {
-            "task_assignee_id": assignee if assignee else task.get('task_assignee_id'),
+            "task_assignee_id": assignees_list if assignees_list else task.get('task_assignee_id'),
             "task_description": description if description else task.get('task_description'),
             "task_status_id": status if status else task.get('task_status_id'),
             "task_tags": ",".join(tags) if tags else task.get('task_tags'),

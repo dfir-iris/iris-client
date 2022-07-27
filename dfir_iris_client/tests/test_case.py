@@ -873,10 +873,9 @@ class CaseTest(unittest.TestCase):
         assert type(data) == dict
 
         for task in parse_api_data(data, 'tasks'):
-            assert type(parse_api_data(task, 'assignee_name')) is str
+            assert type(parse_api_data(task, 'task_assignees')) is list
             assert type(parse_api_data(task, 'status_bscolor')) is str
             assert type(parse_api_data(task, 'status_name')) is str
-            assert type(parse_api_data(task, 'task_assignee_id')) is int
             assert type(parse_api_data(task, 'task_description')) is str
             assert type(parse_api_data(task, 'task_id')) is int
             assert type(parse_api_data(task, 'task_open_date')) is str
@@ -1166,7 +1165,6 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
         ret = self.case.delete_global_task(task_id=task_id)
-        assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_gtask_invalid_assignee(self):
         """ """
@@ -1184,7 +1182,6 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
         ret = self.case.delete_global_task(task_id=task_id)
-        assert assert_api_resp(ret, soft_fail=False)
 
     def test_delete_gtask_invalid(self):
         """ """
