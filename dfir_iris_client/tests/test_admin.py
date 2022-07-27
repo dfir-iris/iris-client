@@ -46,9 +46,10 @@ class AdminTest(unittest.TestCase):
         data = get_data_from_resp(ret)
         assert parse_api_data(data, 'user_active') is True
         assert type(parse_api_data(data, 'user_id')) is int
+        assert type(parse_api_data(data, 'user_uuid')) is str
         assert parse_api_data(data, 'user_login') == "administrator"
         assert parse_api_data(data, 'user_name') == "administrator"
-        assert type(parse_api_data(data, 'user_roles')) == list
+        assert parse_api_data(data, 'user_email') == "administrator@iris.local"
 
     def test_get_user_invalid(self):
         """ """
