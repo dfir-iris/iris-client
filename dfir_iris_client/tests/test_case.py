@@ -249,7 +249,7 @@ class CaseTest(unittest.TestCase):
         ret = self.case.delete_note(note_id=111555411, cid=111555411)
         assert bool(assert_api_resp(ret)) is False
         message = ret.get_msg()
-        assert "invalid case id" in message.lower()
+        assert "permission denied" in message.lower()
 
     def test_search_notes(self):
         """ """
@@ -887,13 +887,12 @@ class CaseTest(unittest.TestCase):
     def test_add_task_valid(self):
         """ """
         ret = self.case.add_task(title="dummy title", status='To do', description='dummy description',
-                                 assignee='administrator', tags=['tag1', 'tag2'])
+                                 assignees=['administrator'], tags=['tag1', 'tag2'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
         assert type(task) == dict
 
-        assert type(parse_api_data(task, 'task_assignee_id')) is int
         assert type(parse_api_data(task, 'id')) is int
         assert type(parse_api_data(task, 'task_case_id')) is int
         assert parse_api_data(task, 'task_close_date') is None
@@ -918,7 +917,6 @@ class CaseTest(unittest.TestCase):
         task = get_data_from_resp(ret)
         assert type(task) == dict
 
-        assert type(parse_api_data(task, 'task_assignee_id')) is int
         assert type(parse_api_data(task, 'id')) is int
         assert type(parse_api_data(task, 'task_case_id')) is int
         assert parse_api_data(task, 'task_close_date') is None
@@ -937,27 +935,27 @@ class CaseTest(unittest.TestCase):
 
     def test_add_task_partial_invalid_status(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='dummy status', assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status='dummy status', assignees=['administrator'])
         assert bool(assert_api_resp(ret)) is False
 
         assert "Invalid task status" in ret.get_msg()
 
-        ret = self.case.add_task(title="dummy title", status=111155551111, assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status=111155551111, assignees=['administrator'])
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_task_partial_invalid_assignee(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='To do', assignee='dummy user')
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=['dummy user'])
         assert bool(assert_api_resp(ret)) is False
 
         assert "Invalid login" in ret.get_msg()
 
-        ret = self.case.add_task(title="dummy title", status='To do', assignee=111155551111)
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=[111155551111])
         assert bool(assert_api_resp(ret)) is False
 
     def test_update_task_full(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=['administrator'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
@@ -973,7 +971,6 @@ class CaseTest(unittest.TestCase):
         task = get_data_from_resp(ret)
         assert type(task) == dict
 
-        assert type(parse_api_data(task, 'task_assignee_id')) is int
         assert parse_api_data(task, 'id') == task_id
         assert type(parse_api_data(task, 'task_case_id')) is int
         assert parse_api_data(task, 'task_close_date') is None
@@ -992,7 +989,7 @@ class CaseTest(unittest.TestCase):
 
     def test_update_task_invalid_status(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=['administrator'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
@@ -1010,7 +1007,7 @@ class CaseTest(unittest.TestCase):
 
     def test_update_task_invalid_assignee(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=['administrator'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
