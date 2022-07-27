@@ -16,6 +16,8 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import unittest
 
+import pytest
+
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
@@ -33,7 +35,8 @@ class AdminTest(unittest.TestCase):
     def test_is_user_admin_valid_deprecated(self):
         """ """
         # Expect method deprecated exception
-        self.failureException(self.adm.is_user_admin())
+        with self.assertRaises(DeprecationWarning):
+            self.adm.is_user_admin()
 
     def test_get_user_valid(self):
         """ """
@@ -99,47 +102,51 @@ class AdminTest(unittest.TestCase):
         ret = self.adm.delete_ioc_type(parse_api_data(data, 'type_id'))
         assert assert_api_resp(ret, soft_fail=False)
 
-    def test_add_asset_type_valid(self):
+    def test_add_asset_type_valid_deprecated(self):
         """ """
-        ret = self.adm.add_asset_type('dummy asset type', description='dummy description')
-        assert assert_api_resp(ret, soft_fail=False)
-
-        data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'asset_description') == 'dummy description'
-        assert parse_api_data(data, 'asset_name') == 'dummy asset type'
-        assert type(parse_api_data(data, 'asset_id')) == int
-
-        ret = self.adm.delete_asset_type(parse_api_data(data, 'asset_id'))
-        assert assert_api_resp(ret, soft_fail=False)
+        with self.assertRaises(DeprecationWarning):
+            self.adm.add_asset_type('dummy asset type', description='dummy description')
+        # assert assert_api_resp(ret, soft_fail=False)
+        #
+        # data = get_data_from_resp(ret)
+        # assert parse_api_data(data, 'asset_description') == 'dummy description'
+        # assert parse_api_data(data, 'asset_name') == 'dummy asset type'
+        # assert type(parse_api_data(data, 'asset_id')) == int
+        #
+        # ret = self.adm.delete_asset_type(parse_api_data(data, 'asset_id'))
+        # assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_asset_type_invalid_already_exists(self):
         """ """
-        ret = self.adm.add_asset_type('WAF', description='dummy description')
-        assert bool(assert_api_resp(ret, soft_fail=True)) is False
-
-        assert 'Data error' in ret.get_msg()
+        with self.assertRaises(DeprecationWarning):
+            self.adm.add_asset_type('WAF', description='dummy description')
+        # ret = self.adm.add_asset_type('WAF', description='dummy description')
+        # assert bool(assert_api_resp(ret, soft_fail=True)) is False
+        #
+        # assert 'Data error' in ret.get_msg()
 
     def test_update_asset_type_valid(self):
         """ """
-        ret = self.adm.add_asset_type('dummy asset type', description='dummy description')
-        assert assert_api_resp(ret, soft_fail=False)
-
-        data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'asset_description') == 'dummy description'
-        assert parse_api_data(data, 'asset_name') == 'dummy asset type'
-        assert type(parse_api_data(data, 'asset_id')) == int
-
-        ret = self.adm.update_asset_type(asset_type_id=parse_api_data(data, 'asset_id'),
-                                         name='new dummy', description='new dummy description')
-        assert assert_api_resp(ret, soft_fail=False)
-
-        data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'asset_description') == 'new dummy description'
-        assert parse_api_data(data, 'asset_name') == 'new dummy'
-        assert type(parse_api_data(data, 'asset_id')) == int
-
-        ret = self.adm.delete_asset_type(parse_api_data(data, 'asset_id'))
-        assert assert_api_resp(ret, soft_fail=False)
+        with self.assertRaises(Warning):
+            self.adm.add_asset_type('dummy asset type', description='dummy description')
+        # assert assert_api_resp(ret, soft_fail=False)
+        #
+        # data = get_data_from_resp(ret)
+        # assert parse_api_data(data, 'asset_description') == 'dummy description'
+        # assert parse_api_data(data, 'asset_name') == 'dummy asset type'
+        # assert type(parse_api_data(data, 'asset_id')) == int
+        #
+        # ret = self.adm.update_asset_type(asset_type_id=parse_api_data(data, 'asset_id'),
+        #                                  name='new dummy', description='new dummy description')
+        # assert assert_api_resp(ret, soft_fail=False)
+        #
+        # data = get_data_from_resp(ret)
+        # assert parse_api_data(data, 'asset_description') == 'new dummy description'
+        # assert parse_api_data(data, 'asset_name') == 'new dummy'
+        # assert type(parse_api_data(data, 'asset_id')) == int
+        #
+        # ret = self.adm.delete_asset_type(parse_api_data(data, 'asset_id'))
+        # assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_customer_valid(self):
         """ """
