@@ -42,6 +42,7 @@ class AdminHelper(object):
         if not self.is_user_admin():
             raise Exception(ClientApiError('Only administrators can use AdminHelper'))
 
+    @deprecated('Use the new has_permission(<permission>) method', version="1.0.4", action="error")
     def is_user_admin(self) -> bool:
         """Returns True if the calling user is administrator
 
