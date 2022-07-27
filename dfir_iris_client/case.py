@@ -1268,22 +1268,22 @@ class Case(object):
             return ClientApiError(msg=f'Unable to fetch task #{task_id} for update', error=task_req.get_msg())
 
         assignees_list = []
+        if assignees:
+            for assignee in assignees:
+                if assignee and isinstance(assignee, str):
+                    user = User(self._s)
+                    assignee_r = user.lookup_username(username=assignee)
+                    if assignee_r.is_error():
+                        return assignee_r
 
-        for assignee in assignees:
-            if assignee and isinstance(assignee, str):
-                user = User(self._s)
-                assignee_r = user.lookup_username(username=assignee)
-                if assignee_r.is_error():
-                    return assignee_r
+                    assignee = assignee_r.get_data().get('user_id')
+                    if not assignee:
+                        return ClientApiError(msg=f'Error while looking up username {assignee}')
 
-                assignee = assignee_r.get_data().get('user_id')
-                if not assignee:
-                    return ClientApiError(msg=f'Error while looking up username {assignee}')
+                elif assignee and not isinstance(assignee, int):
+                    return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
 
-            elif assignee and not isinstance(assignee, int):
-                return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
-
-            assignees_list.append(assignee)
+                assignees_list.append(assignee)
 
         if status and isinstance(status, str):
             tsh = TaskStatusHelper(self._s)
@@ -1297,9 +1297,11 @@ class Case(object):
 
         task = task_req.get_data()
 
-        # TODO Get user task list feedback from task
+        if not assignees_list:
+            assignees_list = [u.get('id') for u in task.get('task_assignees')]
+
         body = {
-            "task_assignee_id": assignees_list if assignees_list else task.get('task_assignee_id'),
+            "task_assignees_id": assignees_list,
             "task_description": description if description else task.get('task_description'),
             "task_status_id": status if status else task.get('task_status_id'),
             "task_tags": ",".join(tags) if tags else task.get('task_tags'),

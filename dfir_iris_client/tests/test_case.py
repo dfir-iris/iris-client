@@ -965,7 +965,7 @@ class CaseTest(unittest.TestCase):
         ret = self.case.update_task(task_id=task_id)
         assert assert_api_resp(ret, soft_fail=False)
 
-        ret = self.case.update_task(task_id=task_id, title="new dummy title", status='Done', assignee='user01',
+        ret = self.case.update_task(task_id=task_id, title="new dummy title", status='Done', assignees=['wk'],
                                     description='dummy description', tags=['tag1', 'tag2'])
         assert assert_api_resp(ret, soft_fail=False)
 
