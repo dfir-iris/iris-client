@@ -28,11 +28,8 @@ class AdminHelper(object):
     """Handles administrative tasks"""
     def __init__(self, session):
         """
-        Overlay offering administrative tasks. Initialisation of the class checks if the calling user
-        has admin rights. If the user doesn't, a ClientApiError exception is raised.
-
-        Raise:
-            ClientApiError if unprivileged user
+        Overlay offering administrative tasks. Initialisation of the class does NOT check if the calling user
+        has admin rights anymore. If the user doesn't, 403 will be generated upon requests
 
         Args:
             session: ClientSession object
@@ -40,12 +37,12 @@ class AdminHelper(object):
         """
         self._s = session
 
-        if not self.is_user_admin():
-            raise Exception(ClientApiError('Only administrators can use AdminHelper'))
+        return
 
     @deprecated('Use the new has_permission(<permission>) method', version="1.0.4", action="error")
     def is_user_admin(self) -> bool:
-        """Returns True if the calling user is administrator
+        """Deprecated in IRIS v1.5.0. Use the new has_permission(<permission>) method.
+        Returns True if the calling user is administrator
 
         Args:
 
@@ -63,7 +60,7 @@ class AdminHelper(object):
         """
         body = {
             "permission_name": permission.name,
-            "permission_id": permission.value
+            "permission_value": permission.value
         }
 
         req = self._s.pi_post('user/has-permission', data=body)

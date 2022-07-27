@@ -30,13 +30,10 @@ class AdminTest(unittest.TestCase):
         self.adm = AdminHelper(session)
         self.customer = Customer(session)
 
-    def test_is_user_admin_valid(self):
+    def test_is_user_admin_valid_deprecated(self):
         """ """
-        ret = self.adm.is_user_admin()
-        assert ret is True
-
-        session_no_adm = new_session()
-        self.failureException(AdminHelper(session_no_adm))
+        # Expect method deprecated exception
+        self.failureException(self.adm.is_user_admin())
 
     def test_get_user_valid(self):
         """ """
