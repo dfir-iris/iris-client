@@ -34,13 +34,14 @@ import urllib.parse
 
 class Case(object):
     """Handles the case methods"""
+
     def __init__(self, session, case_id: int = None):
         self._s = session
         self._cid = case_id
 
     def list_cases(self) -> ApiResponse:
         """Returns a list of all the cases
-        
+
         :return: ApiResponse
 
         Args:
@@ -68,7 +69,7 @@ class Case(object):
                  create_customer=False) -> ApiResponse:
         """Creates a new case. If create_customer is set to true and the customer doesn't exist,
         it is created. Otherwise an error is returned.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -212,7 +213,7 @@ class Case(object):
 
     def set_summary(self, summary_content: str = None, cid: int = None) -> ApiResponse:
         """Sets the summary of the specified case id.
-        
+
         !!! warning
             This completely replace the current content of the summary. Any co-worker working on the summary
             will receive an overwrite order from the server. The order is immediately received by web socket. This method
@@ -247,7 +248,7 @@ class Case(object):
         cid = self._assert_cid(cid)
         return self._s.pi_get('case/notes/groups/list', cid=cid)
 
-    def get_notes_group(self, group_id:int, cid: int = None) -> ApiResponse:
+    def get_notes_group(self, group_id: int, cid: int = None) -> ApiResponse:
         """Returns a notes group based on its ID. The group ID needs to match the CID where it is stored.
 
         Args:
@@ -337,7 +338,7 @@ class Case(object):
                     custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """Updates a note. note_id needs to be a valid existing note in the target case.
         Only the content of the set fields is replaced.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -394,7 +395,7 @@ class Case(object):
     def add_note(self, note_title: str, note_content: str, group_id: int, custom_attributes: dict = None,
                  cid: int = None) -> ApiResponse:
         """Creates a new note. Case ID and group note ID need to match the case in which the note is stored.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -496,11 +497,11 @@ class Case(object):
                   description: str = None, domain: str = None, ip: str = None, additional_info: str = None,
                   ioc_links: List[int] = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """Adds an asset to the target case id.
-        
+
         If they are strings, asset_types and analysis_status are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -609,13 +610,13 @@ class Case(object):
     def update_asset(self, asset_id: int, name: str = None, asset_type: Union[str, int] = None, tags: List[str] = None,
                      analysis_status: Union[str, int] = None, description: str = None, domain: str = None,
                      ip: str = None, additional_info: str = None, ioc_links: List[int] = None, compromised: bool = None,
-                     custom_attributes: dict = None, cid: int = None, no_sync = False) -> ApiResponse:
+                     custom_attributes: dict = None, cid: int = None, no_sync=False) -> ApiResponse:
         """Updates an asset. asset_id needs to be an existing asset in the target case cid.
-        
+
         If they are strings, asset_types and analysis_status are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -682,7 +683,8 @@ class Case(object):
         body = {
             "asset_name": name if name is not None or no_sync else asset.get('asset_name'),
             "asset_type_id": asset_type if asset_type is not None or no_sync else int(asset.get('asset_type_id')),
-            "analysis_status_id": analysis_status if analysis_status is not None or no_sync else int(asset.get('analysis_status_id')),
+            "analysis_status_id": analysis_status if analysis_status is not None or no_sync else int(
+                asset.get('analysis_status_id')),
             "asset_description": description if description is not None or no_sync else asset.get('analysis_status'),
             "asset_domain": domain if domain is not None or no_sync else asset.get('asset_domain'),
             "asset_ip": ip if ip is not None or no_sync else asset.get('asset_ip'),
@@ -731,11 +733,11 @@ class Case(object):
                 ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
                 cid: int = None) -> ApiResponse:
         """Adds an ioc to the target case id.
-        
+
         If they are strings, ioc_tlp and ioc_type are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -810,14 +812,14 @@ class Case(object):
         return self._s.pi_get(f'case/ioc/{ioc_id}', cid=cid)
 
     def update_ioc(self, ioc_id: int, value: str = None, ioc_type: Union[str, int] = None, description: str = None,
-                    ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
+                   ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
                    cid: int = None) -> ApiResponse:
         """Updates an existing IOC. ioc_id needs to be an existing ioc in the provided case ID.
-        
+
         If they are strings, ioc_tlp and ioc_type are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -950,11 +952,11 @@ class Case(object):
                   display_in_summary: bool = None, custom_attributes: str = None, cid: int = None,
                   timezone_string: str = None) -> ApiResponse:
         """Adds a new event to the timeline.
-        
+
         If it is a string, category is lookup-ed up before the addition request is issued.
         it can be either a name or an ID. For performances prefer an ID as it is used directly in the request
         without prior lookup.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -1026,12 +1028,12 @@ class Case(object):
                      color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
                      custom_attributes: dict = None, cid: int = None, timezone_string: str = None) -> ApiResponse:
         """Updates an event of the timeline. event_id needs to be an existing event in the target case.
-        
+
         If it is a string, category is lookup-ed up before the addition request is issued.
         it can be either a name or an ID. For performances prefer an ID as it is used directly in the request
         without prior lookup.
-        
-        
+
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -1167,14 +1169,14 @@ class Case(object):
 
         return self._s.pi_get(f'case/tasks/{task_id}', cid=cid)
 
-    def add_task(self, title: str, status: Union[str, int], assignee: Union[str, int], description: str = None,
-                 tags: list = None, custom_attributes :dict = None, cid: int = None) -> ApiResponse:
+    def add_task(self, title: str, status: Union[str, int], assignees: List[Union[str, int]], description: str = None,
+                 tags: list = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """Adds a new task to the target case.
-        
+
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -1182,7 +1184,7 @@ class Case(object):
         Args:
           title: Title of the task
           description: Description of the task
-          assignee: Assignee ID or username
+          assignees: List of assignees ID or username
           cid: Case ID
           tags: Tags of the task
           status: String or status ID, need to be a valid status
@@ -1193,19 +1195,23 @@ class Case(object):
 
         """
         cid = self._assert_cid(cid)
+        assignees_list = []
 
-        if isinstance(assignee, str):
-            user = User(self._s)
-            assignee_r = user.lookup_username(username=assignee)
-            if assignee_r.is_error():
-                return assignee_r
+        for assignee in assignees:
+            if isinstance(assignee, str):
+                user = User(self._s)
+                assignee_r = user.lookup_username(username=assignee)
+                if assignee_r.is_error():
+                    return assignee_r
 
-            assignee = assignee_r.get_data().get('user_id')
-            if not assignee:
-                return ClientApiError(msg=f'Error while looking up username {assignee}')
+                assignee = assignee_r.get_data().get('user_id')
+                if not assignee:
+                    return ClientApiError(msg=f'Error while looking up username {assignee}')
 
-        elif not isinstance(assignee, int):
-            return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+            elif not isinstance(assignee, int):
+                return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+
+            assignees_list.append(assignee)
 
         if isinstance(status, str):
             tsh = TaskStatusHelper(self._s)
@@ -1218,11 +1224,11 @@ class Case(object):
             return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
         body = {
-            "task_assignee_id": assignee,
+            "task_assignees_id": assignees_list,
             "task_description": description if description else "",
             "task_status_id": status,
             "task_tags": ','.join(tags) if tags else "",
-            "task_title":  title,
+            "task_title": title,
             "custom_attributes": custom_attributes if custom_attributes else {},
             "cid": cid
         }
@@ -1230,14 +1236,14 @@ class Case(object):
         return self._s.pi_post(f'case/tasks/add', data=body)
 
     def update_task(self, task_id: int, title: str = None, status: Union[str, int] = None,
-                    assignee: Union[int, str] = None, description: str = None, tags: list = None,
+                    assignees: List[Union[int, str]] = None, description: str = None, tags: list = None,
                     custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """Updates a task. task_id needs to be a valid task in the target case.
-        
+
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -1246,7 +1252,7 @@ class Case(object):
           task_id: ID of the task to update
           title: Title of the task
           description: Description of the task
-          assignee: Assignee ID or assignee username
+          assignees: List of assignee ID or assignee username
           cid: Case ID
           tags: Tags of the task
           status: String status, need to be a valid status
@@ -1263,18 +1269,23 @@ class Case(object):
         if task_req.is_error():
             return ClientApiError(msg=f'Unable to fetch task #{task_id} for update', error=task_req.get_msg())
 
-        if assignee and isinstance(assignee, str):
-            user = User(self._s)
-            assignee_r = user.lookup_username(username=assignee)
-            if assignee_r.is_error():
-                return assignee_r
+        assignees_list = []
+        if assignees:
+            for assignee in assignees:
+                if assignee and isinstance(assignee, str):
+                    user = User(self._s)
+                    assignee_r = user.lookup_username(username=assignee)
+                    if assignee_r.is_error():
+                        return assignee_r
 
-            assignee = assignee_r.get_data().get('user_id')
-            if not assignee:
-                return ClientApiError(msg=f'Error while looking up username {assignee}')
+                    assignee = assignee_r.get_data().get('user_id')
+                    if not assignee:
+                        return ClientApiError(msg=f'Error while looking up username {assignee}')
 
-        elif assignee and not isinstance(assignee, int):
-            return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+                elif assignee and not isinstance(assignee, int):
+                    return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+
+                assignees_list.append(assignee)
 
         if status and isinstance(status, str):
             tsh = TaskStatusHelper(self._s)
@@ -1288,12 +1299,15 @@ class Case(object):
 
         task = task_req.get_data()
 
+        if not assignees_list:
+            assignees_list = [u.get('id') for u in task.get('task_assignees')]
+
         body = {
-            "task_assignee_id": assignee if assignee else task.get('task_assignee_id'),
+            "task_assignees_id": assignees_list,
             "task_description": description if description else task.get('task_description'),
             "task_status_id": status if status else task.get('task_status_id'),
             "task_tags": ",".join(tags) if tags else task.get('task_tags'),
-            "task_title":  title if title else task.get('task_title'),
+            "task_title": title if title else task.get('task_title'),
             "custom_attributes": custom_attributes if custom_attributes else task.get('custom_attributes'),
             "cid": cid
         }
@@ -1347,7 +1361,7 @@ class Case(object):
     def add_evidence(self, filename: str, file_size: int, description: str = None,
                      file_hash: str = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """Adds a new evidence to the target case.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -1383,7 +1397,7 @@ class Case(object):
     def update_evidence(self, evidence_id: int, filename: str = None, file_size: int = None, description: str = None,
                         file_hash: str = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
         """Updates an evidence of the matching case. evidence_id needs to be an existing evidence in the target case.
-        
+
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
         by administrators in the UI otherwise it is ignored.
@@ -1464,11 +1478,11 @@ class Case(object):
         return self._s.pi_get(f'global/tasks/{task_id}', cid=1)
 
     def add_global_task(self, title: str, status: Union[str, int], assignee: Union[str, int], description: str = None,
-                 tags: list = None) -> ApiResponse:
+                        tags: list = None) -> ApiResponse:
         """Adds a new task.
-        
-        If they are strings, status and assignee are lookup-ed up before the addition request is issued.
-        Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
+
+        If set as strings, status and assignee are lookup-ed up before the addition request is issued.
+        Both can be either a name or an ID. For performances prefer an ID as it is used directly in the request
         without prior lookup.
 
         Args:
@@ -1508,17 +1522,17 @@ class Case(object):
             "task_description": description if description else "",
             "task_status_id": status,
             "task_tags": ','.join(tags) if tags else "",
-            "task_title":  title,
+            "task_title": title,
             "cid": 1
         }
 
         return self._s.pi_post(f'global/tasks/add', data=body)
 
     def update_global_task(self, task_id: int, title: str = None, status: Union[str, int] = None,
-                    assignee: Union[int, str] = None, description: str = None,
-                    tags: list = None) -> ApiResponse:
+                           assignee: Union[int, str] = None, description: str = None,
+                           tags: list = None) -> ApiResponse:
         """Updates a task. task_id needs to be an existing task in the database.
-        
+
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
         without prior lookup.
@@ -1568,7 +1582,7 @@ class Case(object):
             "task_description": description if description else task.get('task_description'),
             "task_status_id": status if status else task.get('task_status_id'),
             "task_tags": ",".join(tags) if tags else task.get('task_tags'),
-            "task_title":  title if title else task.get('task_title'),
+            "task_title": title if title else task.get('task_title'),
         }
 
         return self._s.pi_post(f'global/tasks/update/{task_id}', data=body)

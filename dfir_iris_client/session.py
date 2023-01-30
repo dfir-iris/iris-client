@@ -30,7 +30,7 @@ The API version is not directly correlated with Iris version.
 Server has an endpoint /api/versions which should returns the API compatible versions 
 it can handles. 
 """
-API_VERSION = "1.0.2"
+API_VERSION = "1.0.4"
 
 """client_session
 Defines a global session, accessible by all classes. client_session is of type ClientSession.
