@@ -32,7 +32,7 @@ class IocTypeHelper(object):
         Returns:
             APIResponse object
         """
-        return self._s.pi_get('manage/ioc-types/list')
+        return self._s.pi_get('manage/ioc-types/list', cid=1)
 
     def lookup_ioc_type_name(self, ioc_type_name: str) -> Union[None, int]:
         """Returns an ioc_type_name from its name otherwise None

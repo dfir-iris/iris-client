@@ -14,9 +14,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+import json
 import logging as logger
-
+from requests_oauthlib import OAuth2Session
 import requests
 from packaging.version import Version
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -47,7 +47,8 @@ class ClientSession(object):
     Returns:
 
     """
-    def __init__(self, apikey, host=None, agent="iris-client", ssl_verify=True, proxy=None, timeout=120):
+    def __init__(self, apikey=None, client_id=None, client_secret=None,
+                 host=None, agent="iris-client", ssl_verify=True, proxy=None, timeout=120):
         """
         Initialize the ClientSession. APIKey validity is verified as well as API compatibility between the client
         and the server.
@@ -76,12 +77,67 @@ class ClientSession(object):
         if not self._ssl_verify:
             requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+        if client_id is not None and client_secret is not None:
+            self._apikey = self._oidc_auth(client_id, client_secret)
+
         self._check_apikey_validity()
 
         self._check_api_compatibility()
 
         global client_session
         client_session = self
+
+    def _oidc_auth(self, client_id, client_secret):
+        """
+        Authenticates against OIDC and returns a valid API token
+        :return:
+        """
+        auth_server_url = f"{self._host}/oauth2/token"
+        client_id = client_id
+        client_secret = client_secret
+
+        # consumer = oauth2.Consumer(client_id, client_secret)
+        # client = oauth2.Client(consumer)
+        # client.disable_ssl_certificate_validation = True
+        #
+        # resp, content = client.request(auth_server_url, "GET")
+        # if resp['status'] != '200':
+        #     raise Exception("Invalid response %s." % resp['status'])
+        #
+        # log.error(content)
+        scope = ['https://www.googleapis.com/auth/userinfo.email',
+                 'https://www.googleapis.com/auth/userinfo.profile']
+        oauth = OAuth2Session(client_id, redirect_uri=f'{self._host}/oauth2/callback',
+                              scope=scope)
+        authorization_url, state = oauth.authorization_url(
+            f'{self._host}/oauth2/auth',
+            access_type="offline", prompt="select_account")
+
+        log.error(authorization_url)
+
+        token_req_payload = {
+            'grant_type': 'password',
+            'username': '***REMOVED***',
+            'password': '***REMOVED***',
+            'client_id': '***REMOVED***',
+            'client_secret': '***REMOVED***',
+            'scope': 'openid'
+        }
+
+        token_response = requests.post(f'{self._host}/oauth2/token',
+                                       data=token_req_payload, verify=False, allow_redirects=False,
+                                       auth=('***REMOVED***', '***REMOVED***')
+                                       )
+
+        if token_response.status_code != 200:
+            log.error("Failed to obtain token from the OAuth 2.0 server")
+            log.error(f'{token_response.text}')
+            log.error(f'{token_response.headers}')
+            raise Exception(f"Failed to obtain token from the OAuth 2.0 server. Code {token_response.status_code}")
+
+        tokens = json.loads(token_response.text)
+
+        return tokens['id_token']
 
     def preload_base_objects(self) -> None:
         """Preload the base objects most commonly used. This simply init the BaseObjects
@@ -210,19 +266,23 @@ class ClientSession(object):
                                          json=data,
                                          verify=self._ssl_verify,
                                          timeout=self._timeout,
-                                         headers=headers)
+                                         headers=headers,
+                                         cookies={"session": self._apikey})
             elif type == "GET":
                 log.debug(f'GET : {self._pi_uri(uri)}')
                 response = requests.get(url=self._pi_uri(uri),
                                         verify=self._ssl_verify,
                                         timeout=self._timeout,
-                                        headers=headers)
+                                        headers=headers,
+                                        cookies={"session": self._apikey}
+                                        )
 
             else:
                 return ApiResponse()
 
         except requests.exceptions.ConnectionError as e:
-            raise Exception("Unable to connect to endpoint {host}. Please check URL and ports".format(host=uri))
+            raise Exception("Unable to connect to endpoint {host}. Please check URL and ports. {e}".format(host=uri,
+                                                                                                           e=e.__str__()))
 
         if response.status_code == 500:
             log.critical('Server replied 500')

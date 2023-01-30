@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from typing import List
 from typing import Union
 from deprecated import deprecated
 
@@ -113,10 +114,27 @@ class AdminHelper(object):
             "cid": 1
         }
 
-        if is_admin:
-            body['user_isadmin'] = "y"
-
         return self._s.pi_post(f'manage/users/add', data=body)
+
+    def set_group_permissions(self, group_id: int = None, permissions: List[Permissions] = None):
+        """Set the permissions of a group.
+        Permissions must be a list of known permissions ID from the Permission enum
+
+        !!! tips "Calling user must have the manage_users permission"
+
+        Args:
+            group_id: Group ID to set permissions
+            permissions: List of permission from Permission enum
+
+        Returns:
+            ApiResponse object
+        """
+        body = {
+            "",
+            ""
+        }
+        return self._s.pi_post
+
 
     def deactivate_user(self, user_id: int = None) -> ApiResponse:
         """Deactivate a user from its user ID. Disabled users can't login interactively nor user their API keys.
