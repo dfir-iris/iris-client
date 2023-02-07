@@ -14,9 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import json
 import logging as logger
-from requests_oauthlib import OAuth2Session
 import requests
 from packaging.version import Version
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -30,7 +28,7 @@ The API version is not directly correlated with Iris version.
 Server has an endpoint /api/versions which should returns the API compatible versions 
 it can handles. 
 """
-API_VERSION = "1.0.2"
+API_VERSION = "2.0.0"
 
 """client_session
 Defines a global session, accessible by all classes. client_session is of type ClientSession.
@@ -202,7 +200,8 @@ class ClientSession(object):
 
             headers = {
                 'Content-Type': "application/json",
-                'Authorization': "Bearer " + self._apikey
+                'Authorization': "Bearer " + self._apikey,
+                'User-Agent': self._agent
                 }
             if type == "POST":
                 log.debug(f'POST : {self._pi_uri(uri)}')
@@ -210,15 +209,13 @@ class ClientSession(object):
                                          json=data,
                                          verify=self._ssl_verify,
                                          timeout=self._timeout,
-                                         headers=headers,
-                                         cookies={"session": self._apikey})
+                                         headers=headers)
             elif type == "GET":
                 log.debug(f'GET : {self._pi_uri(uri)}')
                 response = requests.get(url=self._pi_uri(uri),
                                         verify=self._ssl_verify,
                                         timeout=self._timeout,
-                                        headers=headers,
-                                        cookies={"session": self._apikey}
+                                        headers=headers
                                         )
 
             else:

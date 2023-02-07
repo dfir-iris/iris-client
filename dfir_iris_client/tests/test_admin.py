@@ -17,8 +17,6 @@
 import random
 import unittest
 
-import pytest
-
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data

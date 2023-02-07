@@ -388,7 +388,7 @@ class AdminHelper(object):
         body = {
             "customer_name": customer_name.lower()
         }
-        resp = self._s.pi_post('/manage/customers/add',
+        resp = self._s.pi_post('manage/customers/add',
                                data=body)
         return resp
 
