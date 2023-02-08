@@ -120,37 +120,22 @@ class AdminTest(unittest.TestCase):
         """ """
         with self.assertRaises(DeprecationWarning):
             self.adm.add_asset_type('WAF', description='dummy description')
-        # ret = self.adm.add_asset_type('WAF', description='dummy description')
-        # assert bool(assert_api_resp(ret, soft_fail=True)) is False
-        #
-        # assert 'Data error' in ret.get_msg()
 
     def test_update_asset_type_valid_deprecated(self):
         """ """
-        with self.assertRaises(Warning):
-            self.adm.add_asset_type('dummy asset type', description='dummy description')
-        # assert assert_api_resp(ret, soft_fail=False)
-        #
-        # data = get_data_from_resp(ret)
-        # assert parse_api_data(data, 'asset_description') == 'dummy description'
-        # assert parse_api_data(data, 'asset_name') == 'dummy asset type'
-        # assert type(parse_api_data(data, 'asset_id')) == int
-        #
-        # ret = self.adm.update_asset_type(asset_type_id=parse_api_data(data, 'asset_id'),
-        #                                  name='new dummy', description='new dummy description')
-        # assert assert_api_resp(ret, soft_fail=False)
-        #
-        # data = get_data_from_resp(ret)
-        # assert parse_api_data(data, 'asset_description') == 'new dummy description'
-        # assert parse_api_data(data, 'asset_name') == 'new dummy'
-        # assert type(parse_api_data(data, 'asset_id')) == int
-        #
-        # ret = self.adm.delete_asset_type(parse_api_data(data, 'asset_id'))
-        # assert assert_api_resp(ret, soft_fail=False)
+        with self.assertRaises(DeprecationWarning):
+            self.adm.update_asset_type(asset_type_id=0, name='dummy asset type', description='dummy description')
 
     def test_add_customer_valid(self):
         """ """
         ret = self.adm.add_customer('dummy customer')
+
+        if parse_api_data(ret.get_data(), 'customer_name') == ['Customer already exists']:
+            ret = self.adm.delete_customer('dummy customer')
+            assert assert_api_resp(ret, soft_fail=False)
+
+            ret = self.adm.add_customer('dummy customer')
+
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)

@@ -40,7 +40,7 @@ class AdminHelper(object):
 
         return
 
-    @deprecated('Use the new has_permission(<permission>) method', version="1.0.4", action="error")
+    @deprecated('Use the new has_permission(<permission>) method', version="2.0.0", action="error")
     def is_user_admin(self) -> bool:
         """Deprecated in IRIS v1.5.0. Use the new has_permission(<permission>) method.
         Returns True if the calling user is administrator
@@ -234,7 +234,7 @@ class AdminHelper(object):
 
         """
 
-        return self._s.pi_get(f'manage/users/delete/{user_id}')
+        return self._s.pi_post(f'manage/users/delete/{user_id}')
 
     def add_ioc_type(self, name: str, description: str, taxonomy: str = None) -> ApiResponse:
         """Add a new IOC Type.
@@ -270,7 +270,7 @@ class AdminHelper(object):
           ApiResponse
 
         """
-        return self._s.pi_get(f'manage/ioc-types/delete/{ioc_type_id}')
+        return self._s.pi_post(f'manage/ioc-types/delete/{ioc_type_id}')
 
     def update_ioc_type(self, ioc_type_id: int, name: str = None,
                         description: str = None, taxonomy: str = None) -> ApiResponse:
@@ -305,7 +305,7 @@ class AdminHelper(object):
         }
         return self._s.pi_post(f'manage/ioc-types/update/{ioc_type_id}', data=body)
 
-    @deprecated(reason='This method is deprecated in IRIS > v1.4.3', action="error")
+    @deprecated(reason='This method is deprecated in IRIS > v1.4.3', action="error", version="2.0.0")
     def add_asset_type(self, name: str, description: str) -> ApiResponse:
         """Add a new Asset Type.
         
@@ -338,9 +338,9 @@ class AdminHelper(object):
           ApiResponse
 
         """
-        return self._s.pi_get(f'manage/asset-type/delete/{asset_type_id}')
+        return self._s.pi_post(f'manage/asset-type/delete/{asset_type_id}')
 
-    @deprecated(reason='This method is deprecated in IRIS > v1.4.3', action="error")
+    @deprecated(reason='This method is deprecated in IRIS > v1.4.3', action="error", version="2.0.0")
     def update_asset_type(self, asset_type_id: int, name: str = None,
                           description: str = None) -> ApiResponse:
         """Updates an Asset type. `asset_type_id` needs to be a valid existing AssetType ID.
@@ -441,6 +441,6 @@ class AdminHelper(object):
         else:
             c_id = customer
 
-        resp = self._s.pi_get(f'manage/customers/delete/{c_id}')
+        resp = self._s.pi_post(f'manage/customers/delete/{c_id}')
 
         return resp

@@ -140,7 +140,7 @@ class Case(object):
           ApiResponse
 
         """
-        resp = self._s.pi_get(f'manage/cases/delete/{cid}')
+        resp = self._s.pi_post(f'manage/cases/delete/{cid}')
 
         return resp
 
@@ -316,7 +316,7 @@ class Case(object):
 
         """
         cid = self._assert_cid(cid)
-        return self._s.pi_get(f'case/notes/groups/delete/{group_id}', cid=cid)
+        return self._s.pi_post(f'case/notes/groups/delete/{group_id}', cid=cid)
 
     def get_note(self, note_id: int, cid: int = None) -> ApiResponse:
         """Fetches a note. note_id needs to be a valid existing note in the target case.
@@ -389,7 +389,7 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/notes/delete/{note_id}', cid=cid)
+        return self._s.pi_post(f'case/notes/delete/{note_id}', cid=cid)
 
     def add_note(self, note_title: str, note_content: str, group_id: int, custom_attributes: dict = None,
                  cid: int = None) -> ApiResponse:
@@ -711,7 +711,7 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/assets/delete/{asset_id}', cid=cid)
+        return self._s.pi_post(f'case/assets/delete/{asset_id}', cid=cid)
 
     def list_iocs(self, cid: int = None) -> ApiResponse:
         """Returns a list of all iocs of the target case.
@@ -893,7 +893,7 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/ioc/delete/{ioc_id}', cid=cid)
+        return self._s.pi_post(f'case/ioc/delete/{ioc_id}', cid=cid)
 
     def get_event(self, event_id: int, cid: int = None) -> ApiResponse:
         """Returns an event from the timeline
@@ -1117,7 +1117,7 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/timeline/events/delete/{event_id}', cid=cid)
+        return self._s.pi_post(f'case/timeline/events/delete/{event_id}', cid=cid)
 
     def add_task_log(self, message: str, cid: int = None) -> ApiResponse:
         """Adds a new task log that will appear under activities
@@ -1325,7 +1325,7 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/tasks/delete/{task_id}', cid=cid)
+        return self._s.pi_post(f'case/tasks/delete/{task_id}', cid=cid)
 
     def list_evidences(self, cid: int = None) -> ApiResponse:
         """Returns a list of evidences.
@@ -1449,7 +1449,7 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/evidences/delete/{evidence_id}', cid=cid)
+        return self._s.pi_post(f'case/evidences/delete/{evidence_id}', cid=cid)
 
     def list_global_tasks(self) -> ApiResponse:
         """
@@ -1596,4 +1596,4 @@ class Case(object):
 
         """
 
-        return self._s.pi_get(f'global/tasks/delete/{task_id}', cid=1)
+        return self._s.pi_post(f'global/tasks/delete/{task_id}', cid=1)

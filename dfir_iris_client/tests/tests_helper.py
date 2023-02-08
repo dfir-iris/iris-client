@@ -18,7 +18,7 @@ import os
 
 from dfir_iris_client.session import ClientSession
 
-API_KEY = os.getenv('IRIS_ADMIN_APIKEY')
+API_KEY = os.getenv('IRIS_ADM_API_KEY')
 
 
 def new_session():
