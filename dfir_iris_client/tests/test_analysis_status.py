@@ -19,15 +19,25 @@ import unittest
 
 from dfir_iris_client.helper.analysis_status import AnalysisStatusHelper
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session
+from dfir_iris_client.tests.tests_helper import new_session, new_adm_session
 
 
 class AnalysisStatusTest(unittest.TestCase):
     """ """
+    docker_compose = None
+    session = None
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.session, cls.docker_compose = new_adm_session()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.docker_compose.stop()
+
     def setUp(self):
         """ """
-        session = new_session()
-        self.asset_type = AnalysisStatusHelper(session)
+        self.asset_type = AnalysisStatusHelper(self.session)
 
     def test_list_analysis_status(self):
         """ """

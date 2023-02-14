@@ -16,6 +16,8 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import os
 
+import requests
+
 from dfir_iris_client.helper.docker_helper import DockerHelper
 from dfir_iris_client.session import ClientSession
 
@@ -37,8 +39,15 @@ def new_adm_session():
     docker_compose = DockerHelper(docker_compose_path=COMPOSE_FILE)
     docker_compose.start()
 
+    while True:
+        try:
+            requests.head(API_URL, timeout=500)
+            break
+        except ConnectionError:
+            pass
+
     session = ClientSession(apikey=API_KEY,
-                            host=API_URL, ssl_verify=False)
+                            host=API_URL, ssl_verify=False, timeout=500)
 
     return session, docker_compose
 

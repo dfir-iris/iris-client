@@ -19,14 +19,21 @@ import unittest
 
 from dfir_iris_client.global_search import global_search_ioc, global_search_notes
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session
+from dfir_iris_client.tests.tests_helper import new_session, new_adm_session
 
 
 class GlobalSearchTest(unittest.TestCase):
     """ """
-    def setUp(self):
-        """ """
-        self.session = new_session()
+    docker_compose = None
+    session = None
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.session, cls.docker_compose = new_adm_session()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.docker_compose.stop()
 
     def test_search_ioc(self):
         """ """

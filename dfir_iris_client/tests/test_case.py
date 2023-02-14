@@ -22,16 +22,27 @@ from dfir_iris_client.case import Case
 from dfir_iris_client.helper.colors import EventWhite
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session
+from dfir_iris_client.tests.tests_helper import new_session, new_adm_session
 
 
 class CaseTest(unittest.TestCase):
     """ """
+    docker_compose = None
+    session = None
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.session, cls.docker_compose = new_adm_session()
+        cls.addClassCleanup(cls.docker_compose.stop)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.docker_compose.stop()
+
     def setUp(self):
         """ """
-        session = new_session()
-        self.case = Case(session)
-        self.ch = Customer(session)
+        self.case = Case(self.session)
+        self.ch = Customer(self.session)
         self.case.set_cid(1)
 
     def test_add_rm_case_with_existing_customer_id(self):
