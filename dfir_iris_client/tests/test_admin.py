@@ -25,11 +25,18 @@ from dfir_iris_client.tests.tests_helper import new_session, new_adm_session
 
 class AdminTest(unittest.TestCase):
     """ """
-    def setUp(self):
-        """ """
-        session = new_adm_session()
-        self.adm = AdminHelper(session)
-        self.customer = Customer(session)
+
+    docker_compose = None
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        session, cls.docker_compose = new_adm_session()
+        cls.adm = AdminHelper(session)
+        cls.customer = Customer(session)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.docker_compose.stop()
 
     def test_is_user_admin_valid_deprecated(self):
         """ """
@@ -60,6 +67,12 @@ class AdminTest(unittest.TestCase):
     def test_add_ioc_type_valid(self):
         """ """
         ret = self.adm.add_ioc_type('dummy ioc type', description='dummy description', taxonomy='dummy taxo')
+        if ret.get_data().get('type_name') == ['IOC type name already exists']:
+            ret = self.adm.delete_ioc_type(parse_api_data(ret.get_data(), 'type_id'))
+
+            assert assert_api_resp(ret, soft_fail=False)
+            ret = self.adm.add_ioc_type('dummy ioc type', description='dummy description', taxonomy='dummy taxo')
+
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)

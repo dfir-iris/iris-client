@@ -19,6 +19,7 @@ import requests
 from packaging.version import Version
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
+from dfir_iris_client.helper.errors import IrisClientException
 from dfir_iris_client.helper.utils import ApiResponse
 
 log = logger.getLogger(__name__)
@@ -170,7 +171,7 @@ class ClientSession(object):
 
         return self._pi_request(uri, type='GET')
 
-    def pi_post(self, uri: str, data: dict) -> ApiResponse:
+    def pi_post(self, uri: str, data: dict = None) -> ApiResponse:
         """Issues a POSt request with the provided data. Simple wrapper around _pi_request
 
         Args:
@@ -222,12 +223,12 @@ class ClientSession(object):
                 return ApiResponse()
 
         except requests.exceptions.ConnectionError as e:
-            raise Exception("Unable to connect to endpoint {host}. Please check URL and ports. {e}".format(host=uri,
-                                                                                                           e=e.__str__()))
+            raise IrisClientException("Unable to connect to endpoint {host}. "
+                                      "Please check URL and ports. {e}".format(host=uri, e=e.__str__()))
 
         if response.status_code == 500:
             log.critical('Server replied 500')
-            raise Exception("Server side error. Please check server logs for more information")
+            raise IrisClientException("Server side error. Please check server logs for more information")
 
         log.debug(f'Server replied with status {response.status_code}')
 

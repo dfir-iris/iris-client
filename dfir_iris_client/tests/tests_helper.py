@@ -16,23 +16,29 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import os
 
+from dfir_iris_client.helper.docker_helper import DockerHelper
 from dfir_iris_client.session import ClientSession
 
 API_KEY = os.getenv('IRIS_ADM_API_KEY')
+API_URL = os.getenv('IRIS_URL', default="http://127.0.0.1:8000")
+COMPOSE_FILE = os.getenv('COMPOSE_FILE', default="../../../iris-web/docker-compose.yml")
 
 
 def new_session():
     """ """
     session = ClientSession(apikey=API_KEY,
-                            host='http://127.0.0.1:8000', ssl_verify=False)
+                            host=API_URL, ssl_verify=False)
 
     return session
 
 
 def new_adm_session():
     """ """
-    session = ClientSession(apikey=API_KEY,
-                            host='http://127.0.0.1:8000', ssl_verify=False)
+    docker_compose = DockerHelper(docker_compose_path=COMPOSE_FILE)
+    docker_compose.start()
 
-    return session
+    session = ClientSession(apikey=API_KEY,
+                            host=API_URL, ssl_verify=False)
+
+    return session, docker_compose
 

@@ -177,3 +177,8 @@ class ObjectNotInitialized(IrisStatusError):
 class ObjectAlreadyInitialized(IrisStatusError):
     """ """
     pass
+
+
+class IrisClientException(Exception):
+    """ """
+    pass
