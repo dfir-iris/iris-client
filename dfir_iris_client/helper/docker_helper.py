@@ -24,6 +24,7 @@ import logging as log
 class DockerHelper(object):
 
     def __init__(self, docker_compose_path: str) -> None:
+
         self._compose_file = docker_compose_path
         if not Path(self._compose_file).exists():
             raise FileNotFoundError(f"File {self._compose_file} does not exist")

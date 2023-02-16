@@ -15,8 +15,10 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import os
+from pathlib import Path
 
 import requests
+from dotenv import load_dotenv
 
 from dfir_iris_client.helper.docker_helper import DockerHelper
 from dfir_iris_client.session import ClientSession
@@ -36,6 +38,10 @@ def new_session():
 
 def new_adm_session():
     """ """
+    dot_path = Path(__file__).parent / "resources" / ".env"
+    if not load_dotenv(dotenv_path=dot_path, override=True):
+        raise FileNotFoundError(f"File {dot_path} not found")
+
     docker_compose = DockerHelper(docker_compose_path=COMPOSE_FILE)
     docker_compose.start()
 
@@ -46,7 +52,7 @@ def new_adm_session():
         except ConnectionError:
             pass
 
-    session = ClientSession(apikey=API_KEY,
+    session = ClientSession(apikey=os.getenv('IRIS_ADM_API_KEY', API_KEY),
                             host=API_URL, ssl_verify=False, timeout=500)
 
     return session, docker_compose
