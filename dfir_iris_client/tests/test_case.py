@@ -327,7 +327,7 @@ class CaseTest(unittest.TestCase):
         data = get_data_from_resp(ret)
 
         assert type(parse_api_data(data, 'analysis_status_id')) is int
-        assert parse_api_data(data, 'asset_compromised') is None
+        assert parse_api_data(data, 'asset_compromised_status_id') is None
         assert parse_api_data(data, 'asset_description') is None
         assert type(parse_api_data(data, 'asset_id')) is int
         assert type(parse_api_data(data, 'user_id')) is int

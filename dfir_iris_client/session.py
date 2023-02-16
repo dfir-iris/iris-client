@@ -171,17 +171,21 @@ class ClientSession(object):
 
         return self._pi_request(uri, type='GET')
 
-    def pi_post(self, uri: str, data: dict = None) -> ApiResponse:
+    def pi_post(self, uri: str, data: dict = None, cid: int = None) -> ApiResponse:
         """Issues a POSt request with the provided data. Simple wrapper around _pi_request
 
         Args:
           uri: URI endpoint to request
           data: data to be posted. Expect a dict
+          cid: Target case ID
 
         Returns:
           ApiResponse object
 
         """
+        if cid is not None:
+            uri = f"{uri}?cid={cid}"
+
         return self._pi_request(uri, type='POST', data=data)
 
     def _pi_request(self, uri: str, type: str = None, data: dict = None) -> ApiResponse:
