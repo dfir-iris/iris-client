@@ -281,7 +281,7 @@ class CaseTest(unittest.TestCase):
         for asset in parse_api_data(data, 'assets'):
             assert type(parse_api_data(asset, 'analysis_status')) is str
             assert type(parse_api_data(asset, 'analysis_status_id')) is int
-            self.failureException(parse_api_data(asset, 'asset_compromised'))
+            self.failureException(parse_api_data(asset, 'asset_compromise_status_id'))
             self.failureException(parse_api_data(asset, 'asset_description'))
             self.failureException(parse_api_data(asset, 'asset_ip'))
             self.failureException(parse_api_data(asset, 'asset_tags'))
@@ -296,7 +296,7 @@ class CaseTest(unittest.TestCase):
     def test_add_rm_asset_valid(self):
         """ """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='Unspecified',
-                                  compromised=True, tags=['tag1', 'tag2'], description='dummy desc',
+                                  compromise_status="false_positive", tags=['tag1', 'tag2'], description='dummy desc',
                                   domain='dummy domain', ip='dummy IP', additional_info='dummy info', ioc_links=[],
                                   custom_attributes={})
 
@@ -304,7 +304,7 @@ class CaseTest(unittest.TestCase):
         data = get_data_from_resp(ret)
 
         assert type(parse_api_data(data, 'analysis_status_id')) is int
-        assert parse_api_data(data, 'asset_compromised') is True
+        assert parse_api_data(data, 'asset_compromise_status_id') == 1
         assert parse_api_data(data, 'asset_description') == "dummy desc"
         assert type(parse_api_data(data, 'asset_id')) is int
         assert type(parse_api_data(data, 'user_id')) is int
@@ -327,7 +327,7 @@ class CaseTest(unittest.TestCase):
         data = get_data_from_resp(ret)
 
         assert type(parse_api_data(data, 'analysis_status_id')) is int
-        assert parse_api_data(data, 'asset_compromised_status_id') is None
+        assert parse_api_data(data, 'asset_compromise_status_id') is None
         assert parse_api_data(data, 'asset_description') is None
         assert type(parse_api_data(data, 'asset_id')) is int
         assert type(parse_api_data(data, 'user_id')) is int
