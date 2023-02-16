@@ -15,6 +15,7 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import json
+import warnings
 
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.admin import AdminHelper
@@ -492,9 +493,10 @@ class Case(object):
         return self._s.pi_get('case/assets/list', cid=cid)
 
     def add_asset(self, name: str, asset_type: Union[str, int], analysis_status: Union[str, int],
-                  compromised: bool = None, tags: List[str] = None,
+                  compromise_status: Union[str, int] = None, tags: List[str] = None,
                   description: str = None, domain: str = None, ip: str = None, additional_info: str = None,
-                  ioc_links: List[int] = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
+                  ioc_links: List[int] = None, custom_attributes: dict = None, cid: int = None,
+                  **kwargs) -> ApiResponse:
         """Adds an asset to the target case id.
         
         If they are strings, asset_types and analysis_status are lookup-ed up before the addition request is issued.
@@ -509,14 +511,15 @@ class Case(object):
           name: Name of the asset to add
           asset_type: Name or ID of the asset type
           description: Description of the asset
+          compromise_status: Compromise status of the asset
           domain: Domain of the asset
           ip: IP of the asset
           additional_info: Additional information,
           analysis_status: Status of the analysis
-          compromised: Set to true if asset is compromised
           tags: List of tags
           ioc_links: List of IOC to link to this asset
           custom_attributes: Custom attributes of the asset
+          kwargs: Additional arguments to pass to the API
           cid: int - Case ID
 
         Returns:
@@ -524,6 +527,9 @@ class Case(object):
 
         """
         cid = self._assert_cid(cid)
+
+        if kwargs.get('compromised') is not None:
+            warnings.warn("compromised argument is deprecated, use compromise_status instead", DeprecationWarning)
 
         if isinstance(asset_type, str):
             ast = AssetTypeHelper(session=self._s)
@@ -544,6 +550,16 @@ class Case(object):
 
             else:
                 analysis_status = analysis_status_r
+
+        if isinstance(compromise_status, str):
+            csh = CompromiseStatusHelper(self._s)
+            compromise_status_r = csh.lookup_compromise_status_name(compromise_status_name=compromise_status)
+
+            if not compromise_status_r:
+                return ClientApiError(msg=f"Compromise status {compromise_status} was not found")
+
+            else:
+                compromise_status = compromise_status_r
 
         if custom_attributes is not None and not isinstance(custom_attributes, dict):
             return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
