@@ -21,6 +21,7 @@ from dfir_iris_client.customer import Customer
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.helper.assets_type import AssetTypeHelper
 from dfir_iris_client.helper.analysis_status import AnalysisStatusHelper
+from dfir_iris_client.helper.compromise_status import CompromiseStatusHelper
 from dfir_iris_client.helper.ioc_types import IocTypeHelper
 from dfir_iris_client.helper.events_categories import EventCategoryHelper
 from dfir_iris_client.helper.task_status import TaskStatusHelper
@@ -581,8 +582,8 @@ class Case(object):
             body['asset_info'] = additional_info
         if ioc_links is not None:
             body['ioc_links'] = [str(ioc) for ioc in ioc_links]
-        if compromised is not None:
-            body['asset_compromised'] = compromised
+        if compromise_status is not None:
+            body['compromise_status_id'] = compromise_status
         if tags is not None:
             body['asset_tags'] = ','.join(tags)
         if custom_attributes is not None:
