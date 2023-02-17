@@ -128,11 +128,11 @@ class CaseTest(unittest.TestCase):
         assert ret is False
 
     def test_case_trigger_manual_hook_valid(self):
-        ret = self.case.trigger_manual_hook('iris_check_module::on_manual_trigger_ioc',
+        ret = self.case.trigger_manual_hook('iris_check_module::on_manual_trigger_case',
                                             module_name='iris_check_module',
-                                            targets=[2],
-                                            target_type='ioc')
-        print(ret.get_msg())
+                                            targets=[1],
+                                            target_type='case')
+
         assert bool(assert_api_resp(ret)) is True
 
     def test_case_summary(self):
