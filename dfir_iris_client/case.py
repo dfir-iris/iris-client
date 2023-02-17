@@ -556,7 +556,7 @@ class Case(object):
             csh = CompromiseStatusHelper(self._s)
             compromise_status_r = csh.lookup_compromise_status_name(compromise_status_name=compromise_status)
 
-            if not compromise_status_r:
+            if compromise_status_r is None:
                 return ClientApiError(msg=f"Compromise status {compromise_status} was not found")
 
             else:
@@ -583,7 +583,7 @@ class Case(object):
         if ioc_links is not None:
             body['ioc_links'] = [str(ioc) for ioc in ioc_links]
         if compromise_status is not None:
-            body['compromise_status_id'] = compromise_status
+            body['asset_compromise_status_id'] = compromise_status
         if tags is not None:
             body['asset_tags'] = ','.join(tags)
         if custom_attributes is not None:

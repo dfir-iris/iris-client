@@ -132,7 +132,7 @@ class CaseTest(unittest.TestCase):
                                             module_name='iris_check_module',
                                             targets=[2],
                                             target_type='ioc')
-
+        print(ret.get_msg())
         assert bool(assert_api_resp(ret)) is True
 
     def test_case_summary(self):
@@ -296,7 +296,7 @@ class CaseTest(unittest.TestCase):
     def test_add_rm_asset_valid(self):
         """ """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='Unspecified',
-                                  compromise_status="false_positive", tags=['tag1', 'tag2'], description='dummy desc',
+                                  compromise_status="not compromised", tags=['tag1', 'tag2'], description='dummy desc',
                                   domain='dummy domain', ip='dummy IP', additional_info='dummy info', ioc_links=[],
                                   custom_attributes={})
 
@@ -304,7 +304,7 @@ class CaseTest(unittest.TestCase):
         data = get_data_from_resp(ret)
 
         assert type(parse_api_data(data, 'analysis_status_id')) is int
-        assert parse_api_data(data, 'asset_compromise_status_id') == 1
+        assert parse_api_data(data, 'asset_compromise_status_id') == 2
         assert parse_api_data(data, 'asset_description') == "dummy desc"
         assert type(parse_api_data(data, 'asset_id')) is int
         assert type(parse_api_data(data, 'user_id')) is int
