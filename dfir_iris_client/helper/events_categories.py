@@ -25,7 +25,8 @@ class EventCategoryHelper(object):
         self._s = session
 
     def list_events_categories(self) -> ApiResponse:
-        """Returns a list of all events categories available
+        """
+        Returns a list of all events categories available
 
         Args:
 
@@ -35,7 +36,8 @@ class EventCategoryHelper(object):
         return self._s.pi_get('manage/event-categories/list')
 
     def lookup_event_category_name(self, event_category: str) -> Union[None, int]:
-        """Returns an event category ID from its name otherwise None
+        """
+        Returns an event category ID from its name otherwise None
 
         Args:
           event_category: Name of the event to lookup
@@ -53,7 +55,8 @@ class EventCategoryHelper(object):
         return None
 
     def get_event_category(self, event_category_id: int) -> ApiResponse:
-        """Returns an event category from its ID
+        """
+        Returns an event category from its ID
 
         Args:
           event_category_id: Event category to lookup

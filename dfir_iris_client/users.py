@@ -23,7 +23,8 @@ class User(object):
         self._s = session
 
     def user_id_exists(self, user_id: int) -> bool:
-        """Returns True if the user ID exists, else false
+        """
+        Returns True if the user ID exists, else false
 
         Args:
           user_id: User ID to verify
@@ -37,7 +38,8 @@ class User(object):
         return req.is_success()
 
     def username_exists(self, username: str) -> bool:
-        """Returns True if the username (login) exists, else false.
+        """
+        Returns True if the username (login) exists, else false.
         This is equivalent to calling lookup_username() and getting the results.
 
         Args:
@@ -52,7 +54,8 @@ class User(object):
         return req.is_success()
 
     def lookup_username(self, username: str) -> ApiResponse:
-        """Returns a user ID corresponding to the username, else None
+        """
+        Returns a user ID corresponding to the username, else None
 
         Args:
           username: User name to lookup
@@ -78,7 +81,8 @@ class User(object):
         return self._s.pi_get(f'manage/users/lookup/id/{user_id}')
 
     def list_users(self) -> ApiResponse:
-        """Returns a list of the users with a restricted view so it can be called by unprivileged users.
+        """
+        Returns a list of the users with a restricted view so it can be called by unprivileged users.
 
         Args:
 

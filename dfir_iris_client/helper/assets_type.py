@@ -16,6 +16,7 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from typing import Union
 
+from dfir_iris_client.helper.errors import IrisClientException
 from dfir_iris_client.helper.utils import ApiResponse
 import logging as logger
 
@@ -28,7 +29,8 @@ class AssetTypeHelper(object):
         self._s = session
 
     def list_asset_types(self) -> ApiResponse:
-        """Returns a list of all assets types available
+        """
+        Returns a list of all assets types available
 
         Args:
 
@@ -38,7 +40,8 @@ class AssetTypeHelper(object):
         return self._s.pi_get('manage/asset-type/list')
 
     def get_asset_type(self, asset_type_id: int) -> ApiResponse:
-        """Returns an asset type data from its id
+        """
+        Returns an asset type data from its id
 
         Args:
           asset_type_id: ID of asset type to fetch
@@ -50,7 +53,8 @@ class AssetTypeHelper(object):
         return self._s.pi_get(f'manage/asset-type/{asset_type_id}')
 
     def lookup_asset_type_name(self, asset_type_name:str) -> Union[int, None]:
-        """Returns an asset type ID from its name otherwise None
+        """
+        Returns an asset type ID from its name otherwise None
         
         :raise: Exception if server data is invalid
 
@@ -68,6 +72,6 @@ class AssetTypeHelper(object):
                     return ast.get('asset_id')
             else:
                 log.error('Unexpected server response. asset_name and asset_id not found in data')
-                raise Exception('Unexpected server response. asset_name and asset_id not found in data')
+                raise IrisClientException('Unexpected server response. asset_name and asset_id not found in data')
 
         return None

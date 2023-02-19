@@ -25,7 +25,8 @@ class CompromiseStatusHelper(object):
         self._s = session
 
     def lookup_compromise_status_name(self, compromise_status_name: str) -> Union[int, None]:
-        """Returns a compromise status ID from its name otherwise None
+        """
+        Returns a compromise status ID from its name otherwise None
 
         Args:
           compromise_status_name: str:
@@ -42,5 +43,7 @@ class CompromiseStatusHelper(object):
         return None
 
     def list_compromise_status_types(self):
-        """Returns a list of all compromise statuses"""
+        """
+        Returns a list of all compromise statuses
+        """
         return self._s.pi_get('manage/compromise-status/list')

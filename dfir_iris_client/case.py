@@ -22,6 +22,7 @@ from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.helper.assets_type import AssetTypeHelper
 from dfir_iris_client.helper.analysis_status import AnalysisStatusHelper
 from dfir_iris_client.helper.compromise_status import CompromiseStatusHelper
+from dfir_iris_client.helper.errors import IrisClientException
 from dfir_iris_client.helper.ioc_types import IocTypeHelper
 from dfir_iris_client.helper.events_categories import EventCategoryHelper
 from dfir_iris_client.helper.task_status import TaskStatusHelper
@@ -36,12 +37,14 @@ import urllib.parse
 
 class Case(object):
     """Handles the case methods"""
+
     def __init__(self, session, case_id: int = None):
         self._s = session
         self._cid = case_id
 
     def list_cases(self) -> ApiResponse:
-        """Returns a list of all the cases
+        """
+		Returns a list of all the cases
         
         :return: ApiResponse
 
@@ -189,18 +192,19 @@ class Case(object):
 
         """
         if not cid and not self._cid:
-            raise Exception("No case ID provided. Either use cid argument or set_cid method")
+            raise IrisClientException("No case ID provided. Either use cid argument or set_cid method")
 
         if not cid:
             cid = self._cid
 
         if not isinstance(cid, int):
-            raise Exception(f'Invalid CID type. Got {type(cid)} but was expecting int')
+            raise IrisClientException(f'Invalid CID type. Got {type(cid)} but was expecting int')
 
         return cid
 
     def get_summary(self, cid: int = None) -> ApiResponse:
-        """Returns the summary of the specified case id.
+        """
+        Returns the summary of the specified case id.
 
         Args:
           cid: Case ID (Default value = None)
@@ -237,7 +241,8 @@ class Case(object):
         return self._s.pi_post('case/summary/update', data=body)
 
     def list_notes_groups(self, cid: int = None) -> ApiResponse:
-        """Returns a list of notes groups of the target cid case
+        """
+        Returns a list of notes groups of the target cid case
 
         Args:
           cid: Case ID (Default value = None)
@@ -249,8 +254,9 @@ class Case(object):
         cid = self._assert_cid(cid)
         return self._s.pi_get('case/notes/groups/list', cid=cid)
 
-    def get_notes_group(self, group_id:int, cid: int = None) -> ApiResponse:
-        """Returns a notes group based on its ID. The group ID needs to match the CID where it is stored.
+    def get_notes_group(self, group_id: int, cid: int = None) -> ApiResponse:
+        """
+        Returns a notes group based on its ID. The group ID needs to match the CID where it is stored.
 
         Args:
           group_id: Group ID to fetch
@@ -480,7 +486,8 @@ class Case(object):
         return self._s.pi_post(f'dim/hooks/call', data=body)
 
     def list_assets(self, cid: int = None) -> ApiResponse:
-        """Returns a list of all assets of the target case.
+        """
+        Returns a list of all assets of the target case.
 
         Args:
           cid: int - Case ID
@@ -592,7 +599,8 @@ class Case(object):
         return self._s.pi_post(f'case/assets/add', data=body)
 
     def get_asset(self, asset_id: int, cid: int = None) -> ApiResponse:
-        """Returns an asset information from its ID.
+        """
+        Returns an asset information from its ID.
 
         Args:
           asset_id: ID of the asset to fetch
@@ -607,7 +615,8 @@ class Case(object):
         return self._s.pi_get(f'case/assets/{asset_id}', cid=cid)
 
     def asset_exists(self, asset_id: int, cid: int = None) -> bool:
-        """Returns true if asset_id exists in the context of the current case or cid.
+        """
+        Returns true if asset_id exists in the context of the current case or cid.
         This method is an overlay of get_asset and thus not performant.
 
         Args:
@@ -627,8 +636,9 @@ class Case(object):
                      analysis_status: Union[str, int] = None, description: str = None, domain: str = None,
                      ip: str = None, additional_info: str = None, ioc_links: List[int] = None,
                      compromise_status: Union[str, int] = None,
-                     custom_attributes: dict = None, cid: int = None, no_sync = False, **kwargs) -> ApiResponse:
-        """Updates an asset. asset_id needs to be an existing asset in the target case cid.
+                     custom_attributes: dict = None, cid: int = None, no_sync=False, **kwargs) -> ApiResponse:
+        """
+        Updates an asset. asset_id needs to be an existing asset in the target case cid.
         
         If they are strings, asset_types and analysis_status are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -713,12 +723,14 @@ class Case(object):
         body = {
             "asset_name": name if name is not None or no_sync else asset.get('asset_name'),
             "asset_type_id": asset_type if asset_type is not None or no_sync else int(asset.get('asset_type_id')),
-            "analysis_status_id": analysis_status if analysis_status is not None or no_sync else int(asset.get('analysis_status_id')),
+            "analysis_status_id": analysis_status if analysis_status is not None or no_sync else int(
+                asset.get('analysis_status_id')),
             "asset_description": description if description is not None or no_sync else asset.get('analysis_status'),
             "asset_domain": domain if domain is not None or no_sync else asset.get('asset_domain'),
             "asset_ip": ip if ip is not None or no_sync else asset.get('asset_ip'),
             "asset_info": additional_info if additional_info is not None or no_sync else asset.get('asset_info'),
-            "asset_compromise_status_id": compromise_status if compromise_status is not None or no_sync else int(asset.get('asset_compromise_status_id')),
+            "asset_compromise_status_id": compromise_status if compromise_status is not None or no_sync else int(
+                asset.get('asset_compromise_status_id')),
             "asset_tags": ','.join(tags) if tags is not None or no_sync else asset.get('asset_tags'),
             "custom_attributes": custom_attributes if custom_attributes else asset.get('custom_attributes'),
             "cid": cid
@@ -745,7 +757,8 @@ class Case(object):
         return self._s.pi_post(f'case/assets/delete/{asset_id}', cid=cid)
 
     def list_iocs(self, cid: int = None) -> ApiResponse:
-        """Returns a list of all iocs of the target case.
+        """
+        Returns a list of all iocs of the target case.
 
         Args:
           cid: Case ID
@@ -761,7 +774,8 @@ class Case(object):
     def add_ioc(self, value: str, ioc_type: Union[str, int], description: str = None,
                 ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
                 cid: int = None) -> ApiResponse:
-        """Adds an ioc to the target case id.
+        """
+        Adds an ioc to the target case id.
         
         If they are strings, ioc_tlp and ioc_type are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -826,7 +840,8 @@ class Case(object):
         return self._s.pi_post(f'case/ioc/add', data=body)
 
     def get_ioc(self, ioc_id: int, cid: int = None) -> ApiResponse:
-        """Returns an IOC.  ioc_id needs to be an existing ioc in the provided case ID.
+        """
+        Returns an IOC.  ioc_id needs to be an existing ioc in the provided case ID.
 
         Args:
           ioc_id: IOC ID
@@ -841,9 +856,10 @@ class Case(object):
         return self._s.pi_get(f'case/ioc/{ioc_id}', cid=cid)
 
     def update_ioc(self, ioc_id: int, value: str = None, ioc_type: Union[str, int] = None, description: str = None,
-                    ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
+                   ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
                    cid: int = None) -> ApiResponse:
-        """Updates an existing IOC. ioc_id needs to be an existing ioc in the provided case ID.
+        """
+        Updates an existing IOC. ioc_id needs to be an existing ioc in the provided case ID.
         
         If they are strings, ioc_tlp and ioc_type are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -912,7 +928,8 @@ class Case(object):
         return self._s.pi_post(f'case/ioc/update/{ioc_id}', data=body)
 
     def delete_ioc(self, ioc_id: int, cid: int = None) -> ApiResponse:
-        """Deletes an IOC from its ID. CID must match the case in which the ioc is stored.
+        """
+        Deletes an IOC from its ID. CID must match the case in which the ioc is stored.
 
         Args:
           ioc_id: ID of the ioc
@@ -927,7 +944,8 @@ class Case(object):
         return self._s.pi_post(f'case/ioc/delete/{ioc_id}', cid=cid)
 
     def get_event(self, event_id: int, cid: int = None) -> ApiResponse:
-        """Returns an event from the timeline
+        """
+        Returns an event from the timeline
 
         Args:
           event_id: ID of the event to fetch
@@ -942,7 +960,8 @@ class Case(object):
         return self._s.pi_get(f'case/timeline/events/{event_id}', cid=cid)
 
     def list_events(self, filter_by_asset: int = 0, cid: int = None) -> ApiResponse:
-        """Returns a list of events from the timeline. filter_by_asset can be used to return only the events
+        """
+        Returns a list of events from the timeline. filter_by_asset can be used to return only the events
         linked to a specific asset. In case the asset doesn't exist, an empty timeline is returned.
 
         Args:
@@ -958,7 +977,8 @@ class Case(object):
         return self._s.pi_get(f'case/timeline/events/list/filter/{filter_by_asset}', cid=cid)
 
     def filter_events(self, filter_str: dict = None, cid: int = None) -> ApiResponse:
-        """Returns a list of events from the timeline, filtered with the same query types used in
+        """
+        Returns a list of events from the timeline, filtered with the same query types used in
         the UI.
 
         Args:
@@ -980,7 +1000,8 @@ class Case(object):
                   category: Union[int, str] = None, tags: list = None, color: str = None, display_in_graph: bool = None,
                   display_in_summary: bool = None, custom_attributes: str = None, cid: int = None,
                   timezone_string: str = None) -> ApiResponse:
-        """Adds a new event to the timeline.
+        """
+        Adds a new event to the timeline.
         
         If it is a string, category is lookup-ed up before the addition request is issued.
         it can be either a name or an ID. For performances prefer an ID as it is used directly in the request
@@ -1056,7 +1077,8 @@ class Case(object):
                      category: Union[int, str] = None, tags: list = None,
                      color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
                      custom_attributes: dict = None, cid: int = None, timezone_string: str = None) -> ApiResponse:
-        """Updates an event of the timeline. event_id needs to be an existing event in the target case.
+        """
+        Updates an event of the timeline. event_id needs to be an existing event in the target case.
         
         If it is a string, category is lookup-ed up before the addition request is issued.
         it can be either a name or an ID. For performances prefer an ID as it is used directly in the request
@@ -1136,7 +1158,8 @@ class Case(object):
         return self._s.pi_post(f'case/timeline/events/update/{event_id}', data=body)
 
     def delete_event(self, event_id: int, cid: int = None) -> ApiResponse:
-        """Deletes an event from its ID. CID must match the case in which the event is stored
+        """
+        Deletes an event from its ID. CID must match the case in which the event is stored
 
         Args:
           event_id: Event to delete
@@ -1151,7 +1174,8 @@ class Case(object):
         return self._s.pi_post(f'case/timeline/events/delete/{event_id}', cid=cid)
 
     def add_task_log(self, message: str, cid: int = None) -> ApiResponse:
-        """Adds a new task log that will appear under activities
+        """
+        Adds a new task log that will appear under activities
 
         Args:
           message: Message to log
@@ -1170,7 +1194,8 @@ class Case(object):
         return self._s.pi_post(f'case/tasklog/add', data=data)
 
     def list_tasks(self, cid: int = None) -> ApiResponse:
-        """Returns a list of tasks linked to the provided case.
+        """
+        Returns a list of tasks linked to the provided case.
 
         Args:
           cid: Case ID
@@ -1184,7 +1209,8 @@ class Case(object):
         return self._s.pi_get(f'case/tasks/list', cid=cid)
 
     def get_task(self, task_id: int, cid: int = None) -> ApiResponse:
-        """Returns a task from its ID. task_id needs to be a valid task in the target case.
+        """
+        Returns a task from its ID. task_id needs to be a valid task in the target case.
 
         Args:
           task_id: Task ID to lookup
@@ -1200,7 +1226,8 @@ class Case(object):
 
     def add_task(self, title: str, status: Union[str, int], assignees: List[Union[str, int]], description: str = None,
                  tags: list = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
-        """Adds a new task to the target case.
+        """
+        Adds a new task to the target case.
         
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -1257,7 +1284,7 @@ class Case(object):
             "task_description": description if description else "",
             "task_status_id": status,
             "task_tags": ','.join(tags) if tags else "",
-            "task_title":  title,
+            "task_title": title,
             "custom_attributes": custom_attributes if custom_attributes else {},
             "cid": cid
         }
@@ -1267,7 +1294,8 @@ class Case(object):
     def update_task(self, task_id: int, title: str = None, status: Union[str, int] = None,
                     assignees: List[Union[int, str]] = None, description: str = None, tags: list = None,
                     custom_attributes: dict = None, cid: int = None) -> ApiResponse:
-        """Updates a task. task_id needs to be a valid task in the target case.
+        """
+        Updates a task. task_id needs to be a valid task in the target case.
         
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -1336,7 +1364,7 @@ class Case(object):
             "task_description": description if description else task.get('task_description'),
             "task_status_id": status if status else task.get('task_status_id'),
             "task_tags": ",".join(tags) if tags else task.get('task_tags'),
-            "task_title":  title if title else task.get('task_title'),
+            "task_title": title if title else task.get('task_title'),
             "custom_attributes": custom_attributes if custom_attributes else task.get('custom_attributes'),
             "cid": cid
         }
@@ -1344,7 +1372,8 @@ class Case(object):
         return self._s.pi_post(f'case/tasks/update/{task_id}', data=body)
 
     def delete_task(self, task_id: int, cid: int = None) -> ApiResponse:
-        """Deletes a task from its ID. CID must match the case in which the task is stored.
+        """
+        Deletes a task from its ID. CID must match the case in which the task is stored.
 
         Args:
           task_id: Task to delete
@@ -1359,7 +1388,8 @@ class Case(object):
         return self._s.pi_post(f'case/tasks/delete/{task_id}', cid=cid)
 
     def list_evidences(self, cid: int = None) -> ApiResponse:
-        """Returns a list of evidences.
+        """
+        Returns a list of evidences.
 
         Args:
           cid: Case ID
@@ -1373,7 +1403,8 @@ class Case(object):
         return self._s.pi_get(f'case/evidences/list', cid=cid)
 
     def get_evidence(self, evidence_id: int, cid: int = None) -> ApiResponse:
-        """Returns an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
+        """
+		Returns an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
 
         Args:
           evidence_id: Evidence ID to lookup
@@ -1389,7 +1420,8 @@ class Case(object):
 
     def add_evidence(self, filename: str, file_size: int, description: str = None,
                      file_hash: str = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
-        """Adds a new evidence to the target case.
+        """
+        Adds a new evidence to the target case.
         
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
@@ -1425,7 +1457,8 @@ class Case(object):
 
     def update_evidence(self, evidence_id: int, filename: str = None, file_size: int = None, description: str = None,
                         file_hash: str = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
-        """Updates an evidence of the matching case. evidence_id needs to be an existing evidence in the target case.
+        """
+        Updates an evidence of the matching case. evidence_id needs to be an existing evidence in the target case.
         
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
@@ -1468,7 +1501,8 @@ class Case(object):
         return self._s.pi_post(f'case/evidences/update/{evidence_id}', data=body)
 
     def delete_evidence(self, evidence_id: int, cid: int = None):
-        """Deletes an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
+        """
+        Deletes an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
 
         Args:
           evidence_id: int - Evidence to delete
@@ -1494,7 +1528,8 @@ class Case(object):
         return self._s.pi_get(f'global/tasks/list', cid=1)
 
     def get_global_task(self, task_id: int) -> ApiResponse:
-        """Returns a global task from its ID.
+        """
+        Returns a global task from its ID.
 
         Args:
           task_id: Task ID to lookup
@@ -1507,8 +1542,9 @@ class Case(object):
         return self._s.pi_get(f'global/tasks/{task_id}', cid=1)
 
     def add_global_task(self, title: str, status: Union[str, int], assignee: Union[str, int], description: str = None,
-                 tags: list = None) -> ApiResponse:
-        """Adds a new task.
+                        tags: list = None) -> ApiResponse:
+        """
+        Adds a new task.
         
         If set as strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as it is used directly in the request
@@ -1551,16 +1587,17 @@ class Case(object):
             "task_description": description if description else "",
             "task_status_id": status,
             "task_tags": ','.join(tags) if tags else "",
-            "task_title":  title,
+            "task_title": title,
             "cid": 1
         }
 
         return self._s.pi_post(f'global/tasks/add', data=body)
 
     def update_global_task(self, task_id: int, title: str = None, status: Union[str, int] = None,
-                    assignee: Union[int, str] = None, description: str = None,
-                    tags: list = None) -> ApiResponse:
-        """Updates a task. task_id needs to be an existing task in the database.
+                           assignee: Union[int, str] = None, description: str = None,
+                           tags: list = None) -> ApiResponse:
+        """
+        Updates a task. task_id needs to be an existing task in the database.
         
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -1611,13 +1648,14 @@ class Case(object):
             "task_description": description if description else task.get('task_description'),
             "task_status_id": status if status else task.get('task_status_id'),
             "task_tags": ",".join(tags) if tags else task.get('task_tags'),
-            "task_title":  title if title else task.get('task_title'),
+            "task_title": title if title else task.get('task_title'),
         }
 
         return self._s.pi_post(f'global/tasks/update/{task_id}', data=body)
 
     def delete_global_task(self, task_id: int) -> ApiResponse:
-        """Deletes a global task from its ID. task_id needs to be an existing task in the database.
+        """
+        Deletes a global task from its ID. task_id needs to be an existing task in the database.
 
         Args:
           task_id: int - Task to delete

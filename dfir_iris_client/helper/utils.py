@@ -176,7 +176,8 @@ class ApiResponse(object):
 
 
 def get_data_from_resp(api_response: ApiResponse):
-    """Returns the data of an ApiResponse object
+    """
+    Returns the data of an ApiResponse object
 
     Args:
       api_response: ApiResponse: 
