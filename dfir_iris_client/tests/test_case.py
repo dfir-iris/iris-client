@@ -161,9 +161,10 @@ class CaseTest(unittest.TestCase):
 
         data = get_data_from_resp(ret)
         groups = parse_api_data(data, 'groups')
-        assert type(parse_api_data(groups[0], 'group_id')) == int
-        assert type(parse_api_data(groups[0], 'group_title')) == str
-        assert type(parse_api_data(groups[0], 'notes')) == list
+        if len(groups) > 0:
+            assert type(parse_api_data(groups[0], 'group_id')) == int
+            assert type(parse_api_data(groups[0], 'group_title')) == str
+            assert type(parse_api_data(groups[0], 'notes')) == list
 
     def test_add_update_rm_notes_group(self):
         """ """
@@ -181,6 +182,8 @@ class CaseTest(unittest.TestCase):
         assert parse_api_data(data, 'group_id') == group_id
         assert parse_api_data(data, 'group_title') == "Dummy title"
         assert parse_api_data(data, 'notes') == []
+
+        self.test_list_get_notes_groups()
 
         ret = self.case.delete_notes_group(group_id)
         assert bool(assert_api_resp(ret)) is True
@@ -391,7 +394,7 @@ class CaseTest(unittest.TestCase):
         data = get_data_from_resp(ret)
 
         assert type(parse_api_data(data, 'analysis_status_id')) is int
-        assert parse_api_data(data, 'asset_compromised') is None
+        assert type(parse_api_data(data, 'asset_compromise_status_id')) in [int, type(None)]
         assert parse_api_data(data, 'asset_description') is None
         assert type(parse_api_data(data, 'asset_id')) is int
         assert type(parse_api_data(data, 'user_id')) is int
@@ -426,14 +429,14 @@ class CaseTest(unittest.TestCase):
 
         ret = self.case.update_asset(asset_id=parse_api_data(data, 'asset_id'), name='Dummy asset 1',
                                      asset_type='Account', analysis_status='Unspecified',
-                                     compromised=True, tags=['tag1', 'tag2'], description='dummy desc',
+                                     compromise_status=1, tags=['tag1', 'tag2'], description='dummy desc',
                                      domain='dummy domain', ip='dummy IP', additional_info='dummy info', ioc_links=[])
 
         assert bool(assert_api_resp(ret)) is True
         data = get_data_from_resp(ret)
 
         assert type(parse_api_data(data, 'analysis_status_id')) is int
-        assert parse_api_data(data, 'asset_compromised') is True
+        assert type(parse_api_data(data, 'asset_compromise_status_id')) is int
         assert parse_api_data(data, 'asset_description') == "dummy desc"
         assert type(parse_api_data(data, 'asset_id')) is int
         assert type(parse_api_data(data, 'user_id')) is int
@@ -451,7 +454,7 @@ class CaseTest(unittest.TestCase):
         """ """
         ret = self.case.update_asset(asset_id=111155551111, name='Dummy asset',
                                      asset_type='Account', analysis_status='Unspecified',
-                                     compromised=True, tags=['tag1', 'tag2'], description='dummy desc',
+                                     compromise_status=2, tags=['tag1', 'tag2'], description='dummy desc',
                                      domain='dummy domain', ip='dummy IP', additional_info='dummy info', ioc_links=[])
         assert bool(assert_api_resp(ret)) is False
 

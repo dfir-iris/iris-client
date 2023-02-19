@@ -625,8 +625,9 @@ class Case(object):
 
     def update_asset(self, asset_id: int, name: str = None, asset_type: Union[str, int] = None, tags: List[str] = None,
                      analysis_status: Union[str, int] = None, description: str = None, domain: str = None,
-                     ip: str = None, additional_info: str = None, ioc_links: List[int] = None, compromised: bool = None,
-                     custom_attributes: dict = None, cid: int = None, no_sync = False) -> ApiResponse:
+                     ip: str = None, additional_info: str = None, ioc_links: List[int] = None,
+                     compromise_status: Union[str, int] = None,
+                     custom_attributes: dict = None, cid: int = None, no_sync = False, **kwargs) -> ApiResponse:
         """Updates an asset. asset_id needs to be an existing asset in the target case cid.
         
         If they are strings, asset_types and analysis_status are lookup-ed up before the addition request is issued.
@@ -648,7 +649,7 @@ class Case(object):
           additional_info: Additional information,
           analysis_status: Status of the analysis
           ioc_links: List of IOC to link to this asset
-          compromised: True is asset is compromised
+          compromise_status: Status of the compromise
           custom_attributes: Custom attributes of the asset
           cid: Case ID
 
@@ -658,6 +659,9 @@ class Case(object):
 
         """
         cid = self._assert_cid(cid)
+
+        if kwargs.get('compromised') is not None:
+            warnings.warn("compromised argument is deprecated, use compromise_status instead", DeprecationWarning)
 
         asset = None
         if not no_sync:
@@ -676,6 +680,16 @@ class Case(object):
 
             else:
                 asset_type = asset_type_r
+
+        if isinstance(compromise_status, str):
+            csh = CompromiseStatusHelper(self._s)
+            compromise_status_r = csh.lookup_compromise_status_name(compromise_status_name=compromise_status)
+
+            if compromise_status_r is None:
+                return ClientApiError(msg=f"Compromise status {compromise_status} was not found")
+
+            else:
+                compromise_status = compromise_status_r
 
         if isinstance(analysis_status, str):
             ant = AnalysisStatusHelper(self._s)
@@ -704,7 +718,7 @@ class Case(object):
             "asset_domain": domain if domain is not None or no_sync else asset.get('asset_domain'),
             "asset_ip": ip if ip is not None or no_sync else asset.get('asset_ip'),
             "asset_info": additional_info if additional_info is not None or no_sync else asset.get('asset_info'),
-            "asset_compromised": compromised if compromised is not None or no_sync else asset.get('asset_compromise'),
+            "asset_compromise_status_id": compromise_status if compromise_status is not None or no_sync else int(asset.get('asset_compromise_status_id')),
             "asset_tags": ','.join(tags) if tags is not None or no_sync else asset.get('asset_tags'),
             "custom_attributes": custom_attributes if custom_attributes else asset.get('custom_attributes'),
             "cid": cid
