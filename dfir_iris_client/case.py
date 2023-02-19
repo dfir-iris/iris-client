@@ -142,7 +142,7 @@ class Case(object):
           ApiResponse
 
         """
-        resp = self._s.pi_post(f'manage/cases/delete/{cid}')
+        resp = self._s.pi_post(f'manage/cases/delete/{cid}', cid=1)
 
         return resp
 

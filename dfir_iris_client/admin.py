@@ -441,6 +441,6 @@ class AdminHelper(object):
         else:
             c_id = customer
 
-        resp = self._s.pi_post(f'manage/customers/delete/{c_id}')
+        resp = self._s.pi_post(f'manage/customers/delete/{c_id}', cid=1)
 
         return resp

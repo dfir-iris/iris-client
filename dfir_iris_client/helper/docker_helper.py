@@ -34,7 +34,7 @@ class DockerHelper(object):
         command = f"docker-compose -f {self._compose_file} {command}"
         log.info(f"Running command: {command}")
 
-        subprocess.run(command, shell=True, check=True)
+        subprocess.run(command, check=True, shell=True)
 
     def start(self) -> None:
         """Starts the docker-compose environment"""
@@ -42,4 +42,5 @@ class DockerHelper(object):
 
     def stop(self) -> None:
         """Stops the docker-compose environment"""
+        self._run_command("logs")
         self._run_command("down --volumes")

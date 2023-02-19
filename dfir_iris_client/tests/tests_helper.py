@@ -16,6 +16,7 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import os
 from pathlib import Path
+from time import sleep
 
 import requests
 from dotenv import load_dotenv
@@ -47,7 +48,11 @@ def new_adm_session():
 
     while True:
         try:
-            requests.head(API_URL, timeout=500)
+            count = 0
+            while count < 5:
+                requests.head(API_URL, timeout=500)
+                count += 1
+                sleep(1)
             break
         except ConnectionError:
             pass

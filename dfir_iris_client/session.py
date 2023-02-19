@@ -210,11 +210,16 @@ class ClientSession(object):
                 }
             if type == "POST":
                 log.debug(f'POST : {self._pi_uri(uri)}')
+
+                if data is None:
+                    data = {}
+
                 response = requests.post(url=self._pi_uri(uri),
                                          json=data,
                                          verify=self._ssl_verify,
                                          timeout=self._timeout,
                                          headers=headers)
+
             elif type == "GET":
                 log.debug(f'GET : {self._pi_uri(uri)}')
                 response = requests.get(url=self._pi_uri(uri),

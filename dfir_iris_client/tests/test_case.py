@@ -979,7 +979,8 @@ class CaseTest(unittest.TestCase):
         ret = self.case.update_task(task_id=task_id)
         assert assert_api_resp(ret, soft_fail=False)
 
-        ret = self.case.update_task(task_id=task_id, title="new dummy title", status='Done', assignees=['wk'],
+        ret = self.case.update_task(task_id=task_id, title="new dummy title", status='Done',
+                                    assignees=['administrator'],
                                     description='dummy description', tags=['tag1', 'tag2'])
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1140,7 +1141,8 @@ class CaseTest(unittest.TestCase):
         ret = self.case.update_global_task(task_id=task_id)
         assert assert_api_resp(ret, soft_fail=False)
 
-        ret = self.case.update_global_task(task_id=task_id, title="new dummy title", status='Done', assignee='user01',
+        ret = self.case.update_global_task(task_id=task_id, title="new dummy title", status='Done',
+                                           assignee='administrator',
                                            description='dummy description', tags=['tag1', 'tag2'])
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1161,6 +1163,13 @@ class CaseTest(unittest.TestCase):
         assert type(parse_api_data(task, 'task_userid_update')) is int
 
         ret = self.case.delete_global_task(task_id=task_id)
+        if ret.is_error():
+            print(ret.get_msg())
+            print(ret.get_data())
+            print(ret.as_json())
+            print(ret.get_uri())
+            print(task_id)
+
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_gtask_invalid_status(self):
