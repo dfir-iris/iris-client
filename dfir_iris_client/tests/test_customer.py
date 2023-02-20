@@ -15,26 +15,13 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import unittest
-
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session, new_adm_session
+from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
-class CustomerTest(unittest.TestCase):
+class CustomerTest(InitIrisClientTest):
     """ """
-    docker_compose = None
-    session = None
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.session, cls.docker_compose = new_adm_session()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        cls.docker_compose.stop()
-
     def setUp(self):
         """ """
         self.customers = Customer(self.session)

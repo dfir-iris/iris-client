@@ -20,23 +20,16 @@ import unittest
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session, new_adm_session
+from dfir_iris_client.tests.tests_helper import new_session, new_adm_session, InitIrisClientTest
 
 
-class AdminTest(unittest.TestCase):
+class AdminTest(InitIrisClientTest):
     """ """
-
-    docker_compose = None
-
     @classmethod
     def setUpClass(cls) -> None:
-        session, cls.docker_compose = new_adm_session()
-        cls.adm = AdminHelper(session)
-        cls.customer = Customer(session)
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        cls.docker_compose.stop()
+        super().setUpClass()
+        cls.adm = AdminHelper(cls.session)
+        cls.customer = Customer(cls.session)
 
     def test_is_user_admin_valid_deprecated(self):
         """ """

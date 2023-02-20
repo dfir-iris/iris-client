@@ -15,6 +15,7 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import os
+import unittest
 from pathlib import Path
 from time import sleep
 
@@ -62,3 +63,22 @@ def new_adm_session():
 
     return session, docker_compose
 
+
+def setUpModule():
+        print("setup module")
+def tearDownModule():
+        print("teardown module")
+
+
+class InitIrisClientTest(unittest.TestCase):
+    docker_compose = None
+    session = None
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.session, cls.docker_compose = new_adm_session()
+        cls.addClassCleanup(cls.docker_compose.stop)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.docker_compose.stop()

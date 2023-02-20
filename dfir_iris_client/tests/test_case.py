@@ -15,29 +15,17 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import datetime
-import unittest
 
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.case import Case
-from dfir_iris_client.helper.colors import EventWhite
 from dfir_iris_client.customer import Customer
+from dfir_iris_client.helper.colors import EventWhite
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session, new_adm_session
+from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
-class CaseTest(unittest.TestCase):
+class CaseTest(InitIrisClientTest):
     """ """
-    docker_compose = None
-    session = None
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.session, cls.docker_compose = new_adm_session()
-        cls.addClassCleanup(cls.docker_compose.stop)
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        cls.docker_compose.stop()
 
     def setUp(self):
         """ """
