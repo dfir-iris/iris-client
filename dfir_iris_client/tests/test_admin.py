@@ -48,7 +48,7 @@ class AdminTest(InitIrisClientTest):
         assert type(parse_api_data(data, 'user_uuid')) is str
         assert parse_api_data(data, 'user_login') == "administrator"
         assert parse_api_data(data, 'user_name') == "administrator"
-        assert parse_api_data(data, 'user_email') == "administrator@localhost"
+        assert parse_api_data(data, 'user_email') == "administrator@iris.local"
 
     def test_get_user_invalid(self):
         """ """

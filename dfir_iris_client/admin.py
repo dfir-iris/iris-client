@@ -279,7 +279,7 @@ class AdminHelper(object):
           ApiResponse
 
         """
-        return self._s.pi_post(f'manage/ioc-types/delete/{ioc_type_id}')
+        return self._s.pi_post(f'manage/ioc-types/delete/{ioc_type_id}', cid=1)
 
     def update_ioc_type(self, ioc_type_id: int, name: str = None,
                         description: str = None, taxonomy: str = None) -> ApiResponse:
