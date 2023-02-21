@@ -44,8 +44,11 @@ def new_adm_session():
     if not load_dotenv(dotenv_path=dot_path, override=True):
         raise FileNotFoundError(f"File {dot_path} not found")
 
-    docker_compose = DockerHelper(docker_compose_path=COMPOSE_FILE)
-    docker_compose.start()
+    docker_compose = None
+
+    if os.getenv('TEST_WITH_DOCKER', default=False):
+        docker_compose = DockerHelper(docker_compose_path=COMPOSE_FILE)
+        docker_compose.start()
 
     while True:
         try:
@@ -64,12 +67,6 @@ def new_adm_session():
     return session, docker_compose
 
 
-def setUpModule():
-        print("setup module")
-def tearDownModule():
-        print("teardown module")
-
-
 class InitIrisClientTest(unittest.TestCase):
     docker_compose = None
     session = None
@@ -77,8 +74,8 @@ class InitIrisClientTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.session, cls.docker_compose = new_adm_session()
-        cls.addClassCleanup(cls.docker_compose.stop)
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.docker_compose.stop()
+        if cls.docker_compose is not None:
+            cls.docker_compose.stop()

@@ -112,15 +112,6 @@ class AdminTest(InitIrisClientTest):
         """ """
         with self.assertRaises(DeprecationWarning):
             self.adm.add_asset_type('dummy asset type', description='dummy description')
-        # assert assert_api_resp(ret, soft_fail=False)
-        #
-        # data = get_data_from_resp(ret)
-        # assert parse_api_data(data, 'asset_description') == 'dummy description'
-        # assert parse_api_data(data, 'asset_name') == 'dummy asset type'
-        # assert type(parse_api_data(data, 'asset_id')) == int
-        #
-        # ret = self.adm.delete_asset_type(parse_api_data(data, 'asset_id'))
-        # assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_asset_type_invalid_already_exists_deprecated(self):
         """ """
