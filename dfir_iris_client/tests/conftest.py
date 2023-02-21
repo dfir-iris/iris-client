@@ -18,19 +18,18 @@ import pytest
 
 
 class User(object):
-    username = None
-    login = None
-    password = None
-    email = None
+    """ """
+    def __init__(self, username=None, login=None, password=None, email=None):
+        """ """
+        self.username = username
+        self.login = login
+        self.password = password
+        self.email = email
 
 
 @pytest.fixture(autouse=True)
 def standard_user():
     """ """
-    user = User()
-    user.login = 'test_user'
-    user.password = 'test_password'
-    user.username = 'test_user'
-    user.email = 'test@iris.local'
+    return User(username='test_user', login='test_user',
+                password='Test_User1!!', email="test@iris.local")
 
-    return user

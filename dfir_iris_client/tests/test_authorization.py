@@ -18,7 +18,7 @@ import pytest
 
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.helper.authorization import Permissions
-from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp
+from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
@@ -35,10 +35,8 @@ class AuthorizationTest(InitIrisClientTest):
         ret = self.adm.has_permission(Permissions.server_administrator)
         assert assert_api_resp(ret, soft_fail=False)
 
-    @pytest.fixture(autouse=True)
     def test_add_user(self, standard_user):
         """ """
-        print(dir(self))
         ret = self.adm.add_user(login=standard_user.login,
                                 name=standard_user.username,
                                 password=standard_user.password,
@@ -46,3 +44,13 @@ class AuthorizationTest(InitIrisClientTest):
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'active') is True
+        assert parse_api_data(data, 'has_deletion_confirmation') is False
+        assert parse_api_data(data, 'external_id') is None
+        assert parse_api_data(data, 'in_dark_mode') is None
+        assert parse_api_data(data, 'user_login') == standard_user.login
+        assert parse_api_data(data, 'user_name') == standard_user.username
+        assert parse_api_data(data, 'user_email') == standard_user.email
+        assert type(parse_api_data(data, 'uuid')) is str
+        assert type(parse_api_data(data, 'id')) is int
+
