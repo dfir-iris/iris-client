@@ -14,16 +14,21 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import enum
+from dfir_iris_client.helper.utils import assert_api_resp
+
+from dfir_iris_client.admin import AdminHelper
+from dfir_iris_client.tests.tests_helper import InitIrisClientTest
+from dfir_iris_client.helper.authorization import Permissions
 
 
-class CaseAccessLevel(enum.Enum):
-    deny_all = 0x1
-    read_only = 0x2
-    full_access = 0x4
+class AuthorizationTest(InitIrisClientTest):
+    """ """
 
+    def setUp(self) -> None:
+        self.adm = AdminHelper(self.session)
 
-class Permissions(enum.Enum):
-    standard_user = 0x1
+    def test_has_permission(self):
+        """ """
+        ret = self.adm.has_permission(Permissions.server_administrator)
+        assert assert_api_resp(ret, soft_fail=False)
 
-    server_administrator = 0x2

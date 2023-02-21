@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import os
 import random
 import unittest
 
@@ -46,9 +47,9 @@ class AdminTest(InitIrisClientTest):
         assert parse_api_data(data, 'user_active') is True
         assert type(parse_api_data(data, 'user_id')) is int
         assert type(parse_api_data(data, 'user_uuid')) is str
-        assert parse_api_data(data, 'user_login') == "administrator"
-        assert parse_api_data(data, 'user_name') == "administrator"
-        assert parse_api_data(data, 'user_email') == "administrator@iris.local"
+        assert parse_api_data(data, 'user_login') == os.getenv('IRIS_ADM_USERNAME', default='administrator')
+        assert parse_api_data(data, 'user_name') == os.getenv('IRIS_ADM_USERNAME', default="administrator")
+        assert parse_api_data(data, 'user_email') == os.getenv('IRIS_ADM_EMAIL', default="administrator@localhost")
 
     def test_get_user_invalid(self):
         """ """

@@ -65,8 +65,8 @@ class AdminHelper(object):
             "permission_value": permission.value
         }
 
-        req = self._s.pi_post('user/has-permission', data=body)
-        return req.is_success()
+        req = self._s.pi_post('user/has-permission', data=body, cid=1)
+        return req
 
     def get_user(self, login: str) -> ApiResponse:
         """
