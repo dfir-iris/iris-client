@@ -27,7 +27,7 @@ class AnalysisStatusHelper(object):
 
     def list_analysis_status_types(self) -> ApiResponse:
         """
-		Returns a list of all analysis statuses
+        Returns a list of all analysis statuses
 
         Args:
 
@@ -38,7 +38,7 @@ class AnalysisStatusHelper(object):
 
     def lookup_analysis_status_name(self, analysis_status_name: str) -> Union[int, None]:
         """
-		Returns an analysis status ID from its name otherwise None
+        Returns an analysis status ID from its name otherwise None
 
         Args:
           analysis_status_name: str: 
@@ -56,7 +56,7 @@ class AnalysisStatusHelper(object):
 
     def get_analysis_status(self, analysis_status_id: int) -> ApiResponse:
         """
-		Returns an analysis status from its ID
+        Returns an analysis status from its ID
 
         Args:
           analysis_status_id: Status ID to lookup
