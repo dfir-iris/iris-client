@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import warnings
 from typing import List
 from typing import Union
 from deprecated import deprecated
@@ -57,8 +58,11 @@ class AdminHelper(object):
         """
         Returns true if the user has the given permissions
 
-        :param permission: Permission to check
-        :return: True if user has the permission
+        Args:
+            permission: Permission to check
+
+        Returns:
+            ApiResponse
         """
         body = {
             "permission_name": permission.name,
@@ -88,7 +92,7 @@ class AdminHelper(object):
 
         return self._s.pi_get(f'manage/users/{user_id}')
 
-    def add_user(self, login: str, name: str, password: str, email: str, is_admin: bool= False) -> ApiResponse:
+    def add_user(self, login: str, name: str, password: str, email: str, **kwargs) -> ApiResponse:
         """
         Adds a new user. A new user can be successfully added if
         
@@ -96,14 +100,13 @@ class AdminHelper(object):
         - email is unique
         - password meets the requirements of IRIS
         
-        !!! tip "Requires admin rights"
+        !!! tip "Requires server administrator rights"
 
         Args:
           login: Username (login name) of the user to add
           name: Full name of the user
           password: Password of the user
           email: Email of the user
-          is_admin: Set to true if user is admin
 
         Returns:
           ApiResponse
@@ -116,6 +119,10 @@ class AdminHelper(object):
             "user_email": email,
             "cid": 1
         }
+
+        if kwargs.get('is_admin') is not None:
+            warnings.warn("\'is_admin argument\' is deprecated, use set_group_permissions method instead",
+                          DeprecationWarning)
 
         return self._s.pi_post(f'manage/users/add', data=body)
 

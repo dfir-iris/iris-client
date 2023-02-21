@@ -19,6 +19,7 @@ import unittest
 from pathlib import Path
 from time import sleep
 
+import pytest
 import requests
 from dotenv import load_dotenv
 
@@ -79,3 +80,4 @@ class InitIrisClientTest(unittest.TestCase):
     def tearDownClass(cls) -> None:
         if cls.docker_compose is not None:
             cls.docker_compose.stop()
+
