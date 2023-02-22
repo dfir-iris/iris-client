@@ -27,9 +27,15 @@ class User(object):
         self.email = email
 
 
-@pytest.fixture(autouse=True)
-def standard_user():
+@pytest.fixture(scope="class")
+def standard_user(request):
     """ """
-    return User(username='test_user', login='test_user',
-                password='Test_User1!!', email="test@iris.local")
+    user = User()
+    user.login = 'test_user'
+    user.password = 'TestPassword1-'
+    user.username = 'test_user'
+    user.email = 'test@iris.local'
+
+    request.cls.standard_user = user
+
 

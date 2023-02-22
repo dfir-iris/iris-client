@@ -22,6 +22,7 @@ from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, p
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
+@pytest.mark.usefixtures('standard_user')
 class AuthorizationTest(InitIrisClientTest):
     """ """
     @classmethod
@@ -35,12 +36,12 @@ class AuthorizationTest(InitIrisClientTest):
         ret = self.adm.has_permission(Permissions.server_administrator)
         assert assert_api_resp(ret, soft_fail=False)
 
-    def test_add_user(self, standard_user):
+    def test_add_user(self):
         """ """
-        ret = self.adm.add_user(login=standard_user.login,
-                                name=standard_user.username,
-                                password=standard_user.password,
-                                email=standard_user.email)
+        ret = self.adm.add_user(login=self.standard_user.login,
+                                name=self.standard_user.username,
+                                password=self.standard_user.password,
+                                email=self.standard_user.email)
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
@@ -48,9 +49,14 @@ class AuthorizationTest(InitIrisClientTest):
         assert parse_api_data(data, 'has_deletion_confirmation') is False
         assert parse_api_data(data, 'external_id') is None
         assert parse_api_data(data, 'in_dark_mode') is None
-        assert parse_api_data(data, 'user_login') == standard_user.login
-        assert parse_api_data(data, 'user_name') == standard_user.username
-        assert parse_api_data(data, 'user_email') == standard_user.email
+        assert parse_api_data(data, 'user_login') == self.standard_user.login
+        assert parse_api_data(data, 'user_name') == self.standard_user.username
+        assert parse_api_data(data, 'user_email') == self.standard_user.email
         assert type(parse_api_data(data, 'uuid')) is str
         assert type(parse_api_data(data, 'id')) is int
 
+        ret = self.adm.deactivate_user(self.standard_user.login)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ret = self.adm.delete_user(self.standard_user.login)
+        assert assert_api_resp(ret, soft_fail=False)

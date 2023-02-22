@@ -146,20 +146,34 @@ class AdminHelper(object):
         }
         return self._s.pi_post(f'manage/groups/{group_id}/permissions', data=body)
 
-    def deactivate_user(self, user_id: int = None) -> ApiResponse:
+    def deactivate_user(self, user: [int, str] = None) -> ApiResponse:
         """
-        Deactivate a user from its user ID. Disabled users can't login interactively nor user their API keys.
+        Deactivate a user from its user ID or login. Disabled users can't login interactively nor user their API keys.
         They do not appears in proposed user lists.
 
         !!! tip "Requires admin rights"
 
         Args:
-          user_id: User ID to deactivate
+          user: User ID or login to deactivate
 
         Returns:
           ApiResponse object
 
         """
+        user_id = None
+        if isinstance(user, int):
+            user_id = user
+
+        elif isinstance(user, str):
+            user_lookup_r = self._s.pi_get(f'manage/users/lookup/login/{user}', cid=1)
+            if user_lookup_r.is_error():
+                return ClientApiError(msg=user_lookup_r.get_msg())
+
+            user_id = user_lookup_r.get_data().get('user_id')
+
+        if user_id is None:
+            return ClientApiError(msg="Invalid user ID or login")
+
         return self._s.pi_get(f'manage/users/deactivate/{user_id}')
 
     def update_user(self, login: str = None,
@@ -248,7 +262,7 @@ class AdminHelper(object):
 
         """
 
-        return self._s.pi_post(f'manage/users/delete/{user_id}')
+        return self._s.pi_post(f'manage/users/delete/{user_id}', cid=1)
 
     def add_ioc_type(self, name: str, description: str, taxonomy: str = None) -> ApiResponse:
         """
