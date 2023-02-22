@@ -148,8 +148,8 @@ class AdminHelper(object):
 
     def deactivate_user(self, user: [int, str] = None) -> ApiResponse:
         """
-        Deactivate a user from its user ID or login. Disabled users can't login interactively nor user their API keys.
-        They do not appears in proposed user lists.
+        Deactivate a user from its user ID or login. Disabled users can't log in interactively nor user their API keys.
+        They do not appear in proposed user lists.
 
         !!! tip "Requires admin rights"
 
@@ -176,11 +176,13 @@ class AdminHelper(object):
 
         return self._s.pi_get(f'manage/users/deactivate/{user_id}')
 
-    def update_user(self, login: str = None,
+    def update_user(self,
+                    user: Union[int, str],
+                    login: str = None,
                     name: str = None,
                     password: str = None,
                     email: str = None,
-                    is_admin: bool = None) -> ApiResponse:
+                    **kwargs) -> ApiResponse:
         """
         Updates a user. The user can be updated if :
         
@@ -188,25 +190,35 @@ class AdminHelper(object):
         - email is unique
         - password meets the requirements of IRIS
         
-        Password can be left empty to update other attributes.
+        Only set the parameters that needs to be updated.
         
         !!! tip "Requires admin rights"
 
         Args:
-          login: Username (login name) of the user to update
+          user: User ID or login to update
+          login: Login of the user
           name: Full name of the user
           password: Password of the user
           email: Email of the user
-          is_admin: Set to true if user is admin
 
         Returns:
           ApiResponse
 
         """
 
-        user_req = self.get_user(login=login)
+        if kwargs.get('is_admin') is not None:
+            warnings.warn("\'is_admin\' argument is deprecated, use set_group_permissions method instead",
+                          DeprecationWarning)
+
+        user_req = None
+        if isinstance(user, int):
+            user_req = self._s.pi_get(f'manage/users/{user}')
+
+        elif isinstance(user, str):
+            user_req = self.get_user(login=user)
+
         if user_req.is_error():
-            return ClientApiError(msg=f'Unable to fetch user {login} for update',
+            return ClientApiError(msg=f'Unable to fetch user {user} for update',
                                   error=user_req.get_msg())
 
         user = user_req.get_data()
@@ -219,28 +231,38 @@ class AdminHelper(object):
             "cid": 1
         }
 
-        if is_admin:
-            body['user_isadmin'] = "y"
-
         return self._s.pi_post(f'manage/users/update/{user.get("user_id")}', data=body)
 
-    def delete_user(self, login: str) -> ApiResponse:
+    def delete_user(self, user: [int, str], **kwargs) -> ApiResponse:
         """
         Deletes a user based on its login. A user can only be deleted if it does not have any
-        activities in IRIS. This is to maintain coherence in the database.
+        activities in IRIS. This is to maintain coherence in the database. The user needs to be
+        deactivated first.
         
-        !!! tip "Requires admin rights"
+        !!! tip "Requires administrative rights"
 
         Args:
-          login: Username (login name) of the user to delete
+          user: Username or user ID of the user to delete
 
         Returns:
           ApiResponse
 
         """
-        user_req = self.get_user(login=login)
+
+        if kwargs.get('login') is not None:
+            warnings.warn("\'login\' argument is deprecated, use \'user\' instead",
+                          DeprecationWarning)
+            user = kwargs.get('login')
+
+        if isinstance(user, int):
+            return self.delete_user_by_id(user_id=user)
+
+        if user is None:
+            return ClientApiError(msg='Invalid user ID or login')
+
+        user_req = self.get_user(login=user)
         if user_req.is_error():
-            return ClientApiError(msg=f'Unable to fetch user {login} for update',
+            return ClientApiError(msg=f'Unable to fetch user {user} for update',
                                   error=user_req.get_msg())
 
         user = user_req.get_data()

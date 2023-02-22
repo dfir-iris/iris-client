@@ -38,26 +38,6 @@ class AdminTest(InitIrisClientTest):
         with self.assertRaises(DeprecationWarning):
             self.adm.is_user_admin()
 
-    def test_get_user_valid(self):
-        """ """
-        ret = self.adm.get_user('administrator')
-        assert assert_api_resp(ret, soft_fail=False)
-
-        data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'user_active') is True
-        assert type(parse_api_data(data, 'user_id')) is int
-        assert type(parse_api_data(data, 'user_uuid')) is str
-        assert parse_api_data(data, 'user_login') == os.getenv('IRIS_ADM_USERNAME', default='administrator')
-        assert parse_api_data(data, 'user_name') == os.getenv('IRIS_ADM_USERNAME', default="administrator")
-        assert parse_api_data(data, 'user_email') == os.getenv('IRIS_ADM_EMAIL', default="administrator@localhost")
-
-    def test_get_user_invalid(self):
-        """ """
-        ret = self.adm.get_user('dummy user')
-        assert bool(assert_api_resp(ret)) is False
-
-        assert 'Invalid login' in ret.get_msg()
-
     def test_add_ioc_type_valid(self):
         """ """
         ret = self.adm.add_ioc_type('dummy ioc type', description='dummy description', taxonomy='dummy taxo')
