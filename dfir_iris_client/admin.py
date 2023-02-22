@@ -484,7 +484,7 @@ class AdminHelper(object):
 
         return resp
 
-    def add_group(self, group_name: str, group_description: str, permissions: List[Permissions]) -> ApiResponse:
+    def add_group(self, group_name: str, group_description: str, group_permissions: List[Permissions]) -> ApiResponse:
         """
         Add a new group with permissions. Cases access and members can be set later on with
         `set_group_access` and `set_group_members` methods. Permissions must be a list of known
@@ -493,23 +493,35 @@ class AdminHelper(object):
         Args:
             group_name: Name of the group
             group_description: Description of the group
-            permissions: List of permission from Permission enum
+            group_permissions: List of permission from Permission enum
 
         Returns:
             ApiResponse object
         """
-        for perm in permissions:
+        for perm in group_permissions:
             if not isinstance(perm, Permissions):
                 return ClientApiError(msg=f'Invalid permission {perm}')
 
         body = {
             "group_name": group_name,
             "group_description": group_description,
-            "permissions": [perm.value for perm in permissions],
+            "group_permissions": [perm.value for perm in group_permissions],
             "cid": 1
         }
 
         return self._s.pi_post('manage/groups/add', data=body)
+
+    def delete_group(self, group: Union[str, int]) -> ApiResponse:
+        """
+        Delete a group by its ID or name.
+
+        Args:
+            group: Group ID or group name
+
+        Returns:
+            ApiResponse object
+        """
+        return self._s.pi_post(f'manage/groups/delete/{group}', cid=1)
 
     def set_group_permissions(self, group_id: int = None, permissions: List[Permissions] = None) -> ApiResponse:
         """

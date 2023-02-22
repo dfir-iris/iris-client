@@ -24,7 +24,7 @@ from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, p
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
-@pytest.mark.usefixtures('standard_user')
+@pytest.mark.usefixtures('standard_user', 'standard_group', 'admin_group')
 class AuthorizationTest(InitIrisClientTest):
     """ """
     @classmethod
@@ -87,3 +87,24 @@ class AuthorizationTest(InitIrisClientTest):
 
         assert 'Invalid login' in ret.get_msg()
 
+    def test_add_group(self):
+        """ """
+        std_perm = 0
+        for perm in self.standard_group.permissions:
+            std_perm += perm.value
+
+        ret = self.adm.add_group(group_name=self.standard_group.name,
+                                 group_description=self.standard_group.description,
+                                 group_permissions=self.standard_group.permissions)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'group_name') == self.standard_group.name
+        assert type(parse_api_data(data, 'group_id')) is int
+        assert type(parse_api_data(data, 'group_uuid')) is str
+        assert parse_api_data(data, 'group_auto_follow') is False
+        assert parse_api_data(data, 'group_permissions') == std_perm
+
+        ret = self.adm.delete_group(parse_api_data(data, 'group_id'))
+        assert assert_api_resp(ret, soft_fail=False)
