@@ -126,26 +126,6 @@ class AdminHelper(object):
 
         return self._s.pi_post(f'manage/users/add', data=body)
 
-    def set_group_permissions(self, group_id: int = None, permissions: List[Permissions] = None):
-        """
-        Set the permissions of a group.
-        Permissions must be a list of known permissions ID from the Permission enum
-
-        !!! tips "Calling user must have the manage_users permission"
-
-        Args:
-            group_id: Group ID to set permissions
-            permissions: List of permission from Permission enum
-
-        Returns:
-            ApiResponse object
-        """
-        body = {
-            "",
-            ""
-        }
-        return self._s.pi_post(f'manage/groups/{group_id}/permissions', data=body)
-
     def deactivate_user(self, user: [int, str] = None) -> ApiResponse:
         """
         Deactivate a user from its user ID or login. Disabled users can't log in interactively nor user their API keys.
@@ -503,3 +483,50 @@ class AdminHelper(object):
         resp = self._s.pi_post(f'manage/customers/delete/{c_id}', cid=1)
 
         return resp
+
+    def add_group(self, group_name: str, group_description: str, permissions: List[Permissions]) -> ApiResponse:
+        """
+        Add a new group with permissions. Cases access and members can be set later on with
+        `set_group_access` and `set_group_members` methods. Permissions must be a list of known
+        permissions from the Permission enum.
+
+        Args:
+            group_name: Name of the group
+            group_description: Description of the group
+            permissions: List of permission from Permission enum
+
+        Returns:
+            ApiResponse object
+        """
+        for perm in permissions:
+            if not isinstance(perm, Permissions):
+                return ClientApiError(msg=f'Invalid permission {perm}')
+
+        body = {
+            "group_name": group_name,
+            "group_description": group_description,
+            "permissions": [perm.value for perm in permissions],
+            "cid": 1
+        }
+
+        return self._s.pi_post('manage/groups/add', data=body)
+
+    def set_group_permissions(self, group_id: int = None, permissions: List[Permissions] = None) -> ApiResponse:
+        """
+        Set the permissions of a group.
+        Permissions must be a list of known permissions ID from the Permission enum
+
+        !!! tips "Calling user must have the manage_users permission"
+
+        Args:
+            group_id: Group ID to set permissions
+            permissions: List of permission from Permission enum
+
+        Returns:
+            ApiResponse object
+        """
+        body = {
+            "",
+            ""
+        }
+        return self._s.pi_post(f'manage/groups/{group_id}/permissions', data=body)
