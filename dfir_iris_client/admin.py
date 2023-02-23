@@ -23,7 +23,7 @@ from dfir_iris_client.helper.assets_type import AssetTypeHelper
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.authorization import Permissions
 from dfir_iris_client.helper.ioc_types import IocTypeHelper
-from dfir_iris_client.helper.utils import ApiResponse, ClientApiError, get_data_from_resp, parse_api_data
+from dfir_iris_client.helper.utils import ApiResponse, ClientApiError, get_data_from_resp, parse_api_data, ClientApiData
 
 
 class AdminHelper(object):
@@ -522,6 +522,37 @@ class AdminHelper(object):
             ApiResponse object
         """
         return self._s.pi_post(f'manage/groups/delete/{group}', cid=1)
+
+    def list_groups(self) -> ApiResponse:
+        """
+        List all groups.
+
+        Returns:
+            ApiResponse object
+        """
+        return self._s.pi_get('manage/groups/list', cid=1)
+
+    def lookup_group(self, group_name: str) -> ApiResponse:
+        """
+        Lookup a group by its name.
+
+        Args:
+            group_name: Group name
+
+        Returns:
+            ApiResponse object
+        """
+        group_lists = self.list_groups()
+        if group_lists.is_error():
+            return group_lists
+
+        for group in group_lists.get_data():
+            if group.get('group_name').lower() == group_name.lower():
+                response = ClientApiData(data=group)
+
+                return ApiResponse(response=response, uri=group_lists.get_uri())
+
+        return ClientApiError(msg=f'Group {group_name} not found')
 
     def set_group_permissions(self, group_id: int = None, permissions: List[Permissions] = None) -> ApiResponse:
         """

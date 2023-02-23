@@ -24,7 +24,7 @@ from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, p
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
-@pytest.mark.usefixtures('standard_user', 'standard_group', 'admin_group')
+@pytest.mark.usefixtures('standard_user', 'standard_group', 'admin_group', 'native_admin_group')
 class AuthorizationTest(InitIrisClientTest):
     """ """
     @classmethod
@@ -108,3 +108,37 @@ class AuthorizationTest(InitIrisClientTest):
 
         ret = self.adm.delete_group(parse_api_data(data, 'group_id'))
         assert assert_api_resp(ret, soft_fail=False)
+
+    def test_list_groups(self):
+        """ """
+        ret = self.adm.list_groups()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(parse_api_data(data[0], 'group_auto_follow')) is bool
+        assert type(parse_api_data(data[0], 'group_auto_follow_access_level')) is int
+        assert type(parse_api_data(data[0], 'group_description')) is str
+        assert type(parse_api_data(data[0], 'group_id')) is int
+        assert type(parse_api_data(data[0], 'group_members')) is list
+        assert type(parse_api_data(data[0], 'group_name')) is str
+        assert type(parse_api_data(data[0], 'group_permissions')) is int
+        assert type(parse_api_data(data[0], 'group_permissions_list')) is list
+        assert type(parse_api_data(data[0], 'group_uuid')) is str
+
+    def test_lookup_group(self):
+        """ """
+        ret = self.adm.lookup_group(group_name=self.native_admin_group.name)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+
+        adm_perm = 0
+        for perm in self.native_admin_group.permissions:
+            adm_perm += perm.value
+
+        assert parse_api_data(data, 'group_name').lower() == self.native_admin_group.name.lower()
+        assert type(parse_api_data(data, 'group_id')) is int
+        assert type(parse_api_data(data, 'group_uuid')) is str
+        assert parse_api_data(data, 'group_auto_follow') is self.native_admin_group.group_auto_follow
+        assert parse_api_data(data, 'group_permissions') == adm_perm
+        assert parse_api_data(data, 'group_auto_follow_access_level') == self.native_admin_group.group_auto_follow_access_level

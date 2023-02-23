@@ -32,11 +32,13 @@ class User(object):
 
 class Group(object):
     """ """
-    def __init__(self, name=None, description=None, permissions: List[Permissions] = None):
+    def __init__(self, **kwargs):
         """ """
-        self.name = name
-        self.description = description
+        self.name = kwargs.get('name')
+        self.description = kwargs.get('description')
         self.permissions = []
+        self.group_auto_follow = kwargs.get('group_auto_follow', False)
+        self.group_auto_follow_access_level = kwargs.get('group_auto_follow_access_level', 0)
 
 
 @pytest.fixture(scope="class")
@@ -71,3 +73,16 @@ def admin_group(request):
     group.permissions = [Permissions.server_administrator, Permissions.standard_user]
 
     request.cls.admin_group = group
+
+
+@pytest.fixture(scope="class")
+def native_admin_group(request):
+    """ """
+    group = Group()
+    group.name = 'Administrators'
+    group.description = 'Administrators'
+    group.permissions = [Permissions.server_administrator, Permissions.standard_user]
+    group.group_auto_follow = True
+    group.group_auto_follow_access_level = 4
+
+    request.cls.native_admin_group = group
