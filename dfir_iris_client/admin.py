@@ -587,6 +587,37 @@ class AdminHelper(object):
 
         return self._s.pi_post(f'manage/groups/update/{group}', data=body)
 
+    def update_group_members(self, group: Union[str, int], members: List[int]) -> ApiResponse:
+        """
+        Update the members of a group. Members must be a list of user IDs.
+
+        Args:
+            group: Group ID or group name
+            members: List of user IDs
+
+        Returns:
+            ApiResponse object
+        """
+        if isinstance(group, str):
+            lookup = self.lookup_group(group_name=group)
+            if lookup.is_error():
+                return lookup
+
+            group = lookup.get_data().get('group_id')
+
+        if not isinstance(members, list):
+            return ClientApiError(msg=f'Members must be a list of user IDs')
+
+        if not all(isinstance(member, int) for member in members):
+            return ClientApiError(msg=f'Members must be a list of user IDs')
+
+        body = {
+            "group_members": members,
+            "cid": 1
+        }
+
+        return self._s.pi_post(f'manage/groups/{group}/members/update', data=body)
+
     def delete_group(self, group: Union[str, int]) -> ApiResponse:
         """
         Delete a group by its ID or name.

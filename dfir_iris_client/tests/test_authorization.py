@@ -205,3 +205,23 @@ class AuthorizationTest(InitIrisClientTest):
         ret = self.adm.delete_group(group_id)
         assert assert_api_resp(ret, soft_fail=False)
 
+    def test_set_group_members(self):
+        """ """
+        ret = self.adm.add_group(group_name=self.standard_group.name,
+                                 group_description=self.standard_group.description,
+                                 group_permissions=self.standard_group.permissions)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        group_id = parse_api_data(data, 'group_id')
+
+        ret = self.adm.update_group_members(group=group_id, members=[1])
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'group_name') == self.standard_group.name
+        assert parse_api_data(data, 'group_members')[0].get('id') == 1
+
+        ret = self.adm.delete_group(group_id)
+        assert assert_api_resp(ret, soft_fail=False)
