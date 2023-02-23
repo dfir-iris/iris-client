@@ -188,12 +188,19 @@ class AuthorizationTest(InitIrisClientTest):
 
         ret = self.adm.update_group(group=group_id,
                                     group_name=self.standard_group.name + ' updated',
-                                    group_description=self.standard_group.description,
-                                    group_permissions=self.standard_group.permissions)
+                                    group_description=self.standard_group.description + ' updated',
+                                    group_permissions=self.admin_group.permissions)
 
         assert assert_api_resp(ret, soft_fail=False)
         data = get_data_from_resp(ret)
+
+        perms = 0
+        for perm in self.admin_group.permissions:
+            perms += perm.value
+
         assert parse_api_data(data, 'group_name') == self.standard_group.name + ' updated'
+        assert parse_api_data(data, 'group_description') == self.standard_group.description + ' updated'
+        assert parse_api_data(data, 'group_permissions') == perms
 
         ret = self.adm.delete_group(group_id)
         assert assert_api_resp(ret, soft_fail=False)
