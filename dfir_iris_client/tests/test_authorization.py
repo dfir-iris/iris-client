@@ -109,6 +109,21 @@ class AuthorizationTest(InitIrisClientTest):
         ret = self.adm.delete_group(parse_api_data(data, 'group_id'))
         assert assert_api_resp(ret, soft_fail=False)
 
+    def test_delete_group_by_name(self):
+        """ """
+        std_perm = 0
+        for perm in self.standard_group.permissions:
+            std_perm += perm.value
+
+        ret = self.adm.add_group(group_name=self.standard_group.name,
+                                 group_description=self.standard_group.description,
+                                 group_permissions=self.standard_group.permissions)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ret = self.adm.delete_group(self.standard_group.name)
+        assert assert_api_resp(ret, soft_fail=False)
+
     def test_delete_group_invalid(self):
         """ """
         ret = self.adm.delete_group(999999)
