@@ -521,6 +521,14 @@ class AdminHelper(object):
         Returns:
             ApiResponse object
         """
+
+        if isinstance(group, str):
+            lookup = self.lookup_group(group_name=group)
+            if lookup.is_error():
+                return lookup
+
+            group = lookup.get_data().get('group_id')
+
         return self._s.pi_post(f'manage/groups/delete/{group}', cid=1)
 
     def list_groups(self) -> ApiResponse:

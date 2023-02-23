@@ -109,6 +109,13 @@ class AuthorizationTest(InitIrisClientTest):
         ret = self.adm.delete_group(parse_api_data(data, 'group_id'))
         assert assert_api_resp(ret, soft_fail=False)
 
+    def test_delete_group_invalid(self):
+        """ """
+        ret = self.adm.delete_group(999999)
+        assert bool(assert_api_resp(ret)) is False
+
+        assert 'invalid group id' in ret.get_msg().lower()
+
     def test_list_groups(self):
         """ """
         ret = self.adm.list_groups()
