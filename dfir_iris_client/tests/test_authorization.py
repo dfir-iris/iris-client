@@ -21,7 +21,8 @@ import pytest
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.helper.authorization import Permissions
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import InitIrisClientTest
+from dfir_iris_client.tests.tests_helper import InitIrisClientTest, create_standard_user, delete_standard_user_auto, \
+    create_standard_group, delete_standard_group
 
 
 @pytest.mark.usefixtures('standard_user', 'standard_group', 'admin_group', 'native_admin_group')
@@ -40,10 +41,7 @@ class AuthorizationTest(InitIrisClientTest):
 
     def test_add_user(self):
         """ """
-        ret = self.adm.add_user(login=self.standard_user.login,
-                                name=self.standard_user.username,
-                                password=self.standard_user.password,
-                                email=self.standard_user.email)
+        ret = create_standard_user(self)
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
@@ -57,11 +55,7 @@ class AuthorizationTest(InitIrisClientTest):
         assert type(parse_api_data(data, 'uuid')) is str
         assert type(parse_api_data(data, 'id')) is int
 
-        ret = self.adm.deactivate_user(self.standard_user.login)
-        assert assert_api_resp(ret, soft_fail=False)
-
-        ret = self.adm.delete_user(self.standard_user.login)
-        assert assert_api_resp(ret, soft_fail=False)
+        delete_standard_user_auto(self)
 
     def test_get_user_valid(self):
         """ """
@@ -93,9 +87,7 @@ class AuthorizationTest(InitIrisClientTest):
         for perm in self.standard_group.permissions:
             std_perm += perm.value
 
-        ret = self.adm.add_group(group_name=self.standard_group.name,
-                                 group_description=self.standard_group.description,
-                                 group_permissions=self.standard_group.permissions)
+        ret = create_standard_group(self)
 
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -106,7 +98,7 @@ class AuthorizationTest(InitIrisClientTest):
         assert parse_api_data(data, 'group_auto_follow') is False
         assert parse_api_data(data, 'group_permissions') == std_perm
 
-        ret = self.adm.delete_group(parse_api_data(data, 'group_id'))
+        ret = delete_standard_group(self)
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_delete_group_by_name(self):
@@ -115,9 +107,7 @@ class AuthorizationTest(InitIrisClientTest):
         for perm in self.standard_group.permissions:
             std_perm += perm.value
 
-        ret = self.adm.add_group(group_name=self.standard_group.name,
-                                 group_description=self.standard_group.description,
-                                 group_permissions=self.standard_group.permissions)
+        ret = create_standard_group(self)
 
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -177,9 +167,7 @@ class AuthorizationTest(InitIrisClientTest):
 
     def test_group_update(self):
         """ """
-        ret = self.adm.add_group(group_name=self.standard_group.name,
-                                 group_description=self.standard_group.description,
-                                 group_permissions=self.standard_group.permissions)
+        ret = create_standard_group(self)
 
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -202,15 +190,11 @@ class AuthorizationTest(InitIrisClientTest):
         assert parse_api_data(data, 'group_description') == self.standard_group.description + ' updated'
         assert parse_api_data(data, 'group_permissions') == perms
 
-        ret = self.adm.delete_group(group_id)
-        assert assert_api_resp(ret, soft_fail=False)
+        delete_standard_group(self)
 
     def test_set_group_members(self):
         """ """
-        ret = self.adm.add_group(group_name=self.standard_group.name,
-                                 group_description=self.standard_group.description,
-                                 group_permissions=self.standard_group.permissions)
-
+        ret = create_standard_group(self)
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
@@ -223,5 +207,4 @@ class AuthorizationTest(InitIrisClientTest):
         assert parse_api_data(data, 'group_name') == self.standard_group.name
         assert parse_api_data(data, 'group_members')[0].get('id') == 1
 
-        ret = self.adm.delete_group(group_id)
-        assert assert_api_resp(ret, soft_fail=False)
+        delete_standard_group(self)

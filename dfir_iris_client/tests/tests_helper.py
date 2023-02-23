@@ -21,6 +21,7 @@ from time import sleep
 
 import pytest
 import requests
+from dfir_iris_client.helper.utils import assert_api_resp
 from dotenv import load_dotenv
 
 from dfir_iris_client.helper.docker_helper import DockerHelper
@@ -81,3 +82,43 @@ class InitIrisClientTest(unittest.TestCase):
         if cls.docker_compose is not None:
             cls.docker_compose.stop()
 
+
+def create_standard_user(session):
+    """
+    Create a new standard user
+    """
+    return session.adm.add_user(login=session.standard_user.login,
+                                name=session.standard_user.username,
+                                password=session.standard_user.password,
+                                email=session.standard_user.email)
+
+
+def delete_standard_user_auto(session):
+    """
+    Delete user
+    """
+    ret = session.adm.deactivate_user(session.standard_user.login)
+    assert assert_api_resp(ret, soft_fail=False)
+
+    ret = session.adm.delete_user(session.standard_user.login)
+    assert assert_api_resp(ret, soft_fail=False)
+
+    return ret
+
+
+def create_standard_group(session):
+    """
+    Create a new standard group
+    """
+    return session.adm.add_group(group_name=session.standard_group.name,
+                                 group_description=session.standard_group.description,
+                                 group_permissions=session.standard_group.permissions)
+
+
+def delete_standard_group(session):
+    """
+    Delete group
+    """
+    ret = session.adm.delete_group(session.standard_group.name)
+
+    return ret
