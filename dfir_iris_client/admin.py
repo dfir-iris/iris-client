@@ -554,19 +554,34 @@ class AdminHelper(object):
 
             group = lookup.get_data().get('group_id')
 
-        if group_permissions:
+        group_resp = self.get_group(group)
+        if group_resp.is_error():
+            return group_resp
+
+        group_data = group_resp.get_data()
+
+        group_perms = []
+        if group_permissions is not None:
             for perm in group_permissions:
                 if not isinstance(perm, Permissions):
                     return ClientApiError(msg=f'Invalid permission {perm}')
+                group_perms.append(perm.value)
 
-        for perm in group_permissions:
-            if not isinstance(perm, Permissions):
-                return ClientApiError(msg=f'Invalid permission {perm}')
+        else:
+            perms = parse_api_data(group_data, 'group_permissions')
+            for perm in perms:
+                group_perms.append(perm.get('value'))
+
+        group_description = group_description if group_description is not None \
+            else parse_api_data(group_data, 'group_description')
+
+        group_name = group_name if group_name is not None \
+            else parse_api_data(group_data, 'group_name')
 
         body = {
-            "group_name": group_name if group_name else None,
+            "group_name": group_name,
             "group_description": group_description,
-            "group_permissions": [perm.value for perm in group_permissions],
+            "group_permissions": group_perms,
             "cid": 1
         }
 
