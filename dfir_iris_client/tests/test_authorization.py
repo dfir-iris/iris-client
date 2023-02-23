@@ -164,3 +164,14 @@ class AuthorizationTest(InitIrisClientTest):
         assert parse_api_data(data, 'group_auto_follow') is self.native_admin_group.group_auto_follow
         assert parse_api_data(data, 'group_permissions') == adm_perm
         assert parse_api_data(data, 'group_auto_follow_access_level') == self.native_admin_group.group_auto_follow_access_level
+
+    def test_get_group_by_id(self):
+        """ """
+        ret = self.adm.get_group(1)
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_get_group_by_name(self):
+        """ """
+        ret = self.adm.get_group(self.native_admin_group.name)
+        assert assert_api_resp(ret, soft_fail=False)
+

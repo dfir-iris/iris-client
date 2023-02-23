@@ -28,6 +28,7 @@ from dfir_iris_client.helper.utils import ApiResponse, ClientApiError, get_data_
 
 class AdminHelper(object):
     """Handles administrative tasks"""
+
     def __init__(self, session):
         """
         Overlay offering administrative tasks. Initialisation of the class does NOT check if the calling user
@@ -511,6 +512,66 @@ class AdminHelper(object):
 
         return self._s.pi_post('manage/groups/add', data=body)
 
+    def get_group(self, group: Union[str, int]) -> ApiResponse:
+        """
+        Get a group by its ID or name.
+
+        Args:
+            group: Group ID or group name
+
+        Returns:
+            ApiResponse object
+        """
+        if isinstance(group, str):
+            lookup = self.lookup_group(group_name=group)
+            if lookup.is_error():
+                return lookup
+
+            group = lookup.get_data().get('group_id')
+
+        return self._s.pi_get(f'manage/groups/{group}', cid=1)
+
+    def update_group(self, group: Union[str, int], group_name: str = None, group_description: str = None,
+                     group_permissions: List[Permissions] = None) -> ApiResponse:
+        """
+        Update a group. Cases access and members can be with
+        `set_group_access` and `set_group_members` methods. Permissions must be a list of known
+        permissions from the Permission enum.
+
+        Args:
+            group: Group ID or group name
+            group_name: Name of the group
+            group_description: Description of the group
+            group_permissions: List of permission from Permission enum
+
+        Returns:
+            ApiResponse object
+        """
+        if isinstance(group, str):
+            lookup = self.lookup_group(group_name=group)
+            if lookup.is_error():
+                return lookup
+
+            group = lookup.get_data().get('group_id')
+
+        if group_permissions:
+            for perm in group_permissions:
+                if not isinstance(perm, Permissions):
+                    return ClientApiError(msg=f'Invalid permission {perm}')
+
+        for perm in group_permissions:
+            if not isinstance(perm, Permissions):
+                return ClientApiError(msg=f'Invalid permission {perm}')
+
+        body = {
+            "group_name": group_name if group_name else None,
+            "group_description": group_description,
+            "group_permissions": [perm.value for perm in group_permissions],
+            "cid": 1
+        }
+
+        return self._s.pi_post(f'manage/groups/update/{group}', data=body)
+
     def delete_group(self, group: Union[str, int]) -> ApiResponse:
         """
         Delete a group by its ID or name.
@@ -566,8 +627,6 @@ class AdminHelper(object):
         """
         Set the permissions of a group.
         Permissions must be a list of known permissions ID from the Permission enum
-
-        !!! tips "Calling user must have the manage_users permission"
 
         Args:
             group_id: Group ID to set permissions
