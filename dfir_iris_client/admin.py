@@ -73,25 +73,24 @@ class AdminHelper(object):
         req = self._s.pi_post('user/has-permission', data=body, cid=1)
         return req
 
-    def get_user(self, login: str) -> ApiResponse:
-        """
-        Returns a user by its login. Login names are unique in Iris.
+    def get_user(self, user: Union[int, str], **kwargs) -> ApiResponse:
+        """Return a user data
 
         Args:
-          login: username to lookup
+          user: User ID or login of the user to get
 
         Returns:
-          ApiResponse
-
+          ApiResponse object
         """
+        if kwargs.get('user_id') is not None:
+            warnings.warn("\'user_id\' argument is deprecated, use \'user\' instead",
+                          DeprecationWarning)
+            user = kwargs.get('user_id')
 
-        user_lookup_r = self._s.pi_get(f'manage/users/lookup/login/{login}', cid=1)
-        if user_lookup_r.is_error():
-            return ClientApiError(msg=user_lookup_r.get_msg())
+        if isinstance(user, str):
+            return self._s.pi_get(f'manage/users/lookup/login/{user}')
 
-        user_id = user_lookup_r.get_data().get('user_id')
-
-        return self._s.pi_get(f'manage/users/{user_id}')
+        return self._s.pi_get(f'manage/users/lookup/id/{user}')
 
     def add_user(self, login: str, name: str, password: str, email: str, **kwargs) -> ApiResponse:
         """
@@ -241,7 +240,7 @@ class AdminHelper(object):
         if user is None:
             return ClientApiError(msg='Invalid user ID or login')
 
-        user_req = self.get_user(login=user)
+        user_req = self.get_user(user=user)
         if user_req.is_error():
             return ClientApiError(msg=f'Unable to fetch user {user} for update',
                                   error=user_req.get_msg())
@@ -266,6 +265,47 @@ class AdminHelper(object):
         """
 
         return self._s.pi_post(f'manage/users/delete/{user_id}', cid=1)
+
+    def update_user_cases_access(self, user: Union[int, str], cases_list: List[int],
+                                 access_level: CaseAccessLevel) -> ApiResponse:
+        """
+        Updates the cases that a user can access.
+
+        !!! tip "Requires admin rights"
+
+        Args:
+          user: User ID or login to update
+          cases_list: List of case IDs
+          access_level: Access level to set for the user
+
+        Returns:
+          ApiResponse
+
+        """
+        user_req = self.get_user(user=user)
+
+        if user_req.is_error():
+            return ClientApiError(msg=f'Unable to fetch user {user} for update',
+                                  error=user_req.get_msg())
+
+        if not isinstance(cases_list, list):
+            return ClientApiError(msg=f'Invalid cases list. Expected list of IDs')
+
+        if not all(isinstance(case_id, int) for case_id in cases_list):
+            return ClientApiError(msg=f'Invalid cases list. Expected list of IDs')
+
+        if access_level not in CaseAccessLevel:
+            return ClientApiError(msg=f'Invalid access level. Expected enum from CaseAccessLevel')
+
+        user = parse_api_data(user_req.get_data(), 'user_id')
+
+        body = {
+            "access_level": access_level.value,
+            "cases_list": cases_list,
+            "cid": 1
+        }
+
+        return self._s.pi_post(f'manage/users/{user}/cases-access/update', data=body)
 
     def add_ioc_type(self, name: str, description: str, taxonomy: str = None) -> ApiResponse:
         """

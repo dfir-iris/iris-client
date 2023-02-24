@@ -21,7 +21,7 @@ from time import sleep
 
 import pytest
 import requests
-from dfir_iris_client.helper.utils import assert_api_resp
+from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
 from dotenv import load_dotenv
 
 from dfir_iris_client.helper.docker_helper import DockerHelper
@@ -40,7 +40,7 @@ def new_session():
     return session
 
 
-def new_adm_session():
+def new_adm_session(session: ClientSession = None):
     """ """
     dot_path = Path(__file__).parent / "resources" / ".env"
     if not load_dotenv(dotenv_path=dot_path, override=True):
@@ -63,8 +63,9 @@ def new_adm_session():
         except ConnectionError:
             pass
 
-    session = ClientSession(apikey=os.getenv('IRIS_ADM_API_KEY', API_KEY),
-                            host=API_URL, ssl_verify=False, timeout=500)
+    if session is None:
+        session = ClientSession(apikey=os.getenv('IRIS_ADM_API_KEY', API_KEY),
+                                host=API_URL, ssl_verify=False, timeout=500)
 
     return session, docker_compose
 
@@ -75,7 +76,7 @@ class InitIrisClientTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.session, cls.docker_compose = new_adm_session()
+        cls.session, cls.docker_compose = new_adm_session(session=cls.session)
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -87,10 +88,26 @@ def create_standard_user(session):
     """
     Create a new standard user
     """
-    return session.adm.add_user(login=session.standard_user.login,
-                                name=session.standard_user.username,
-                                password=session.standard_user.password,
-                                email=session.standard_user.email)
+    ret = session.adm.add_user(login=session.standard_user.login,
+                               name=session.standard_user.username,
+                               password=session.standard_user.password,
+                               email=session.standard_user.email)
+
+    assert assert_api_resp(ret, soft_fail=False)
+
+    data = get_data_from_resp(ret)
+    api_key = parse_api_data(data, 'user_api_key')
+    session.standard_user.api_key = api_key
+
+    return ret
+
+
+def get_standard_user_session(session):
+    """
+    Get a session with standard user
+    """
+    return ClientSession(apikey=session.standard_user.api_key,
+                         host=API_URL, ssl_verify=False)
 
 
 def delete_standard_user_auto(session):

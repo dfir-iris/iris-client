@@ -22,16 +22,17 @@ from dfir_iris_client.helper.authorization import Permissions
 
 class User(object):
     """ """
-    def __init__(self, username=None, login=None, password=None, email=None):
-        """ """
+    def __init__(self, username=None, login=None, password=None, email=None, api_key=None):
+        """User helper class """
         self.username = username
         self.login = login
         self.password = password
         self.email = email
+        self.api_key = api_key
 
 
 class Group(object):
-    """ """
+    """Group helper class """
     def __init__(self, **kwargs):
         """ """
         self.name = kwargs.get('name')
@@ -43,7 +44,7 @@ class Group(object):
 
 @pytest.fixture(scope="class")
 def standard_user(request):
-    """ """
+    """Create a standard user for testing """
     user = User()
     user.login = 'test_user'
     user.password = 'TestPassword1-'
@@ -55,7 +56,7 @@ def standard_user(request):
 
 @pytest.fixture(scope="class")
 def standard_group(request):
-    """ """
+    """Create a standard group for testing """
     group = Group()
     group.name = 'test_group'
     group.description = 'test group description'
@@ -66,7 +67,7 @@ def standard_group(request):
 
 @pytest.fixture(scope="class")
 def admin_group(request):
-    """ """
+    """Create an admin group for testing """
     group = Group()
     group.name = 'test_adm_group'
     group.description = 'test adm group description'
@@ -77,7 +78,7 @@ def admin_group(request):
 
 @pytest.fixture(scope="class")
 def native_admin_group(request):
-    """ """
+    """Fetch the native admin group for testing """
     group = Group()
     group.name = 'Administrators'
     group.description = 'Administrators'

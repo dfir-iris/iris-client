@@ -20,11 +20,12 @@ import pytest
 
 
 from dfir_iris_client.admin import AdminHelper
+from dfir_iris_client.tests.test_case import CaseTest
 from dfir_iris_client.users import User
 from dfir_iris_client.helper.authorization import Permissions, CaseAccessLevel
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest, create_standard_user, delete_standard_user_auto, \
-    create_standard_group, delete_standard_group
+    create_standard_group, delete_standard_group, get_standard_user_session
 
 
 @pytest.mark.usefixtures('standard_user', 'standard_group', 'admin_group', 'native_admin_group')
@@ -36,53 +37,6 @@ class AuthorizationTest(InitIrisClientTest):
         super().setUpClass()
         cls.adm = AdminHelper(cls.session)
         cls.users = User(cls.session)
-
-    def test_has_permission(self):
-        """ """
-        ret = self.adm.has_permission(Permissions.server_administrator)
-        assert assert_api_resp(ret, soft_fail=False)
-
-    def test_add_user(self):
-        """ """
-        ret = create_standard_user(self)
-        assert assert_api_resp(ret, soft_fail=False)
-
-        data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'active') is True
-        assert parse_api_data(data, 'has_deletion_confirmation') is False
-        assert parse_api_data(data, 'external_id') is None
-        assert parse_api_data(data, 'in_dark_mode') is None
-        assert parse_api_data(data, 'user_login') == self.standard_user.login
-        assert parse_api_data(data, 'user_name') == self.standard_user.username
-        assert parse_api_data(data, 'user_email') == self.standard_user.email
-        assert type(parse_api_data(data, 'uuid')) is str
-        assert type(parse_api_data(data, 'id')) is int
-
-        delete_standard_user_auto(self)
-
-    def test_get_user_valid(self):
-        """ """
-        ret = self.adm.get_user('administrator')
-        assert assert_api_resp(ret, soft_fail=False)
-
-        data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'user_active') is True
-        assert type(parse_api_data(data, 'user_id')) is int
-        assert type(parse_api_data(data, 'user_uuid')) is str
-        assert parse_api_data(data, 'user_login') == os.getenv('IRIS_ADM_USERNAME', default='administrator')
-        assert parse_api_data(data, 'user_name') == os.getenv('IRIS_ADM_USERNAME', default="administrator")
-        assert parse_api_data(data, 'user_email') == os.getenv('IRIS_ADM_EMAIL', default="administrator@localhost")
-        assert type(parse_api_data(data, 'user_cases_access')) is list
-        assert type(parse_api_data(data, 'user_groups')) is list
-        assert type(parse_api_data(data, 'user_organisations')) is list
-        assert type(parse_api_data(data, 'user_permissions')) is list
-
-    def test_get_user_invalid(self):
-        """ """
-        ret = self.adm.get_user('dummy user')
-        assert bool(assert_api_resp(ret)) is False
-
-        assert 'Invalid login' in ret.get_msg()
 
     def test_add_group(self):
         """ """
@@ -327,4 +281,71 @@ class AuthorizationTest(InitIrisClientTest):
         ret = self.users.get_user(user=999999999)
         assert bool(assert_api_resp(ret)) is False
 
-    
+    def test_has_permission(self):
+        """ """
+        ret = self.adm.has_permission(Permissions.server_administrator)
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_add_user(self):
+        """ """
+        ret = create_standard_user(self)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'active') is True
+        assert parse_api_data(data, 'has_deletion_confirmation') is False
+        assert parse_api_data(data, 'external_id') is None
+        assert parse_api_data(data, 'in_dark_mode') is None
+        assert parse_api_data(data, 'user_login') == self.standard_user.login
+        assert parse_api_data(data, 'user_name') == self.standard_user.username
+        assert parse_api_data(data, 'user_email') == self.standard_user.email
+        assert type(parse_api_data(data, 'uuid')) is str
+        assert type(parse_api_data(data, 'id')) is int
+
+        delete_standard_user_auto(self)
+
+    def test_get_user_valid(self):
+        """ """
+        ret = self.adm.get_user('administrator')
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'user_active') is True
+        assert type(parse_api_data(data, 'user_id')) is int
+        assert type(parse_api_data(data, 'user_uuid')) is str
+        assert parse_api_data(data, 'user_login') == os.getenv('IRIS_ADM_USERNAME', default='administrator')
+        assert parse_api_data(data, 'user_name') == os.getenv('IRIS_ADM_USERNAME', default="administrator")
+        assert parse_api_data(data, 'user_email') == os.getenv('IRIS_ADM_EMAIL', default="administrator@localhost")
+        assert type(parse_api_data(data, 'user_cases_access')) is list
+        assert type(parse_api_data(data, 'user_groups')) is list
+        assert type(parse_api_data(data, 'user_organisations')) is list
+        assert type(parse_api_data(data, 'user_permissions')) is list
+
+    def test_get_user_invalid(self):
+        """ """
+        ret = self.adm.get_user('dummy user')
+        assert bool(assert_api_resp(ret)) is False
+
+        assert 'Invalid login' in ret.get_msg()
+
+    def test_user_cases_access(self):
+        """ """
+        ret = create_standard_user(self)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        user_id = parse_api_data(data, 'id')
+
+        ret = self.adm.update_user_cases_access(user_id, cases_list=[1], access_level=CaseAccessLevel.read_only)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ct = CaseTest()
+        ct.session = get_standard_user_session(self)
+        ct.setUp()
+        self.assertRaises(AssertionError, ct.test_add_update_rm_notes_group)
+        self.assertRaises(AssertionError, ct.test_add_update_delete_note_valid_group_id)
+        self.assertRaises(AssertionError, ct.test_add_note_invalid_group)
+        self.assertRaises(AssertionError, ct.test_add_asset_partial_invalid_analysis_status())
+
+        delete_standard_user_auto(self)
+

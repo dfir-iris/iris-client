@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import warnings
 from typing import Union
 
 from deprecated.classic import deprecated
@@ -73,8 +74,10 @@ class User(object):
         Returns:
           ApiResponse object
         """
-        if kwargs.get('user_id'):
-            raise DeprecationWarning('user_id is deprecated, use user instead')
+        if kwargs.get('user_id') is not None:
+            warnings.warn("\'user_id\' argument is deprecated, use \'user\' instead",
+                          DeprecationWarning)
+            user = kwargs.get('user_id')
 
         if isinstance(user, str):
             return self.lookup_username(username=user)
@@ -91,4 +94,5 @@ class User(object):
             ApiResponse object
         """
         return self._s.pi_get(f'manage/users/restricted/list')
+
 
