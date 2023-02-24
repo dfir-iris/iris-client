@@ -88,9 +88,13 @@ class AdminHelper(object):
             user = kwargs.get('user_id')
 
         if isinstance(user, str):
-            return self._s.pi_get(f'manage/users/lookup/login/{user}')
+            ret = self._s.pi_get(f'manage/users/lookup/login/{user}')
+            if ret.is_error():
+                return ret
+            data = get_data_from_resp(ret)
+            user = parse_api_data(data, 'user_id')
 
-        return self._s.pi_get(f'manage/users/lookup/id/{user}')
+        return self._s.pi_get(f'manage/users/{user}')
 
     def add_user(self, login: str, name: str, password: str, email: str, **kwargs) -> ApiResponse:
         """

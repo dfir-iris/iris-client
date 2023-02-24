@@ -46,7 +46,7 @@ class User(object):
           True if exists else false
         """
         if isinstance(user, int):
-            req = self.get_user(user_id=user)
+            req = self.get_user(user=user)
         else:
             req = self.lookup_username(username=user)
 

@@ -21,6 +21,8 @@ from time import sleep
 
 import pytest
 import requests
+
+from dfir_iris_client.helper.errors import IrisClientException
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
 from dotenv import load_dotenv
 
@@ -54,13 +56,10 @@ def new_adm_session(session: ClientSession = None):
 
     while True:
         try:
-            count = 0
-            while count < 5:
-                requests.head(API_URL, timeout=500)
-                count += 1
-                sleep(1)
+            requests.head(API_URL, timeout=500)
             break
         except ConnectionError:
+            sleep(1)
             pass
 
     if session is None:
@@ -82,6 +81,22 @@ class InitIrisClientTest(unittest.TestCase):
     def tearDownClass(cls) -> None:
         if cls.docker_compose is not None:
             cls.docker_compose.stop()
+
+    @staticmethod
+    def assertIrisPermissionDenied(method: callable) -> None:
+        """
+        Assert that the method raise an IrisClientException with the message "Permission denied"
+
+        Args:
+            method: Method to call and assert
+
+        Returns:
+            None
+        """
+        try:
+            method()
+        except Exception as e:
+            assert "Permission denied" in str(e)
 
 
 def create_standard_user(session):

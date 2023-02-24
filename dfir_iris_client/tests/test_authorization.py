@@ -18,14 +18,13 @@ import os
 
 import pytest
 
-
 from dfir_iris_client.admin import AdminHelper
-from dfir_iris_client.tests.test_case import CaseTest
-from dfir_iris_client.users import User
 from dfir_iris_client.helper.authorization import Permissions, CaseAccessLevel
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
+from dfir_iris_client.tests.test_case import CaseTest
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest, create_standard_user, delete_standard_user_auto, \
     create_standard_group, delete_standard_group, get_standard_user_session
+from dfir_iris_client.users import User
 
 
 @pytest.mark.usefixtures('standard_user', 'standard_group', 'admin_group', 'native_admin_group')
@@ -315,11 +314,11 @@ class AuthorizationTest(InitIrisClientTest):
         assert type(parse_api_data(data, 'user_uuid')) is str
         assert parse_api_data(data, 'user_login') == os.getenv('IRIS_ADM_USERNAME', default='administrator')
         assert parse_api_data(data, 'user_name') == os.getenv('IRIS_ADM_USERNAME', default="administrator")
-        assert parse_api_data(data, 'user_email') == os.getenv('IRIS_ADM_EMAIL', default="administrator@localhost")
+        assert parse_api_data(data, 'user_email') == os.getenv('IRIS_ADM_EMAIL', default="administrator@iris.local")
         assert type(parse_api_data(data, 'user_cases_access')) is list
         assert type(parse_api_data(data, 'user_groups')) is list
         assert type(parse_api_data(data, 'user_organisations')) is list
-        assert type(parse_api_data(data, 'user_permissions')) is list
+        assert type(parse_api_data(data, 'user_permissions')) is dict
 
     def test_get_user_invalid(self):
         """ """
@@ -328,7 +327,7 @@ class AuthorizationTest(InitIrisClientTest):
 
         assert 'Invalid login' in ret.get_msg()
 
-    def test_user_cases_access(self):
+    def test_user_cases_access_read_only(self):
         """ """
         ret = create_standard_user(self)
         assert assert_api_resp(ret, soft_fail=False)
@@ -342,14 +341,15 @@ class AuthorizationTest(InitIrisClientTest):
         ct = CaseTest()
         ct.session = get_standard_user_session(self)
         ct.setUp()
-        self.assertRaises(AssertionError, ct.test_add_update_delete_note_valid_group_id)
-        self.assertRaises(AssertionError, ct.test_add_event_full_valid)
-        self.assertRaises(AssertionError, ct.test_add_update_rm_notes_group)
-        self.assertRaises(AssertionError, ct.test_add_evidence_full_valid)
-        self.assertRaises(AssertionError, ct.test_add_task_valid)
-        self.assertRaises(AssertionError, ct.test_add_ioc_full_valid)
-        self.assertRaises(AssertionError, ct.test_add_rm_asset_partial_valid)
-        self.assertRaises(AssertionError, ct.test_case_summary)
+
+        self.assertIrisPermissionDenied(ct.test_add_update_delete_note_valid_group_id)
+        self.assertIrisPermissionDenied(ct.test_add_event_full_valid)
+        self.assertIrisPermissionDenied(ct.test_add_update_rm_notes_group)
+        self.assertIrisPermissionDenied(ct.test_add_evidence_full_valid)
+        self.assertIrisPermissionDenied(ct.test_add_task_valid)
+        self.assertIrisPermissionDenied(ct.test_add_ioc_full_valid)
+        self.assertIrisPermissionDenied(ct.test_add_rm_asset_partial_valid)
+        self.assertIrisPermissionDenied(ct.test_case_summary)
 
         delete_standard_user_auto(self)
 

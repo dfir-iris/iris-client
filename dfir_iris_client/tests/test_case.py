@@ -719,8 +719,6 @@ class CaseTest(InitIrisClientTest):
         event = get_data_from_resp(ret)
         assert type(event) == dict
 
-        self.failureException(parse_api_data(event, 'event_color'))
-
         assert type(parse_api_data(event, 'event_category_id')) is int
         assert parse_api_data(event, 'event_content') == 'dummy content'
         assert parse_api_data(event, 'event_title') == 'dummy event'
