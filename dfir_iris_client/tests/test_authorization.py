@@ -342,10 +342,14 @@ class AuthorizationTest(InitIrisClientTest):
         ct = CaseTest()
         ct.session = get_standard_user_session(self)
         ct.setUp()
-        self.assertRaises(AssertionError, ct.test_add_update_rm_notes_group)
         self.assertRaises(AssertionError, ct.test_add_update_delete_note_valid_group_id)
-        self.assertRaises(AssertionError, ct.test_add_note_invalid_group)
-        self.assertRaises(AssertionError, ct.test_add_asset_partial_invalid_analysis_status())
+        self.assertRaises(AssertionError, ct.test_add_event_full_valid)
+        self.assertRaises(AssertionError, ct.test_add_update_rm_notes_group)
+        self.assertRaises(AssertionError, ct.test_add_evidence_full_valid)
+        self.assertRaises(AssertionError, ct.test_add_task_valid)
+        self.assertRaises(AssertionError, ct.test_add_ioc_full_valid)
+        self.assertRaises(AssertionError, ct.test_add_rm_asset_partial_valid)
+        self.assertRaises(AssertionError, ct.test_case_summary)
 
         delete_standard_user_auto(self)
 
