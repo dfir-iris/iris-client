@@ -18,7 +18,9 @@ import os
 
 import pytest
 
+
 from dfir_iris_client.admin import AdminHelper
+from dfir_iris_client.users import User
 from dfir_iris_client.helper.authorization import Permissions, CaseAccessLevel
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest, create_standard_user, delete_standard_user_auto, \
@@ -33,6 +35,7 @@ class AuthorizationTest(InitIrisClientTest):
         """ """
         super().setUpClass()
         cls.adm = AdminHelper(cls.session)
+        cls.users = User(cls.session)
 
     def test_has_permission(self):
         """ """
@@ -231,4 +234,16 @@ class AuthorizationTest(InitIrisClientTest):
         assert gca.get('access_level_list')[0].get('value') == CaseAccessLevel.read_only.value
 
         delete_standard_group(self)
-        
+
+    def test_list_users(self):
+        """ """
+        ret = self.users.list_users()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(parse_api_data(data[0], 'user_active')) is bool
+        assert type(parse_api_data(data[0], 'user_id')) is int
+        assert type(parse_api_data(data[0], 'user_name')) is str
+        assert type(parse_api_data(data[0], 'user_login')) is str
+        assert type(parse_api_data(data[0], 'user_uuid')) is str
+

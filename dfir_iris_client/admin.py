@@ -707,20 +707,3 @@ class AdminHelper(object):
 
         return ClientApiError(msg=f'Group {group_name} not found')
 
-    def set_group_permissions(self, group_id: int = None, permissions: List[Permissions] = None) -> ApiResponse:
-        """
-        Set the permissions of a group.
-        Permissions must be a list of known permissions ID from the Permission enum
-
-        Args:
-            group_id: Group ID to set permissions
-            permissions: List of permission from Permission enum
-
-        Returns:
-            ApiResponse object
-        """
-        body = {
-            "",
-            ""
-        }
-        return self._s.pi_post(f'manage/groups/{group_id}/permissions', data=body)

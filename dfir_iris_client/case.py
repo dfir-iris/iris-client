@@ -44,7 +44,7 @@ class Case(object):
 
     def list_cases(self) -> ApiResponse:
         """
-		Returns a list of all the cases
+        Returns a list of all the cases
         
         :return: ApiResponse
 
