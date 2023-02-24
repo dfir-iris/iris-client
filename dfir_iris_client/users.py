@@ -14,6 +14,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from typing import Union
+
+from deprecated.classic import deprecated
+
 from dfir_iris_client.helper.utils import ApiResponse
 
 
@@ -22,34 +26,28 @@ class User(object):
     def __init__(self, session):
         self._s = session
 
+    @deprecated('Use the new user_exists method', version="2.0.0", action="error")
     def user_id_exists(self, user_id: int) -> bool:
-        """
-        Returns True if the user ID exists, else false
+        return self.user_exists(user=user_id)
 
-        Args:
-          user_id: User ID to verify
-
-        Returns:
-          bool - Asset type ID matching provided asset type name
-
-        """
-        req = self.get_user(user_id=user_id)
-
-        return req.is_success()
-
+    @deprecated('Use the new user_exists method', version="2.0.0", action="error")
     def username_exists(self, username: str) -> bool:
+        return self.user_exists(user=username)
+
+    def user_exists(self, user: Union[str, int]) -> bool:
         """
-        Returns True if the username (login) exists, else false.
-        This is equivalent to calling lookup_username() and getting the results.
+        Returns True if the user (login) exists, else false. User ID can also be looked up.
 
         Args:
-          username: User name (login) to lookup
+          user: Login or user ID to lookup
 
         Returns:
           True if exists else false
-
         """
-        req = self.lookup_username(username=username)
+        if isinstance(user, int):
+            req = self.get_user(user_id=user)
+        else:
+            req = self.lookup_username(username=user)
 
         return req.is_success()
 
@@ -58,13 +56,12 @@ class User(object):
         Returns a user ID corresponding to the username, else None
 
         Args:
-          username: User name to lookup
+          username: Username to lookup
 
         Returns:
           ApiResponse
 
         """
-
         return self._s.pi_get(f'manage/users/lookup/login/{username}')
 
     def get_user(self, user_id: int) -> ApiResponse:

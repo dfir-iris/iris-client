@@ -247,3 +247,35 @@ class AuthorizationTest(InitIrisClientTest):
         assert type(parse_api_data(data[0], 'user_login')) is str
         assert type(parse_api_data(data[0], 'user_uuid')) is str
 
+    def test_user_id_exists(self):
+        """ """
+        ret = create_standard_user(self)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        user_id = parse_api_data(data, 'id')
+
+        assert self.users.user_exists(user_id) is True
+
+        delete_standard_user_auto(self)
+
+    def test_user_id_exists_failure(self):
+        """ """
+        assert self.users.user_exists(999999999) is False
+
+    def test_user_name_exists(self):
+        """ """
+        ret = create_standard_user(self)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        user_name = parse_api_data(data, 'user_name')
+
+        assert self.users.user_exists(user_name) is True
+
+        delete_standard_user_auto(self)
+
+    def test_user_name_exists_failure(self):
+        """ """
+        assert self.users.user_exists('nonexistent') is False
+
