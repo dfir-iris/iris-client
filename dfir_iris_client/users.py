@@ -64,18 +64,22 @@ class User(object):
         """
         return self._s.pi_get(f'manage/users/lookup/login/{username}')
 
-    def get_user(self, user_id: int) -> ApiResponse:
+    def get_user(self, user: Union[int, str], **kwargs) -> ApiResponse:
         """Return a user data
 
         Args:
-          user_id: USer ID to verify
+          user: User ID or login of the user to get
 
         Returns:
-          bool - Asset type ID matching provided asset type name
-
+          ApiResponse object
         """
+        if kwargs.get('user_id'):
+            raise DeprecationWarning('user_id is deprecated, use user instead')
 
-        return self._s.pi_get(f'manage/users/lookup/id/{user_id}')
+        if isinstance(user, str):
+            return self.lookup_username(username=user)
+
+        return self._s.pi_get(f'manage/users/lookup/id/{user}')
 
     def list_users(self) -> ApiResponse:
         """
@@ -87,3 +91,4 @@ class User(object):
             ApiResponse object
         """
         return self._s.pi_get(f'manage/users/restricted/list')
+
