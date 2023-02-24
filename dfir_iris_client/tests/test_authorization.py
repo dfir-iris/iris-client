@@ -321,3 +321,10 @@ class AuthorizationTest(InitIrisClientTest):
         assert parse_api_data(data, 'user_login') == self.standard_user.login
 
         delete_standard_user_auto(self)
+
+    def test_get_user_failure(self):
+        """ """
+        ret = self.users.get_user(user=999999999)
+        assert bool(assert_api_resp(ret)) is False
+
+    
