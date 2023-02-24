@@ -19,7 +19,7 @@ import os
 import pytest
 
 from dfir_iris_client.admin import AdminHelper
-from dfir_iris_client.helper.authorization import Permissions
+from dfir_iris_client.helper.authorization import Permissions, CaseAccessLevel
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest, create_standard_user, delete_standard_user_auto, \
     create_standard_group, delete_standard_group
@@ -208,3 +208,27 @@ class AuthorizationTest(InitIrisClientTest):
         assert parse_api_data(data, 'group_members')[0].get('id') == 1
 
         delete_standard_group(self)
+
+    def test_update_group_cases_access(self):
+        """ """
+        ret = create_standard_group(self)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        group_id = parse_api_data(data, 'group_id')
+
+        ret = self.adm.update_group_cases_access(group=group_id, cases_list=[1],
+                                                 access_level=CaseAccessLevel.read_only, auto_follow=False)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'group_name') == self.standard_group.name
+        assert parse_api_data(data, 'group_auto_follow_access_level') == 0
+        assert parse_api_data(data, 'group_cases_access')[0].get('case_id') == 1
+        assert parse_api_data(data, 'group_cases_access')[0].get('access_level') == CaseAccessLevel.read_only.value
+        gca = parse_api_data(data, 'group_cases_access')[0]
+        assert gca.get('access_level_list')[0].get('name') == CaseAccessLevel.read_only.name
+        assert gca.get('access_level_list')[0].get('value') == CaseAccessLevel.read_only.value
+
+        delete_standard_group(self)
+        

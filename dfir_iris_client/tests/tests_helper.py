@@ -119,6 +119,5 @@ def delete_standard_group(session):
     """
     Delete group
     """
-    ret = session.adm.delete_group(session.standard_group.name)
 
-    return ret
+    return session.adm.delete_group(session.standard_group.name)

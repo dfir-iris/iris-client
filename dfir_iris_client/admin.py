@@ -21,7 +21,7 @@ from deprecated import deprecated
 
 from dfir_iris_client.helper.assets_type import AssetTypeHelper
 from dfir_iris_client.customer import Customer
-from dfir_iris_client.helper.authorization import Permissions
+from dfir_iris_client.helper.authorization import Permissions, CaseAccessLevel
 from dfir_iris_client.helper.ioc_types import IocTypeHelper
 from dfir_iris_client.helper.utils import ApiResponse, ClientApiError, get_data_from_resp, parse_api_data, ClientApiData
 
@@ -617,6 +617,44 @@ class AdminHelper(object):
         }
 
         return self._s.pi_post(f'manage/groups/{group}/members/update', data=body)
+
+    def update_group_cases_access(self, group: Union[str, int], cases_list: List[int],
+                                  access_level: CaseAccessLevel, auto_follow: bool = False) -> ApiResponse:
+        """
+        Update the cases access of a group. Cases access must be a list of case IDs. access_level must be
+        a CaseAccessLevel enum.
+        If auto_follow is True, the cases will be automatically added to the group when they are created.
+
+        Args:
+            group: Group ID or group name
+            cases_list: List of case IDs
+            access_level: CaseAccessLevel enum
+            auto_follow: Set to true to auto follow cases new cases
+
+        Returns:
+            ApiResponse object
+        """
+        if isinstance(group, str):
+            lookup = self.lookup_group(group_name=group)
+            if lookup.is_error():
+                return lookup
+
+            group = lookup.get_data().get('group_id')
+
+        if not isinstance(cases_list, list):
+            return ClientApiError(msg=f'Cases access must be a list of case IDs')
+
+        if not all(isinstance(case, int) for case in cases_list):
+            return ClientApiError(msg=f'Cases access must be a list of case IDs')
+
+        body = {
+            "cases_list": cases_list,
+            "access_level": access_level.value,
+            "auto_follow": auto_follow,
+            "cid": 1
+        }
+
+        return self._s.pi_post(f'manage/groups/{group}/cases-access/update', data=body)
 
     def delete_group(self, group: Union[str, int]) -> ApiResponse:
         """
