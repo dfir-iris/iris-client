@@ -394,7 +394,7 @@ class AuthorizationTest(InitIrisClientTest):
         ct.setUp()
 
         # Read access
-        self.assertIrisPermissionDenied(ct.test_get_asset_valid())
+        self.assertIrisPermissionDenied(ct.case.get_case, 1)
 
         # Write access
         self.assertIrisPermissionDenied(ct.test_add_update_delete_note_valid_group_id)

@@ -80,7 +80,7 @@ class InitIrisClientTest(unittest.TestCase):
             cls.docker_compose.stop()
 
     @staticmethod
-    def assertIrisPermissionDenied(method: callable) -> None:
+    def assertIrisPermissionDenied(method: callable, *args, **kwargs) -> None:
         """
         Assert that the method raise an IrisClientException with the message "Permission denied"
 
@@ -91,7 +91,7 @@ class InitIrisClientTest(unittest.TestCase):
             None
         """
         try:
-            method()
+            method(*args, **kwargs)
         except Exception as e:
             assert "Permission denied" in str(e)
 
