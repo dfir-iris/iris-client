@@ -416,3 +416,32 @@ class AuthorizationTest(InitIrisClientTest):
         self.assertIrisPermissionDenied(ct.test_case_summary)
 
         delete_standard_user_auto(self, suffix=suffix)
+
+    def test_get_user_cases_access_trace(self):
+        """ """
+        suffix = get_random_string()
+        ret = create_standard_user(self, suffix=suffix)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        user_id = parse_api_data(data, 'id')
+
+        ret = self.adm.update_user_cases_access(user_id, cases_list=[1], access_level=CaseAccessLevel.deny_all)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ret = self.adm.get_user_cases_access_trace(user_id)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        audit = parse_api_data(data, 'access_audit')
+        print(audit)
+        assert type(audit) is dict
+        assert len(audit) > 0
+        case_audit = audit.get("1")
+        assert type(case_audit) is dict
+        assert 'case_info' in case_audit
+        assert 'user_access' in case_audit
+        assert 'user_effective_access' in case_audit
+        assert case_audit.get('user_effective_access')[0].get('value') == CaseAccessLevel.deny_all.value
+
+        delete_standard_user_auto(self, suffix=suffix)

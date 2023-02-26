@@ -369,7 +369,7 @@ class CaseTest(InitIrisClientTest):
     def test_get_asset_valid(self):
         """ """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='Unspecified')
-        print(ret)
+
         assert bool(assert_api_resp(ret)) is True
         data = get_data_from_resp(ret)
 

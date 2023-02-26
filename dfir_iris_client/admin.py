@@ -199,7 +199,7 @@ class AdminHelper(object):
             user_req = self._s.pi_get(f'manage/users/{user}')
 
         elif isinstance(user, str):
-            user_req = self.get_user(login=user)
+            user_req = self.get_user(user=user)
 
         if user_req.is_error():
             return ClientApiError(msg=f'Unable to fetch user {user} for update',
@@ -310,6 +310,26 @@ class AdminHelper(object):
         }
 
         return self._s.pi_post(f'manage/users/{user}/cases-access/update', data=body)
+
+    def get_user_cases_access_trace(self, user: Union[int, str]) -> ApiResponse:
+        """
+        Get the trace of the cases access of a user.
+
+        Args:
+            user: User ID or login to update
+
+        Returns:
+            ApiResponse
+        """
+        user_req = self.get_user(user=user)
+
+        if user_req.is_error():
+            return ClientApiError(msg=f'Unable to fetch user {user} for update',
+                                  error=user_req.get_msg())
+
+        user = parse_api_data(user_req.get_data(), 'user_id')
+
+        return self._s.pi_get(f'manage/access-control/audit/users/{user}')
 
     def add_ioc_type(self, name: str, description: str, taxonomy: str = None) -> ApiResponse:
         """
