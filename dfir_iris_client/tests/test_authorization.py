@@ -23,7 +23,7 @@ from dfir_iris_client.helper.authorization import Permissions, CaseAccessLevel
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
 from dfir_iris_client.tests.test_case import CaseTest
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest, create_standard_user, delete_standard_user_auto, \
-    create_standard_group, delete_standard_group, get_standard_user_session
+    create_standard_group, delete_standard_group, get_standard_user_session, get_random_string
 from dfir_iris_client.users import User
 
 
@@ -353,3 +353,57 @@ class AuthorizationTest(InitIrisClientTest):
 
         delete_standard_user_auto(self)
 
+    def test_user_cases_access_read_write(self):
+        """ """
+        ret = create_standard_user(self, suffix=get_random_string())
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        user_id = parse_api_data(data, 'id')
+
+        ret = self.adm.update_user_cases_access(user_id, cases_list=[1], access_level=CaseAccessLevel.full_access)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ct = CaseTest()
+        ct.session = get_standard_user_session(self)
+        ct.setUp()
+
+        ct.test_add_update_delete_note_valid_group_id()
+        ct.test_add_event_full_valid()
+        ct.test_add_update_rm_notes_group()
+        ct.test_add_evidence_full_valid()
+        ct.test_add_task_valid()
+        ct.test_add_ioc_full_valid()
+        ct.test_add_rm_asset_partial_valid()
+        ct.test_case_summary()
+
+    def test_user_cases_access_deny(self):
+        """ """
+        suffix = get_random_string()
+        ret = create_standard_user(self, suffix=suffix)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        user_id = parse_api_data(data, 'id')
+
+        ret = self.adm.update_user_cases_access(user_id, cases_list=[1], access_level=CaseAccessLevel.deny_all)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ct = CaseTest()
+        ct.session = get_standard_user_session(self)
+        ct.setUp()
+
+        # Read access
+        self.assertIrisPermissionDenied(ct.test_get_asset_valid())
+
+        # Write access
+        self.assertIrisPermissionDenied(ct.test_add_update_delete_note_valid_group_id)
+        self.assertIrisPermissionDenied(ct.test_add_event_full_valid)
+        self.assertIrisPermissionDenied(ct.test_add_update_rm_notes_group)
+        self.assertIrisPermissionDenied(ct.test_add_evidence_full_valid)
+        self.assertIrisPermissionDenied(ct.test_add_task_valid)
+        self.assertIrisPermissionDenied(ct.test_add_ioc_full_valid)
+        self.assertIrisPermissionDenied(ct.test_add_rm_asset_partial_valid)
+        self.assertIrisPermissionDenied(ct.test_case_summary)
+
+        delete_standard_user_auto(self, suffix=suffix)

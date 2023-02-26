@@ -19,14 +19,11 @@ import unittest
 from pathlib import Path
 from time import sleep
 
-import pytest
 import requests
-
-from dfir_iris_client.helper.errors import IrisClientException
-from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
 from dotenv import load_dotenv
 
 from dfir_iris_client.helper.docker_helper import DockerHelper
+from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
 from dfir_iris_client.session import ClientSession
 
 API_KEY = os.getenv('IRIS_ADM_API_KEY')
@@ -99,14 +96,18 @@ class InitIrisClientTest(unittest.TestCase):
             assert "Permission denied" in str(e)
 
 
-def create_standard_user(session):
+def create_standard_user(session, suffix: str = None):
     """
     Create a new standard user
     """
-    ret = session.adm.add_user(login=session.standard_user.login,
-                               name=session.standard_user.username,
+    login = session.standard_user.login if suffix is None else f"{session.standard_user.login}_{suffix}"
+    username = session.standard_user.username if suffix is None else f"{session.standard_user.username}_{suffix}"
+    email = session.standard_user.email if suffix is None else f"{session.standard_user.email}_{suffix}"
+
+    ret = session.adm.add_user(login=login,
+                               name=username,
                                password=session.standard_user.password,
-                               email=session.standard_user.email)
+                               email=email)
 
     assert assert_api_resp(ret, soft_fail=False)
 
@@ -125,14 +126,15 @@ def get_standard_user_session(session):
                          host=API_URL, ssl_verify=False)
 
 
-def delete_standard_user_auto(session):
+def delete_standard_user_auto(session, suffix: str = None):
     """
     Delete user
     """
-    ret = session.adm.deactivate_user(session.standard_user.login)
+    login = session.standard_user.login if suffix is None else f"{session.standard_user.login}_{suffix}"
+    ret = session.adm.deactivate_user(login)
     assert assert_api_resp(ret, soft_fail=False)
 
-    ret = session.adm.delete_user(session.standard_user.login)
+    ret = session.adm.delete_user(login)
     assert assert_api_resp(ret, soft_fail=False)
 
     return ret
@@ -153,3 +155,14 @@ def delete_standard_group(session):
     """
 
     return session.adm.delete_group(session.standard_group.name)
+
+
+def get_random_string(length: int = 10):
+    """
+    Get a random string
+    """
+    import random
+    import string
+
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for _ in range(length))
