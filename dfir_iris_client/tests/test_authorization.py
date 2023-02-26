@@ -434,7 +434,7 @@ class AuthorizationTest(InitIrisClientTest):
 
         data = get_data_from_resp(ret)
         audit = parse_api_data(data, 'access_audit')
-        print(audit)
+
         assert type(audit) is dict
         assert len(audit) > 0
         case_audit = audit.get("1")
