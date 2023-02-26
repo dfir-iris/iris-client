@@ -17,6 +17,7 @@
 import os
 
 import pytest
+from dfir_iris_client.helper.errors import ApiRequestFailure
 
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.helper.authorization import Permissions, CaseAccessLevel
@@ -443,5 +444,22 @@ class AuthorizationTest(InitIrisClientTest):
         assert 'user_access' in case_audit
         assert 'user_effective_access' in case_audit
         assert case_audit.get('user_effective_access')[0].get('value') == CaseAccessLevel.deny_all.value
+
+        delete_standard_user_auto(self, suffix=suffix)
+
+    def test_recompute_user_cases_access(self):
+        """ """
+        suffix = get_random_string()
+        ret = create_standard_user(self, suffix=suffix)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        user_id = parse_api_data(data, 'id')
+
+        ret = self.adm.update_user_cases_access(user_id, cases_list=[1], access_level=CaseAccessLevel.deny_all)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ret = self.adm.recompute_user_cases_access(user_id)
+        assert assert_api_resp(ret, soft_fail=False)
 
         delete_standard_user_auto(self, suffix=suffix)

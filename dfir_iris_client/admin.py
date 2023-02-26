@@ -331,6 +331,26 @@ class AdminHelper(object):
 
         return self._s.pi_get(f'manage/access-control/audit/users/{user}')
 
+    def recompute_user_cases_access(self, user: Union[int, str]) -> ApiResponse:
+        """
+        Recompute the cases access of a user.
+
+        Args:
+            user: User ID or login to update
+
+        Returns:
+            ApiResponse
+        """
+        user_req = self.get_user(user=user)
+
+        if user_req.is_error():
+            return ClientApiError(msg=f'Unable to fetch user {user} for update',
+                                  error=user_req.get_msg())
+
+        user = parse_api_data(user_req.get_data(), 'user_id')
+
+        return self._s.pi_get(f'manage/access-control/recompute-effective-user-ac/{user}')
+
     def add_ioc_type(self, name: str, description: str, taxonomy: str = None) -> ApiResponse:
         """
         Add a new IOC Type.
