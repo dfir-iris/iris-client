@@ -379,6 +379,7 @@ class AuthorizationTest(InitIrisClientTest):
 
     def test_user_cases_access_deny(self):
         """ """
+        case_id = 1
         suffix = get_random_string()
         ret = create_standard_user(self, suffix=suffix)
         assert assert_api_resp(ret, soft_fail=False)
@@ -386,7 +387,7 @@ class AuthorizationTest(InitIrisClientTest):
         data = get_data_from_resp(ret)
         user_id = parse_api_data(data, 'id')
 
-        ret = self.adm.update_user_cases_access(user_id, cases_list=[1], access_level=CaseAccessLevel.deny_all)
+        ret = self.adm.update_user_cases_access(user_id, cases_list=[case_id], access_level=CaseAccessLevel.deny_all)
         assert assert_api_resp(ret, soft_fail=False)
 
         ct = CaseTest()
@@ -394,7 +395,15 @@ class AuthorizationTest(InitIrisClientTest):
         ct.setUp()
 
         # Read access
-        self.assertIrisPermissionDenied(ct.case.get_case, 1)
+        self.assertIrisPermissionDenied(ct.case.get_case, case_id)
+        self.assertIrisPermissionDenied(ct.case.case_id_exists, case_id)
+        self.assertIrisPermissionDenied(ct.case.get_asset, 1, case_id)
+        self.assertIrisPermissionDenied(ct.case.get_ioc, 1, case_id)
+        self.assertIrisPermissionDenied(ct.case.get_task, 1, case_id)
+        self.assertIrisPermissionDenied(ct.case.get_note, 1, case_id)
+        self.assertIrisPermissionDenied(ct.case.get_event, 1, case_id)
+        self.assertIrisPermissionDenied(ct.case.get_evidence, 1, case_id)
+        self.assertIrisPermissionDenied(ct.case.get_notes_group, 1, case_id)
 
         # Write access
         self.assertIrisPermissionDenied(ct.test_add_update_delete_note_valid_group_id)
