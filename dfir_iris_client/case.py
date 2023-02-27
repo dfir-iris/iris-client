@@ -1685,8 +1685,8 @@ class Case(object):
         return self._s.pi_get(f'datastore/list/tree', cid=cid)
 
     def add_ds_file(self, parent_id: int, file_stream: BinaryIO, filename: str, file_description: str,
-                    file_is_ioc: bool= False, file_is_evidence: bool = False, file_password: str =None,
-                    cid: int = None) -> ApiResponse:
+                    file_is_ioc: bool = False, file_is_evidence: bool = False, file_password: str = None,
+                    file_tags: list[str] = None, cid: int = None) -> ApiResponse:
         """
         Adds a file to the Datastore.
 
@@ -1698,6 +1698,7 @@ class Case(object):
           file_is_evidence: bool - Is the file an evidence
           parent_id: int - Parent ID
           file_password: str - File password
+          file_tags: str - File tags
           cid: int - Case ID
 
         Returns:
@@ -1715,7 +1716,8 @@ class Case(object):
             'file_password': file_password if file_password else '',
             'file_is_ioc': 'y' if file_is_ioc else 'n',
             'file_is_evidence': 'y' if file_is_evidence else 'n',
-            'file_description': file_description
+            'file_description': file_description,
+            'file_tags': ','.join(file_tags) if file_tags else ''
         }
 
         return self._s.pi_post_files(f'datastore/file/add/{parent_id}', files=files, data=data, cid=cid)
