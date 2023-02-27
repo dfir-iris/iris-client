@@ -351,6 +351,15 @@ class AdminHelper(object):
 
         return self._s.pi_get(f'manage/access-control/recompute-effective-user-ac/{user}')
 
+    def recompute_all_users_cases_access(self) -> ApiResponse:
+        """
+        Recompute the cases access of all users.
+
+        Returns:
+            ApiResponse object
+        """
+        return self._s.pi_get(f'manage/access-control/recompute-effective-users-ac')
+
     def add_ioc_type(self, name: str, description: str, taxonomy: str = None) -> ApiResponse:
         """
         Add a new IOC Type.

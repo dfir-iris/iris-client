@@ -463,3 +463,9 @@ class AuthorizationTest(InitIrisClientTest):
         assert assert_api_resp(ret, soft_fail=False)
 
         delete_standard_user_auto(self, suffix=suffix)
+
+    def test_recompute_all_users_cases_access(self):
+        """" """
+        ret = self.adm.recompute_all_users_cases_access()
+        assert assert_api_resp(ret, soft_fail=False)
+
