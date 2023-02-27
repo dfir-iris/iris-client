@@ -1404,7 +1404,7 @@ class Case(object):
 
     def get_evidence(self, evidence_id: int, cid: int = None) -> ApiResponse:
         """
-		Returns an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
+        Returns an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
 
         Args:
           evidence_id: Evidence ID to lookup
@@ -1666,3 +1666,19 @@ class Case(object):
         """
 
         return self._s.pi_post(f'global/tasks/delete/{task_id}', cid=1)
+
+    def list_ds_tree(self, cid: int = None) -> ApiResponse:
+        """
+        Returns the tree of the Datastore
+
+        Args:
+          cid: Case ID
+
+        Returns:
+          APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'datastore/list/tree', cid=cid)
+

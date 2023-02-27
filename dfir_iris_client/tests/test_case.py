@@ -1294,3 +1294,17 @@ class CaseTest(InitIrisClientTest):
         ret = self.case.delete_evidence(evidence_id=111155551111)
         assert assert_api_resp(ret).is_success() is False
 
+    def test_list_ds_tree(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+
+        ds_root = parse_api_data(data, 'd-1')
+        assert ds_root.get('is_root') is True
+        assert ds_root.get('type') == 'directory'
+        assert type(ds_root.get('children')) == dict
+        assert type(ds_root.get('name')) == str
+

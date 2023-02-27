@@ -468,4 +468,3 @@ class AuthorizationTest(InitIrisClientTest):
         """" """
         ret = self.adm.recompute_all_users_cases_access()
         assert assert_api_resp(ret, soft_fail=False)
-
