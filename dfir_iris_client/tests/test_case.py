@@ -15,6 +15,7 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import datetime
+from pathlib import Path
 
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.case import Case
@@ -1307,4 +1308,38 @@ class CaseTest(InitIrisClientTest):
         assert ds_root.get('type') == 'directory'
         assert type(ds_root.get('children')) == dict
         assert type(ds_root.get('name')) == str
+
+    def test_add_ds_file(self):
+        """ """
+        with open(Path(__file__), 'rb') as fin:
+            file_data = fin.read()
+            file_size = len(file_data)
+
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_file(filename="dummy file", file_stream=open(Path(__file__), 'rb'),
+                                    file_description="dummy description", file_is_evidence=True, file_is_ioc=True,
+                                    parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ds_file = get_data_from_resp(ret)
+        assert type(parse_api_data(ds_file, 'file_date_added')) is str
+        assert parse_api_data(ds_file, 'file_description') == 'dummy description'
+        assert type(parse_api_data(ds_file, 'file_sha256')) is str
+        assert type(parse_api_data(ds_file, 'file_uuid')) is str
+        assert parse_api_data(ds_file, 'file_original_name') == 'dummy file'
+        assert parse_api_data(ds_file, 'file_size') == file_size
+        assert parse_api_data(ds_file, 'file_case_id') == 1
+        assert parse_api_data(ds_file, 'file_parent_id') == int(ds_root)
+        assert parse_api_data(ds_file, 'file_is_evidence') is True
+        assert parse_api_data(ds_file, 'file_is_ioc') is True
+
+        ret = self.case.delete_ds_file(parse_api_data(ds_file, 'file_id'))
+        assert assert_api_resp(ret, soft_fail=False)
 

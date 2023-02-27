@@ -17,6 +17,8 @@
 import json
 import warnings
 
+from dfir_iris_client.session import ClientSession
+
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.helper.assets_type import AssetTypeHelper
@@ -30,7 +32,7 @@ from dfir_iris_client.users import User
 from dfir_iris_client.helper.tlps import TlpHelper
 from dfir_iris_client.helper.utils import ClientApiError, ApiResponse
 
-from typing import Union, List
+from typing import Union, List, BinaryIO
 import datetime
 import urllib.parse
 
@@ -38,7 +40,7 @@ import urllib.parse
 class Case(object):
     """Handles the case methods"""
 
-    def __init__(self, session, case_id: int = None):
+    def __init__(self, session: ClientSession, case_id: int = None):
         self._s = session
         self._cid = case_id
 
@@ -1682,3 +1684,54 @@ class Case(object):
 
         return self._s.pi_get(f'datastore/list/tree', cid=cid)
 
+    def add_ds_file(self, parent_id: int, file_stream: BinaryIO, filename: str, file_description: str,
+                    file_is_ioc: bool= False, file_is_evidence: bool = False, file_password: str =None,
+                    cid: int = None) -> ApiResponse:
+        """
+        Adds a file to the Datastore.
+
+        Args:
+          file_stream: BinaryIO - File stream to upload
+          filename: str - File name
+          file_description: str - File description
+          file_is_ioc: bool - Is the file an IOC
+          file_is_evidence: bool - Is the file an evidence
+          parent_id: int - Parent ID
+          file_password: str - File password
+          cid: int - Case ID
+
+        Returns:
+          APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        files = {
+            'file_content': (filename, file_stream)
+        }
+
+        data = {
+            'file_original_name': filename,
+            'file_password': file_password if file_password else '',
+            'file_is_ioc': 'y' if file_is_ioc else 'n',
+            'file_is_evidence': 'y' if file_is_evidence else 'n',
+            'file_description': file_description
+        }
+
+        return self._s.pi_post_files(f'datastore/file/add/{parent_id}', files=files, data=data, cid=cid)
+
+    def delete_ds_file(self, file_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a file from the Datastore.
+
+        Args:
+            file_id: int - File ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_post(f'datastore/file/delete/{file_id}', cid=cid)

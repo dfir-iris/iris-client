@@ -243,3 +243,47 @@ class ClientSession(object):
 
         return ApiResponse(response.content, uri=uri)
 
+    def pi_post_files(self, uri: str, files: dict, data: dict, cid: int) -> ApiResponse:
+        """Issues a POST request in multipart with the provided data.
+
+        Args:
+          uri: URI endpoint to request
+          files: data to be posted. Expect a dict
+          data: data to be posted. Expect a dict
+          cid: Target case ID
+
+        Returns:
+          ApiResponse object
+        """
+        headers = {
+            'Authorization': "Bearer " + self._apikey,
+            'User-Agent': self._agent
+        }
+
+        if cid is None:
+            raise ValueError('cid is mandatory when uploading files')
+
+        uri = f"{uri}?cid={cid}"
+
+        try:
+
+            response = requests.post(url=self._pi_uri(uri),
+                                     files=files,
+                                     data=data,
+                                     verify=self._ssl_verify,
+                                     timeout=self._timeout,
+                                     headers=headers)
+
+            print(response.request.body)
+
+        except requests.exceptions.ConnectionError as e:
+            raise IrisClientException("Unable to connect to endpoint {host}. "
+                                      "Please check URL and ports. {e}".format(host=uri, e=e.__str__()))
+
+        if response.status_code == 500:
+            log.critical('Server replied 500')
+            raise IrisClientException("Server side error. Please check server logs for more information")
+
+        log.debug(f'Server replied with status {response.status_code}')
+
+        return ApiResponse(response.content, uri=uri)
