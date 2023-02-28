@@ -1343,7 +1343,7 @@ class CaseTest(InitIrisClientTest):
         ret = self.case.delete_ds_file(parse_api_data(ds_file, 'file_id'))
         assert assert_api_resp(ret, soft_fail=False)
 
-    def test_add_ds_file_invalid(self):
+    def test_add_ds_file_invalid_stream(self):
         """ """
         ret = self.case.list_ds_tree()
         assert assert_api_resp(ret, soft_fail=False)
@@ -1359,7 +1359,24 @@ class CaseTest(InitIrisClientTest):
         assert ret.is_error() is True
         assert ret.get_data()[0] == "No file provided"
 
-    def test_download_ds_file(self):
+    def test_add_ds_file_invalid_root(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+        ds_root = int(ds_root) + 100
+
+        ret = self.case.add_ds_file(filename="dummy file", file_stream=None,
+                                    file_description="dummy description", file_is_evidence=True, file_is_ioc=True,
+                                    parent_id=ds_root, cid=1)
+
+        assert ret.is_error() is True
+        assert ret.get_msg() == "Invalid path node for this case"
+
+    def test_download_ds_file_valid(self):
         """ """
         with open(Path(__file__), 'rb') as fin:
             file_data = fin.read()
