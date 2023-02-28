@@ -1481,3 +1481,9 @@ class CaseTest(InitIrisClientTest):
                                          new_name="dummy folder renamed")
 
         assert ret.is_error() is True
+
+    def test_delete_ds_folder_invalid(self):
+        """ """
+        ret = self.case.delete_ds_folder(999999999)
+
+        assert ret.is_error() is True
