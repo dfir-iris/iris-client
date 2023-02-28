@@ -1756,3 +1756,63 @@ class Case(object):
 
         return self._s.pi_get(f'datastore/file/view/{file_id}', cid=cid, no_wrap=True)
 
+    def move_ds_file(self, file_id: int, parent_id: int, cid: int = None) -> ApiResponse:
+        """
+        Moves a file from a folder to another.
+
+        Args:
+            file_id: int - File ID
+            parent_id: int - New parent ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'destination-node': parent_id
+        }
+
+        return self._s.pi_post(f'datastore/file/move/{file_id}', data=data, cid=cid)
+
+    def add_ds_folder(self, parent_id: int, folder_name: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a folder to the Datastore.
+
+        Args:
+            parent_id: int - Parent ID
+            folder_name: str - Folder name
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'parent_id': parent_id,
+            'folder_name': folder_name
+        }
+
+        return self._s.pi_post(f'datastore/folder/add', data=data, cid=cid)
+
+    def delete_ds_folder(self, folder_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a folder from the Datastore.
+
+        Args:
+            folder_id: int - Folder ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_post(f'datastore/folder/delete/{folder_id}', cid=cid)
+
+    
