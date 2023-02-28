@@ -1793,7 +1793,7 @@ class Case(object):
         cid = self._assert_cid(cid)
 
         data = {
-            'parent_id': parent_id,
+            'parent_node': parent_id,
             'folder_name': folder_name
         }
 
@@ -1815,4 +1815,3 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/folder/delete/{folder_id}', cid=cid)
 
-    
