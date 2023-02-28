@@ -1370,6 +1370,7 @@ class CaseTest(InitIrisClientTest):
         data = ret.content
         assert type(data) == bytes
         assert data == file_data
+        assert file_size == len(data)
 
         ret = self.case.delete_ds_file(file_id)
         assert assert_api_resp(ret, soft_fail=False)
