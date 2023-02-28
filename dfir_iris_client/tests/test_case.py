@@ -1416,7 +1416,7 @@ class CaseTest(InitIrisClientTest):
         assert ret.status_code == 400
         assert parse_api_data(json.loads(ret.content), 'message') == "Unable to get requested file ID"
 
-    def test_add_ds_folder(self):
+    def test_add_ds_folder_valid(self):
         """ """
         ret = self.case.list_ds_tree()
         assert assert_api_resp(ret, soft_fail=False)
@@ -1431,7 +1431,7 @@ class CaseTest(InitIrisClientTest):
         assert assert_api_resp(ret, soft_fail=False)
 
         ds_folder = get_data_from_resp(ret)
-        print(ds_folder)
+
         assert parse_api_data(ds_folder, 'path_case_id') == 1
         assert type(parse_api_data(ds_folder, 'path_id')) is int
         assert type(parse_api_data(ds_folder, 'path_uuid')) is str
@@ -1440,3 +1440,11 @@ class CaseTest(InitIrisClientTest):
 
         ret = self.case.delete_ds_folder(parse_api_data(ds_folder, 'path_id'))
         assert assert_api_resp(ret, soft_fail=False)
+
+    def test_add_ds_folder_invalid_root(self):
+        """ """
+        ret = self.case.add_ds_folder(folder_name="dummy folder",
+                                      parent_id=999999999, cid=1)
+
+        assert ret.is_error() is True
+
