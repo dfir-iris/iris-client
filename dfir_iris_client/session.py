@@ -15,8 +15,12 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import logging as logger
+from ctypes import Union
+from typing import Union
+
 import requests
 from packaging.version import Version
+from requests import Response
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from dfir_iris_client.helper.errors import IrisClientException
@@ -155,21 +159,22 @@ class ClientSession(object):
         """
         return self._host + '/' + uri
 
-    def pi_get(self, uri: str, cid: int = None) -> ApiResponse:
+    def pi_get(self, uri: str, cid: int = None, no_wrap: bool = False) -> Union[ApiResponse, Response]:
         """Adds the CID information needed by the server when issuing GET requests
         and then issue the request itself.
 
         Args:
           uri: URI endpoint to request
+          no_wrap: Do not wrap the response in ApiResponse object
           cid: Target case ID
 
         Returns:
-          ApiResponse object
+          ApiResponse or Response object
         """
         if cid:
             uri = f"{uri}?cid={cid}"
 
-        return self._pi_request(uri, type='GET')
+        return self._pi_request(uri, type='GET', no_wrap=no_wrap)
 
     def pi_post(self, uri: str, data: dict = None, cid: int = None) -> ApiResponse:
         """Issues a POSt request with the provided data. Simple wrapper around _pi_request
@@ -188,7 +193,8 @@ class ClientSession(object):
 
         return self._pi_request(uri, type='POST', data=data)
 
-    def _pi_request(self, uri: str, type: str = None, data: dict = None) -> ApiResponse:
+    def _pi_request(self, uri: str, type: str = None, data: dict = None,
+                    no_wrap: bool = False) -> Union[ApiResponse, Response]:
         """Make a request (GET or POST) and handle the errors. The authentication header is added.
 
         Args:
@@ -197,7 +203,7 @@ class ClientSession(object):
           data: dict to send if request type is POST
 
         Returns:
-          ApiResponse object
+          ApiResponse or Response object
 
         """
 
@@ -241,7 +247,7 @@ class ClientSession(object):
 
         log.debug(f'Server replied with status {response.status_code}')
 
-        return ApiResponse(response.content, uri=uri)
+        return ApiResponse(response.content, uri=uri) if not no_wrap else response
 
     def pi_post_files(self, uri: str, files: dict, data: dict, cid: int) -> ApiResponse:
         """Issues a POST request in multipart with the provided data.
@@ -273,8 +279,6 @@ class ClientSession(object):
                                      verify=self._ssl_verify,
                                      timeout=self._timeout,
                                      headers=headers)
-
-            print(response.request.body)
 
         except requests.exceptions.ConnectionError as e:
             raise IrisClientException("Unable to connect to endpoint {host}. "

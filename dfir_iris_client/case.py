@@ -17,6 +17,8 @@
 import json
 import warnings
 
+from requests import Response
+
 from dfir_iris_client.session import ClientSession
 
 from dfir_iris_client.customer import Customer
@@ -1737,3 +1739,20 @@ class Case(object):
         cid = self._assert_cid(cid)
 
         return self._s.pi_post(f'datastore/file/delete/{file_id}', cid=cid)
+
+    def download_ds_file(self, file_id: int, cid: int = None) -> Response:
+        """
+        Downloads a file from the Datastore.
+
+        Args:
+            file_id: int - File ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'datastore/file/view/{file_id}', cid=cid, no_wrap=True)
+
