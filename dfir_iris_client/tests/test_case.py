@@ -15,6 +15,7 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import datetime
+import json
 from pathlib import Path
 
 from dfir_iris_client.admin import AdminHelper
@@ -1407,3 +1408,10 @@ class CaseTest(InitIrisClientTest):
 
         ret = self.case.delete_ds_file(file_id)
         assert assert_api_resp(ret, soft_fail=False)
+
+    def test_download_ds_file_invalid(self):
+        """ """
+        ret = self.case.download_ds_file(file_id=99999999)
+
+        assert ret.status_code == 400
+        assert parse_api_data(json.loads(ret.content), 'message') == "Unable to get requested file ID"
