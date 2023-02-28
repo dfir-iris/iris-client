@@ -1815,3 +1815,25 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/folder/delete/{folder_id}', cid=cid)
 
+    def rename_ds_folder(self, folder_id: int, new_name: str, cid: int = None) -> ApiResponse:
+        """
+        Renames a folder in the Datastore.
+
+        Args:
+            folder_id: int - Folder ID
+            new_name: str - New name
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'folder_name': new_name,
+            'parent_node': folder_id
+        }
+
+        return self._s.pi_post(f'datastore/folder/rename/{folder_id}', data=data, cid=cid)
+

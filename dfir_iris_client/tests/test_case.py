@@ -1448,3 +1448,36 @@ class CaseTest(InitIrisClientTest):
 
         assert ret.is_error() is True
 
+    def test_rename_ds_folder_valid(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_folder(folder_name="dummy folder",
+                                      parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ds_folder = get_data_from_resp(ret)
+
+        ret = self.case.rename_ds_folder(folder_id=parse_api_data(ds_folder, 'path_id'),
+                                         new_name="dummy folder renamed")
+
+        assert assert_api_resp(ret, soft_fail=False)
+        data = get_data_from_resp(ret)
+
+        assert parse_api_data(data, 'path_name') == "dummy folder renamed"
+
+        ret = self.case.delete_ds_folder(parse_api_data(ds_folder, 'path_id'))
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_rename_ds_folder_invalid(self):
+        """ """
+        ret = self.case.rename_ds_folder(folder_id=999999999,
+                                         new_name="dummy folder renamed")
+
+        assert ret.is_error() is True
