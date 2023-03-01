@@ -1515,6 +1515,17 @@ class CaseTest(InitIrisClientTest):
         assert assert_api_resp(ret, soft_fail=False)
         data = get_data_from_resp(ret)
 
+        assert parse_api_data(data, 'added_by_user_id') == 1
+        assert parse_api_data(data, 'file_case_id') == 1
+        assert type(parse_api_data(data, 'file_date_added')) is str
+        assert type(parse_api_data(data, 'file_password')) is str
+        assert type(parse_api_data(data, 'file_sha256')) is str
+        assert type(parse_api_data(data, 'file_tags')) is str
+        assert type(parse_api_data(data, 'file_uuid')) is str
+        assert type(parse_api_data(data, 'file_id')) is int
+        assert parse_api_data(data, 'file_parent_id') == int(ds_root)
+        assert parse_api_data(data, 'file_is_evidence') is False
+
         assert parse_api_data(data, 'file_original_name') == "dummy file"
         assert parse_api_data(data, 'file_description') == "dummy description"
         assert parse_api_data(data, 'file_size') == file_size
@@ -1522,3 +1533,4 @@ class CaseTest(InitIrisClientTest):
 
         ret = self.case.delete_ds_file(file_id)
         assert assert_api_resp(ret, soft_fail=False)
+
