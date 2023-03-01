@@ -1724,6 +1724,55 @@ class Case(object):
 
         return self._s.pi_post_files(f'datastore/file/add/{parent_id}', files=files, data=data, cid=cid)
 
+    def get_ds_file_info(self, file_id: int, cid: int = None) -> ApiResponse:
+        """
+        Returns information from file of the Datastore.
+
+        Args:
+            file_id: int - File ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'datastore/file/info/{file_id}', cid=cid)
+
+    def update_ds_file(self, file_id: int, file_description: str, file_is_ioc: bool = False,
+                       file_is_evidence: bool = False, file_password: str = None, file_tags: list[str] = None,
+                       cid: int = None) -> ApiResponse:
+        """
+        Updates a file in the Datastore.
+
+        Args:
+            file_id: int - File ID
+            file_description: str - File description
+            file_is_ioc: bool - Is the file an IOC
+            file_is_evidence: bool - Is the file an evidence
+            file_password: str - File password
+            file_tags: str - File tags
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        ds_file = self.get_ds_file(file_id=file_id, cid=cid)
+
+        data = {
+            'file_password': file_password if file_password else '',
+            'file_is_ioc': 'y' if file_is_ioc else 'n',
+            'file_is_evidence': 'y' if file_is_evidence else 'n',
+            'file_description': file_description,
+            'file_tags': ','.join(file_tags) if file_tags else ''
+        }
+
+        return self._s.pi_post(f'datastore/file/update/{file_id}', data=data, cid=cid)
+
     def delete_ds_file(self, file_id: int, cid: int = None) -> ApiResponse:
         """
         Deletes a file from the Datastore.
