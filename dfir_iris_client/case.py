@@ -1899,3 +1899,24 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/folder/rename/{folder_id}', data=data, cid=cid)
 
+    def move_ds_folder(self, folder_id: int, parent_id: int, cid: int = None) -> ApiResponse:
+        """
+        Moves a folder from a folder to another.
+
+        Args:
+            folder_id: int - Folder ID
+            parent_id: int - New parent ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'destination-node': parent_id
+        }
+
+        return self._s.pi_post(f'datastore/folder/move/{folder_id}', data=data, cid=cid)
+

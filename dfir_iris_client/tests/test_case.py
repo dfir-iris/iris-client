@@ -1538,7 +1538,6 @@ class CaseTest(InitIrisClientTest):
         """ """
         with open(Path(__file__), 'rb') as fin:
             file_data = fin.read()
-            file_size = len(file_data)
 
         ret = self.case.list_ds_tree()
         assert assert_api_resp(ret, soft_fail=False)
@@ -1570,3 +1569,39 @@ class CaseTest(InitIrisClientTest):
         ret = self.case.delete_ds_file(file_id)
         assert assert_api_resp(ret, soft_fail=False)
 
+    def test_move_ds_folder(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_folder(folder_name="dummy folder",
+                                      parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+        ds_folder = get_data_from_resp(ret)
+
+        ret = self.case.add_ds_folder(folder_name="dummy parent",
+                                      parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        new_parent = parse_api_data(data, 'path_parent_id')
+
+        ret = self.case.move_ds_folder(folder_id=parse_api_data(ds_folder, 'path_id'),
+                                       parent_id=new_parent)
+
+        assert assert_api_resp(ret, soft_fail=False)
+        data = get_data_from_resp(ret)
+
+        assert parse_api_data(data, 'path_parent_id') == int(new_parent)
+
+        ret = self.case.delete_ds_folder(parse_api_data(ds_folder, 'path_id'))
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ret = self.case.delete_ds_folder(new_parent)
+        assert assert_api_resp(ret, soft_fail=False)
