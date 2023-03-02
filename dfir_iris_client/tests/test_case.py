@@ -146,6 +146,18 @@ class CaseTest(InitIrisClientTest):
         ret = self.case.reopen_case(case_id=1)
         assert bool(assert_api_resp(ret)) is True
 
+    def test_update_case(self):
+        """ """
+        ret = self.case.update_case(case_id=1, case_name='Dummy name', case_description='Dummy description',
+                                    case_tags=['tag1', 'tag2'])
+        assert bool(assert_api_resp(ret)) is True
+
+        ret = self.case.get_case(cid=1)
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'case_name') == '#1 - Dummy name'
+        assert parse_api_data(data, 'case_description') == 'Dummy description'
+        assert parse_api_data(data, 'case_tags') == ",".join(['tag1', 'tag2'])
+
     def test_case_trigger_manual_hook_valid(self):
         ret = self.case.trigger_manual_hook('iris_check_module::on_manual_trigger_case',
                                             module_name='iris_check_module',

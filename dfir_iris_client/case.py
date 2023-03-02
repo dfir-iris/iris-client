@@ -132,6 +132,69 @@ class Case(object):
 
         return resp
 
+    def update_case(self, case_id: int, case_name: str = None, case_description: str = None,
+                    soc_id: str = None, case_tags: List[str] = None,
+                    custom_attributes: dict = None) -> ApiResponse:
+        """Updates an existing case. If create_customer is set to true and the customer doesn't exist,
+        it is created. Otherwise an error is returned.
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
+
+        If a value is not provided, it is not updated.
+
+        Args:
+          case_id: ID of the case to update
+          case_name: case_name
+          case_description: Description of the case
+          case_tags: List of tags to add to the case
+          soc_id: SOC Number
+          custom_attributes: Custom attributes of the case
+
+        Returns:
+            ApiResponse object
+
+            """
+
+        case = self.get_case(case_id)
+        if case.is_error():
+            return case
+
+        case_data = get_data_from_resp(case)
+
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
+        if custom_attributes is None:
+            custom_attributes = case_data.get('custom_attributes')
+
+        if case_description is None:
+            case_description = case_data.get('case_description')
+
+        if soc_id is None:
+            soc_id = case_data.get('case_soc_id')
+
+        if case_name is None:
+            case_name = case_data.get('case_name')
+
+        if case_tags is None:
+            case_tags = case_data.get('case_tags')
+        else:
+            case_tags = ",".join(case_tags)
+
+        body = {
+            "case_name": case_name,
+            "case_soc_id": soc_id,
+            "case_description": case_description,
+            "custom_attributes": custom_attributes,
+            "case_tags": case_tags
+        }
+
+        resp = self._s.pi_post(f'manage/cases/update', data=body, cid=case_id)
+
+        return resp
+
     def reopen_case(self, case_id: int) -> ApiResponse:
         """Reopens a case based on its ID
 
