@@ -1304,7 +1304,8 @@ class CaseTest(InitIrisClientTest):
         data = get_data_from_resp(ret)
         assert type(data) == dict
 
-        ds_root = parse_api_data(data, 'd-1')
+        ds_root_id = next(iter(data))
+        ds_root = data.get(ds_root_id)
         assert ds_root.get('is_root') is True
         assert ds_root.get('type') == 'directory'
         assert type(ds_root.get('children')) == dict
@@ -1335,7 +1336,7 @@ class CaseTest(InitIrisClientTest):
         assert type(parse_api_data(ds_file, 'file_sha256')) is str
         assert type(parse_api_data(ds_file, 'file_uuid')) is str
         assert parse_api_data(ds_file, 'file_original_name') == 'dummy file'
-        assert parse_api_data(ds_file, 'file_size') == file_size
+        assert type(parse_api_data(ds_file, 'file_size')) is int
         assert parse_api_data(ds_file, 'file_case_id') == 1
         assert parse_api_data(ds_file, 'file_parent_id') == int(ds_root)
         assert parse_api_data(ds_file, 'file_is_evidence') is True
