@@ -1488,7 +1488,7 @@ class CaseTest(InitIrisClientTest):
 
         assert ret.is_error() is True
 
-    def test_get_ds_file_info(self):
+    def test_get_ds_file_info_valid(self):
         """ """
         with open(Path(__file__), 'rb') as fin:
             file_data = fin.read()
@@ -1534,11 +1534,14 @@ class CaseTest(InitIrisClientTest):
         ret = self.case.delete_ds_file(file_id)
         assert assert_api_resp(ret, soft_fail=False)
 
-    def test_update_ds_file(self):
+    def test_get_ds_file_info_invalid(self):
         """ """
-        with open(Path(__file__), 'rb') as fin:
-            file_data = fin.read()
+        ret = self.case.get_ds_file_info(file_id=999999999)
 
+        assert ret.is_error() is True
+
+    def test_update_ds_file_valid(self):
+        """ """
         ret = self.case.list_ds_tree()
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1560,7 +1563,6 @@ class CaseTest(InitIrisClientTest):
 
         assert assert_api_resp(ret, soft_fail=False)
         data = get_data_from_resp(ret)
-        print(data)
 
         assert parse_api_data(data, 'file_description') == "dummy description updated"
         assert parse_api_data(data, 'file_is_evidence') is True
@@ -1569,7 +1571,14 @@ class CaseTest(InitIrisClientTest):
         ret = self.case.delete_ds_file(file_id)
         assert assert_api_resp(ret, soft_fail=False)
 
-    def test_move_ds_folder(self):
+    def test_update_ds_file_invalid(self):
+        """ """
+        ret = self.case.update_ds_file(file_id=999999999, file_description="dummy description updated",
+                                       file_is_evidence=True, file_is_ioc=True)
+
+        assert ret.is_error() is True
+
+    def test_move_ds_folder_valid(self):
         """ """
         ret = self.case.list_ds_tree()
         assert assert_api_resp(ret, soft_fail=False)
