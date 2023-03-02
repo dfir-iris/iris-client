@@ -1534,3 +1534,39 @@ class CaseTest(InitIrisClientTest):
         ret = self.case.delete_ds_file(file_id)
         assert assert_api_resp(ret, soft_fail=False)
 
+    def test_update_ds_file(self):
+        """ """
+        with open(Path(__file__), 'rb') as fin:
+            file_data = fin.read()
+            file_size = len(file_data)
+
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_file(filename="dummy file", file_stream=open(Path(__file__), 'rb'),
+                                    file_description="dummy description", file_is_evidence=False, file_is_ioc=False,
+                                    parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ds_file = get_data_from_resp(ret)
+        file_id = parse_api_data(ds_file, 'file_id')
+
+        ret = self.case.update_ds_file(file_id=file_id, file_description="dummy description updated",
+                                       file_is_evidence=True, file_is_ioc=True)
+
+        assert assert_api_resp(ret, soft_fail=False)
+        data = get_data_from_resp(ret)
+        print(data)
+
+        assert parse_api_data(data, 'file_description') == "dummy description updated"
+        assert parse_api_data(data, 'file_is_evidence') is True
+        assert parse_api_data(data, 'file_is_ioc') is True
+
+        ret = self.case.delete_ds_file(file_id)
+        assert assert_api_resp(ret, soft_fail=False)
+

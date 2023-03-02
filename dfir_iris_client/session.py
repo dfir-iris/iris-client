@@ -249,7 +249,7 @@ class ClientSession(object):
 
         return ApiResponse(response.content, uri=uri) if not no_wrap else response
 
-    def pi_post_files(self, uri: str, files: dict, data: dict, cid: int) -> ApiResponse:
+    def pi_post_files(self, uri: str, files: dict = None, data: dict = None, cid: int = None) -> ApiResponse:
         """Issues a POST request in multipart with the provided data.
 
         Args:

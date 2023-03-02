@@ -32,7 +32,7 @@ from dfir_iris_client.helper.events_categories import EventCategoryHelper
 from dfir_iris_client.helper.task_status import TaskStatusHelper
 from dfir_iris_client.users import User
 from dfir_iris_client.helper.tlps import TlpHelper
-from dfir_iris_client.helper.utils import ClientApiError, ApiResponse
+from dfir_iris_client.helper.utils import ClientApiError, ApiResponse, get_data_from_resp
 
 from typing import Union, List, BinaryIO
 import datetime
@@ -1740,14 +1740,16 @@ class Case(object):
 
         return self._s.pi_get(f'datastore/file/info/{file_id}', cid=cid)
 
-    def update_ds_file(self, file_id: int, file_description: str, file_is_ioc: bool = False,
-                       file_is_evidence: bool = False, file_password: str = None, file_tags: list[str] = None,
+    def update_ds_file(self, file_id: int, file_name: str = None, file_description: str = None,
+                       file_is_ioc: bool = False, file_is_evidence: bool = False, file_password: str = None,
+                       file_tags: list[str] = None,
                        cid: int = None) -> ApiResponse:
         """
         Updates a file in the Datastore.
 
         Args:
             file_id: int - File ID
+            file_name: str - File name
             file_description: str - File description
             file_is_ioc: bool - Is the file an IOC
             file_is_evidence: bool - Is the file an evidence
@@ -1761,17 +1763,28 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        ds_file = self.get_ds_file(file_id=file_id, cid=cid)
+        ds_file_req = self.get_ds_file_info(file_id=file_id, cid=cid)
+        if ds_file_req.is_error():
+            return ds_file_req
+
+        ds_file = get_data_from_resp(ds_file_req)
+
+        if file_is_ioc is None:
+            file_is_ioc = ds_file.get('file_is_ioc')
+
+        if file_is_evidence is None:
+            file_is_evidence = ds_file.get('file_is_evidence')
 
         data = {
-            'file_password': file_password if file_password else '',
+            'file_original_name': file_name if file_name is not None else ds_file.get('file_original_name'),
+            'file_password': file_password if file_password is not None else ds_file.get('file_password'),
             'file_is_ioc': 'y' if file_is_ioc else 'n',
             'file_is_evidence': 'y' if file_is_evidence else 'n',
-            'file_description': file_description,
-            'file_tags': ','.join(file_tags) if file_tags else ''
+            'file_description': file_description if file_description is not None else ds_file.get('file_description'),
+            'file_tags': ','.join(file_tags) if file_tags is not None else ds_file.get('file_tags')
         }
 
-        return self._s.pi_post(f'datastore/file/update/{file_id}', data=data, cid=cid)
+        return self._s.pi_post_files(f'datastore/file/update/{file_id}', data=data, cid=cid)
 
     def delete_ds_file(self, file_id: int, cid: int = None) -> ApiResponse:
         """
