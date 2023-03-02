@@ -1605,3 +1605,13 @@ class CaseTest(InitIrisClientTest):
 
         ret = self.case.delete_ds_folder(new_parent)
         assert assert_api_resp(ret, soft_fail=False)
+
+    def test_move_ds_folder_invalid_initial_folder(self):
+        """ """
+        ret = self.case.move_ds_folder(folder_id=999999999, parent_id=1)
+        assert ret.is_error() is True
+
+    def test_move_ds_folder_invalid_new_parent(self):
+        """ """
+        ret = self.case.move_ds_folder(folder_id=1, parent_id=999999999)
+        assert ret.is_error() is True
