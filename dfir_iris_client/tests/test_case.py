@@ -18,6 +18,8 @@ import datetime
 import json
 from pathlib import Path
 
+import pytest
+
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.case import Case
 from dfir_iris_client.customer import Customer
@@ -26,6 +28,7 @@ from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, p
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
+@pytest.mark.usefixtures('standard_case')
 class CaseTest(InitIrisClientTest):
     """ """
 
@@ -37,8 +40,10 @@ class CaseTest(InitIrisClientTest):
 
     def test_add_rm_case_with_existing_customer_id(self):
         """ """
-        ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer=1, soc_id='dummy', create_customer=False)
+        ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_description=self.standard_case.case_description,
+                                 case_customer=self.standard_case.case_customer_id, soc_id=self.standard_case.soc_id,
+                                 create_customer=False)
 
         assert bool(assert_api_resp(ret)) is True
 
@@ -51,8 +56,10 @@ class CaseTest(InitIrisClientTest):
 
     def test_add_rm_case_with_existing_customer_name(self):
         """ """
-        ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer="IrisInitialClient", soc_id='dummy', custom_attributes={},
+        ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_description=self.standard_case.case_description,
+                                 case_customer=self.standard_case.case_customer, soc_id=self.standard_case.soc_id,
+                                 custom_attributes={},
                                  create_customer=False)
 
         assert bool(assert_api_resp(ret)) is True
@@ -66,24 +73,29 @@ class CaseTest(InitIrisClientTest):
 
     def test_add_case_with_faulty_customer_id(self):
         """ """
-        ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer=15551115, soc_id='dummy',  custom_attributes={}, create_customer=False)
+        ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_description=self.standard_case.case_description,
+                                 case_customer=15551115,  soc_id=self.standard_case.soc_id,
+                                 custom_attributes={}, create_customer=False)
 
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_case_with_faulty_customer_name(self):
         """ """
-        ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer="Dummy dummy 123", soc_id='dummy', custom_attributes={},
+        ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_description=self.standard_case.case_description,
+                                 case_customer="Dummy dummy 123", soc_id=self.standard_case.soc_id,
+                                 custom_attributes={},
                                  create_customer=False)
 
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_case_create_customer_name(self):
         """ """
-        ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
+        ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_description=self.standard_case.case_description,
                                  case_customer="Dummy dummy 123",  custom_attributes={"Test":{"Test":"Test"}},
-                                 soc_id='dummy', create_customer=True)
+                                 soc_id=self.standard_case.soc_id, create_customer=True)
 
         assert bool(assert_api_resp(ret)) is True
 

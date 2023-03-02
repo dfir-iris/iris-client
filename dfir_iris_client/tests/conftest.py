@@ -42,6 +42,18 @@ class Group(object):
         self.group_auto_follow_access_level = kwargs.get('group_auto_follow_access_level', 0)
 
 
+class Case(object):
+    """Case helper class """
+
+    def __init__(self, **kwargs):
+        """ """
+        self.case_name = kwargs.get('case_name')
+        self.case_description = kwargs.get('case_description')
+        self.case_customer = kwargs.get('case_customer')
+        self.case_customer_id = kwargs.get('case_customer_id')
+        self.soc_id = kwargs.get('soc_id')
+
+
 @pytest.fixture(scope="class")
 def standard_user(request):
     """Create a standard user for testing """
@@ -87,3 +99,16 @@ def native_admin_group(request):
     group.group_auto_follow_access_level = 4
 
     request.cls.native_admin_group = group
+
+
+@pytest.fixture(scope="class")
+def standard_case(request):
+    """Create a standard case for testing"""
+    case = Case()
+    case.case_name = 'Administrators'
+    case.case_description = 'Administrators'
+    case.case_customer = "IrisInitialClient"
+    case.case_customer_id = 1
+    case.soc_id = "Dummy SOC ID"
+
+    request.cls.standard_case = case
