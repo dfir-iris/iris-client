@@ -134,6 +134,18 @@ class CaseTest(InitIrisClientTest):
         ret = self.case.case_id_exists(cid=1111155555511111)
         assert ret is False
 
+    def test_close_case(self):
+        """ """
+        ret = self.case.close_case(case_id=1)
+        assert bool(assert_api_resp(ret)) is True
+
+        ret = self.case.get_case(cid=1)
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'close_date') != ''
+
+        ret = self.case.reopen_case(case_id=1)
+        assert bool(assert_api_resp(ret)) is True
+
     def test_case_trigger_manual_hook_valid(self):
         ret = self.case.trigger_manual_hook('iris_check_module::on_manual_trigger_case',
                                             module_name='iris_check_module',

@@ -132,6 +132,34 @@ class Case(object):
 
         return resp
 
+    def reopen_case(self, case_id: int) -> ApiResponse:
+        """Reopens a case based on its ID
+
+        Args:
+          case_id: Case ID to open
+
+        Returns:
+          ApiResponse
+
+        """
+        resp = self._s.pi_post(f'manage/cases/reopen/{case_id}', cid=case_id)
+
+        return resp
+
+    def close_case(self, case_id: int) -> ApiResponse:
+        """Closes a case based on its ID
+
+        Args:
+          case_id: Case ID to close
+
+        Returns:
+          ApiResponse
+
+        """
+        resp = self._s.pi_post(f'manage/cases/close/{case_id}', cid=case_id)
+
+        return resp
+
     def delete_case(self, cid: int) -> ApiResponse:
         """Deletes a case based on its ID. All objects associated to the case are deleted. This includes :
             - assets,
