@@ -1173,7 +1173,8 @@ class Case(object):
                      raw_content: str = None, source: str = None, linked_assets: list = None, linked_iocs: list = None,
                      category: Union[int, str] = None, tags: list = None,
                      color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
-                     custom_attributes: dict = None, cid: int = None, timezone_string: str = None) -> ApiResponse:
+                     custom_attributes: dict = None, cid: int = None, timezone_string: str = None,
+                     sync_ioc_with_assets: bool = False) -> ApiResponse:
         """
         Updates an event of the timeline. event_id needs to be an existing event in the target case.
         
@@ -1202,6 +1203,7 @@ class Case(object):
           tags: A list of strings to add as tags
           custom_attributes: Custom attributes of the event
           timezone_string: Timezone in format +XX:XX or -XX:XX. If none, +00:00 is used
+          sync_ioc_with_assets: Set to true to sync the IOC with the assets
           cid: Case ID
 
         Returns:
@@ -1249,6 +1251,7 @@ class Case(object):
             "event_tags": ','.join(tags) if tags else event.get('event_tags'),
             "event_tz": timezone_string if timezone_string else event.get('event_tz'),
             "custom_attributes": custom_attributes if custom_attributes else event.get('custom_attributes'),
+            "event_sync_iocs_assets": sync_ioc_with_assets if sync_ioc_with_assets is True else False,
             "cid": cid
         }
 
