@@ -1093,8 +1093,8 @@ class Case(object):
     def add_event(self, title: str, date_time: datetime, content: str = None, raw_content: str = None,
                   source: str = None, linked_assets: list = None, linked_iocs: list = None,
                   category: Union[int, str] = None, tags: list = None, color: str = None, display_in_graph: bool = None,
-                  display_in_summary: bool = None, custom_attributes: str = None, cid: int = None,
-                  timezone_string: str = None) -> ApiResponse:
+                  display_in_summary: bool = None, custom_attributes: str = None, timezone_string: str = None,
+                  sync_ioc_with_assets: bool = False, cid: int = None) -> ApiResponse:
         """
         Adds a new event to the timeline.
         
@@ -1121,6 +1121,7 @@ class Case(object):
           tags: A list of strings to add as tags
           custom_attributes: Custom attributes of the event
           timezone_string: Timezone in format +XX:XX or -XX:XX. If none, +00:00 is used
+          sync_ioc_with_assets: Set to true to sync the IOC with the assets
           cid: Case ID
 
         Returns:
@@ -1162,6 +1163,7 @@ class Case(object):
             "event_tags": ','.join(tags) if tags else '',
             "event_tz": timezone_string if timezone_string else "+00:00",
             "custom_attributes": custom_attributes if custom_attributes else {},
+            "event_sync_iocs_assets": sync_ioc_with_assets if sync_ioc_with_assets is True else False,
             "cid": cid
         }
 

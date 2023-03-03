@@ -780,7 +780,7 @@ class CaseTest(InitIrisClientTest):
 
     def test_add_event_partial_valid(self):
         """ """
-        ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now())
+        ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now(), sync_ioc_with_assets=True)
 
         assert assert_api_resp(ret, soft_fail=False)
         event = get_data_from_resp(ret)
