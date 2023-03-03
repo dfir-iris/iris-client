@@ -2016,3 +2016,24 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/folder/move/{folder_id}', data=data, cid=cid)
 
+    def add_asset_comment(self, asset_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to an asset.
+
+        Args:
+            asset_id: int - Asset ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'comment_text': comment
+        }
+
+        return self._s.pi_post(f'case/assets/{asset_id}/comments/add', data=data, cid=cid)
+
