@@ -145,7 +145,7 @@ class Case(object):
 
         return resp
 
-    def set_case_outcome_status(self, case_id: int, outcome_status: Union[str, int]) -> ApiResponse:
+    def set_case_outcome_status(self, outcome_status: Union[str, int], case_id: int = None) -> ApiResponse:
         """Sets the outcome status of a case
 
         Args:
@@ -156,6 +156,8 @@ class Case(object):
           ApiResponse object
 
         """
+        case_id = self._assert_cid(cid=case_id)
+
         if isinstance(outcome_status, str):
             cosh = CaseOutcomeStatusHelper(self._s)
             outcome_status = cosh.lookup_case_outcome_status_name(case_outcome_status_name=outcome_status)
@@ -166,12 +168,12 @@ class Case(object):
             outcome_status = int(outcome_status)
 
         body = {
-            "outcome_status": outcome_status
+            "status_id": outcome_status
         }
 
-        return self._s.pi_post(f'manage/cases/{case_id}/set_outcome_status', data=body)
+        return self._s.pi_post(f'case/update-status', data=body, cid=case_id)
 
-    def update_case(self, case_id: int, case_name: str = None, case_description: str = None,
+    def update_case(self, case_id: int = None, case_name: str = None, case_description: str = None,
                     case_classification: Union[str, int] = None, case_owner: Union[str, int] = None,
                     soc_id: str = None, case_tags: List[str] = None,
                     custom_attributes: dict = None) -> ApiResponse:
@@ -197,6 +199,7 @@ class Case(object):
         Returns:
             ApiResponse object
         """
+        case_id = self._assert_cid(cid=case_id)
 
         case = self.get_case(case_id)
         if case.is_error():
@@ -268,7 +271,7 @@ class Case(object):
 
         return resp
 
-    def reopen_case(self, case_id: int) -> ApiResponse:
+    def reopen_case(self, case_id: int = None) -> ApiResponse:
         """Reopens a case based on its ID
 
         Args:
@@ -278,11 +281,13 @@ class Case(object):
           ApiResponse
 
         """
+        case_id = self._assert_cid(case_id)
+
         resp = self._s.pi_post(f'manage/cases/reopen/{case_id}', cid=case_id)
 
         return resp
 
-    def close_case(self, case_id: int) -> ApiResponse:
+    def close_case(self, case_id: int = None) -> ApiResponse:
         """Closes a case based on its ID
 
         Args:
@@ -292,11 +297,13 @@ class Case(object):
           ApiResponse
 
         """
+        case_id = self._assert_cid(case_id)
+
         resp = self._s.pi_post(f'manage/cases/close/{case_id}', cid=case_id)
 
         return resp
 
-    def delete_case(self, cid: int) -> ApiResponse:
+    def delete_case(self, cid: int = None) -> ApiResponse:
         """Deletes a case based on its ID. All objects associated to the case are deleted. This includes :
             - assets,
             - iocs that are only referenced in this case
@@ -313,6 +320,8 @@ class Case(object):
           ApiResponse
 
         """
+        cid = self._assert_cid(cid)
+
         resp = self._s.pi_post(f'manage/cases/delete/{cid}', cid=1)
 
         return resp

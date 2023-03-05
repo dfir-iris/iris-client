@@ -26,7 +26,7 @@ class CaseOutcomeStatusHelper(object):
         """
         List all case outcome status types.
         """
-        return self._s.get('/manage/outcome-status/list')
+        return self._s.pi_get('/manage/outcome-status/list', cid=1)
 
     def lookup_case_outcome_status_name(self, case_outcome_status_name):
         """

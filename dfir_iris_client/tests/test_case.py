@@ -107,6 +107,11 @@ class CaseTest(InitIrisClientTest):
 
         assert bool(assert_api_resp(ret)) is False
 
+    def test_set_case_outcome_status(self):
+        """ Test set case outcome status """
+        ret = self.case.set_case_outcome_status("true positive")
+        assert bool(assert_api_resp(ret)) is True
+
     def test_add_case_with_faulty_customer_name(self):
         """ """
         ret = self.case.add_case(case_name=self.standard_case.case_name,
