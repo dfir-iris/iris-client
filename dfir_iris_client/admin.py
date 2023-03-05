@@ -15,7 +15,7 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import warnings
-from typing import List
+from typing import List, BinaryIO
 from typing import Union
 from deprecated import deprecated
 
@@ -24,6 +24,7 @@ from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.authorization import Permissions, CaseAccessLevel
 from dfir_iris_client.helper.case_classifications import CaseClassificationsHelper
 from dfir_iris_client.helper.ioc_types import IocTypeHelper
+from dfir_iris_client.helper.report_template_types import ReportTemplateType
 from dfir_iris_client.helper.utils import ApiResponse, ClientApiError, get_data_from_resp, parse_api_data, ClientApiData
 
 
@@ -869,4 +870,39 @@ class AdminHelper(object):
                 return ApiResponse(response=response, uri=group_lists.get_uri())
 
         return ClientApiError(msg=f'Group {group_name} not found')
+
+    def add_report_template(self, template_name: str, template_description: str, template_type: ReportTemplateType,
+                            template_name_format: str, template_language: ReportTemplateLanguage,
+                            template_stream: BinaryIO) -> ApiResponse:
+        """
+        Add a new report template. template_type must be a ReportTemplateType enum.
+
+        Args:
+            template_name: Name of the template
+            template_description: Description of the template
+            template_type: ReportTemplateType enum
+            template_language: ReportTemplateLanguage enum
+            template_name_format: Name format of the template
+
+            template_stream: Template data
+            cid: Case ID
+
+        Returns:
+            ApiResponse object
+        """
+
+        files = {
+            'file': (template_name, template_stream)
+        }
+
+        body = {
+            "report_name": template_name,
+            "report_type": template_type.value,
+            "report_description": template_description,
+            "report_language": template_language.value,
+            "report_name_format": template_name_format,
+            "cid": 1
+        }
+
+        return self._s.pi_post('manage/report-templates/add', data=body, files=files)
 
