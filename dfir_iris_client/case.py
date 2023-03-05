@@ -2171,7 +2171,7 @@ class Case(object):
         """
         return self._add_object_comment(self._asset_object, asset_id, comment, cid=cid)
 
-    def list_asset_comment(self, asset_id: int, cid: int = None) -> ApiResponse:
+    def list_asset_comments(self, asset_id: int, cid: int = None) -> ApiResponse:
         """
         List comments of an asset.
 
@@ -2215,7 +2215,7 @@ class Case(object):
         """
         return self._add_object_comment(self._note_object, note_id, comment, cid=cid)
 
-    def list_note_comment(self, note_id: int, cid: int = None) -> ApiResponse:
+    def list_note_comments(self, note_id: int, cid: int = None) -> ApiResponse:
         """
         List comments of a note.
 
@@ -2259,7 +2259,7 @@ class Case(object):
         """
         return self._add_object_comment(self._task_object, task_id, comment, cid=cid)
 
-    def list_task_comment(self, task_id: int, cid: int = None) -> ApiResponse:
+    def list_task_comments(self, task_id: int, cid: int = None) -> ApiResponse:
         """
         List comments of a task.
 
@@ -2303,7 +2303,7 @@ class Case(object):
         """
         return self._add_object_comment(self._event_object, event_id, comment, cid=cid)
 
-    def list_event_comment(self, event_id: int, cid: int = None) -> ApiResponse:
+    def list_event_comments(self, event_id: int, cid: int = None) -> ApiResponse:
         """
         List comments of an event.
 
@@ -2347,7 +2347,7 @@ class Case(object):
         """
         return self._add_object_comment(self._evidence_object, evidence_id, comment, cid=cid)
 
-    def list_evidence_comment(self, evidence_id: int, cid: int = None) -> ApiResponse:
+    def list_evidence_comments(self, evidence_id: int, cid: int = None) -> ApiResponse:
         """
         List comments of an evidence.
 
@@ -2375,3 +2375,47 @@ class Case(object):
 
         """
         return self._delete_object_comment(self._evidence_object, evidence_id, comment_id, cid=cid)
+
+    def add_ioc_comment(self, ioc_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to an ioc.
+
+        Args:
+            ioc_id: int - IOC ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._ioc_object, ioc_id, comment, cid=cid)
+
+    def list_ioc_comments(self, ioc_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of an ioc.
+
+        Args:
+            ioc_id: int - IOC ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._ioc_object, ioc_id, cid=cid)
+
+    def delete_ioc_comment(self, ioc_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of an ioc.
+
+        Args:
+            ioc_id: int - IOC ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._ioc_object, ioc_id, comment_id, cid=cid)
