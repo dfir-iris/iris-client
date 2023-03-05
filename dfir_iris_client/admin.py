@@ -22,6 +22,7 @@ from deprecated import deprecated
 from dfir_iris_client.helper.assets_type import AssetTypeHelper
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.authorization import Permissions, CaseAccessLevel
+from dfir_iris_client.helper.case_classifications import CaseClassificationsHelper
 from dfir_iris_client.helper.ioc_types import IocTypeHelper
 from dfir_iris_client.helper.utils import ApiResponse, ClientApiError, get_data_from_resp, parse_api_data, ClientApiData
 
@@ -488,6 +489,40 @@ class AdminHelper(object):
             ApiResponse
         """
         return self._s.pi_post(f'manage/case-classifications/delete/{case_classification_id}', cid=1)
+
+    def update_case_classification(self, classification_id: int, name: str = None,
+                                   name_expanded: str = None, description: str = None) -> ApiResponse:
+        """ Updates a Case Classification. `case_classification_id` needs to be a valid existing CaseClassification ID.
+
+        !!! tip "Requires admin rights"
+
+        Args:
+            classification_id: Case Classification to update
+            name: Name of the Case Classification
+            name_expanded: Expanded name of the Case Classification
+            description: Description of the Case Classification
+
+        Returns:
+            ApiResponse
+        """
+        cch = CaseClassificationsHelper(session=self._s)
+
+        case_classification_req = cch.get_case_classification(case_classification_id=classification_id)
+
+        if case_classification_req.is_error():
+            return ClientApiError(msg=f'Unable to fetch case classification #{classification_id} for update',
+                                  error=case_classification_req.get_msg())
+
+        case_classification = case_classification_req.get_data()
+
+        body = {
+            "name": name if name is not None else case_classification.get('name'),
+            "name_expanded": name_expanded if name_expanded is not None else case_classification.get('name_expanded'),
+            "description": description if description is not None else case_classification.get('description'),
+            "cid": 1
+        }
+
+        return self._s.pi_post(f'manage/case-classifications/update/{classification_id}', data=body)
 
     def delete_asset_type(self, asset_type_id: int) -> ApiResponse:
         """

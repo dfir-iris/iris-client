@@ -138,6 +138,71 @@ class AdminTest(InitIrisClientTest):
 
         self.adm.delete_case_classification(classification_id)
 
+    def test_update_case_classification_valid(self):
+        """ """
+        ret = self.adm.add_case_classification(name='dummy case classification',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'description') == 'dummy description'
+        assert parse_api_data(data, 'name') == 'dummy case classification'
+        assert parse_api_data(data, 'name_expanded') == 'dummy case classification expanded'
+        assert type(parse_api_data(data, 'id')) == int
+
+        ret = self.adm.update_case_classification(classification_id=parse_api_data(data, 'id'),
+                                                  name='new dummy case classification',
+                                                  name_expanded='new dummy case classification expanded',
+                                                  description='new dummy description')
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'description') == 'new dummy description'
+        assert parse_api_data(data, 'name') == 'new dummy case classification'
+        assert parse_api_data(data, 'name_expanded') == 'new dummy case classification expanded'
+        assert type(parse_api_data(data, 'id')) == int
+
+        ret = self.adm.delete_case_classification(parse_api_data(data, 'id'))
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_update_case_classification_invalid(self):
+        """ """
+        ret = self.adm.add_case_classification(name='dummy case classification',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'description') == 'dummy description'
+        assert parse_api_data(data, 'name') == 'dummy case classification'
+        assert parse_api_data(data, 'name_expanded') == 'dummy case classification expanded'
+        assert type(parse_api_data(data, 'id')) == int
+        fid = parse_api_data(data, 'id')
+
+        ret = self.adm.add_case_classification(name='dummy case classification updated',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+
+        ret = self.adm.update_case_classification(classification_id=fid,
+                                                  name='dummy case classification updated',
+                                                  name_expanded='new dummy case classification expanded',
+                                                  description='new dummy description')
+
+        assert bool(assert_api_resp(ret, soft_fail=True)) is False
+        assert 'Data error' in ret.get_msg()
+        assert ret.get_data().get('name') == ['Case classification name already exists']
+
+        ret = self.adm.delete_case_classification(parse_api_data(data, 'id'))
+        assert assert_api_resp(ret, soft_fail=False)
+
     def test_add_customer_valid(self):
         """ """
         ret = self.adm.add_customer('dummy customer')
