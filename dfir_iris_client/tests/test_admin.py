@@ -119,6 +119,25 @@ class AdminTest(InitIrisClientTest):
         ret = self.adm.delete_case_classification(parse_api_data(data, 'id'))
         assert assert_api_resp(ret, soft_fail=False)
 
+    def test_add_case_classification_invalid(self):
+        """ """
+        ret = self.adm.add_case_classification(name='dummy case classification',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
+        assert assert_api_resp(ret, soft_fail=False)
+        classification_id = parse_api_data(ret.get_data(), 'id')
+
+        ret = self.adm.add_case_classification(name='dummy case classification',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
+        assert bool(assert_api_resp(ret, soft_fail=True)) is False
+        assert 'Data error' in ret.get_msg()
+        assert ret.get_data().get('name') == ['Case classification name already exists']
+
+        self.adm.delete_case_classification(classification_id)
+
     def test_add_customer_valid(self):
         """ """
         ret = self.adm.add_customer('dummy customer')
