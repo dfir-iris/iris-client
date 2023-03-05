@@ -24,7 +24,7 @@ from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.authorization import Permissions, CaseAccessLevel
 from dfir_iris_client.helper.case_classifications import CaseClassificationsHelper
 from dfir_iris_client.helper.ioc_types import IocTypeHelper
-from dfir_iris_client.helper.report_template_types import ReportTemplateType
+from dfir_iris_client.helper.report_template_types import ReportTemplateType, ReportTemplateLanguage
 from dfir_iris_client.helper.utils import ApiResponse, ClientApiError, get_data_from_resp, parse_api_data, ClientApiData
 
 
@@ -906,3 +906,14 @@ class AdminHelper(object):
 
         return self._s.pi_post('manage/report-templates/add', data=body, files=files)
 
+    def delete_report_template(self, template_id: int) -> ApiResponse:
+        """
+        Delete a report template by its ID.
+
+        Args:
+            template_id: Template ID
+
+        Returns:
+            ApiResponse object
+        """
+        return self._s.pi_post(f'manage/report-templates/delete/{template_id}', cid=1)
