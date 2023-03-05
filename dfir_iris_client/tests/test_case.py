@@ -1702,7 +1702,7 @@ class CaseTest(InitIrisClientTest):
         ret = self.case.move_ds_folder(folder_id=1, parent_id=999999999)
         assert ret.is_error() is True
 
-    def test_add_asset_comment_valid(self):
+    def test_asset_comment_valid(self):
         """ """
         ret = self.case.add_asset(name="dummy asset", asset_type='Windows - Computer',
                                   analysis_status='started', cid=1)
@@ -1722,3 +1722,12 @@ class CaseTest(InitIrisClientTest):
         assert type(parse_api_data(data, 'comment_update_date')) is str
         assert type(parse_api_data(data, 'comment_user_id')) is int
 
+        ret = self.case.update_asset_comment(asset_id=asset_id, comment_id=parse_api_data(data, 'comment_id'),
+                                             comment="dummy comment updated")
+        assert assert_api_resp(ret, soft_fail=False)
+        data = get_data_from_resp(ret)
+
+        assert parse_api_data(data, 'comment_text') == "dummy comment updated"
+
+        self.case.delete_asset_comment(asset_id=asset_id, comment_id=parse_api_data(data, 'comment_id'))
+        self.case.delete_asset(asset_id)

@@ -2156,6 +2156,27 @@ class Case(object):
 
         return self._s.pi_post(f'case/{object_name}/{object_id}/comments/{comment_id}/delete', cid=cid)
 
+    def _update_object_comment(self, object_name: str, object_id: int, comment_id: int, comment: str, cid: int = None):
+        """ Updates a comment of an object.
+
+        Args:
+            object_name: str - Object name
+            object_id: int - Object ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'comment_text': comment
+        }
+
+        return self._s.pi_post(f'case/{object_name}/{object_id}/comments/{comment_id}/edit', data=data, cid=cid)
+
     def add_asset_comment(self, asset_id: int, comment: str, cid: int = None) -> ApiResponse:
         """
         Adds a comment to an asset.
@@ -2199,6 +2220,22 @@ class Case(object):
 
         """
         return self._delete_object_comment(self._asset_object, asset_id, comment_id, cid=cid)
+
+    def update_asset_comment(self, asset_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of an asset.
+
+        Args:
+            asset_id: int - Asset ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._asset_object, asset_id, comment_id, comment, cid=cid)
 
     def add_note_comment(self, note_id: int, comment: str, cid: int = None) -> ApiResponse:
         """
@@ -2244,6 +2281,22 @@ class Case(object):
         """
         return self._delete_object_comment(self._note_object, note_id, comment_id, cid=cid)
 
+    def update_note_comment(self, note_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of a note.
+
+        Args:
+            note_id: int - Note ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._note_object, note_id, comment_id, comment, cid=cid)
+
     def add_task_comment(self, task_id: int, comment: str, cid: int = None) -> ApiResponse:
         """
         Adds a comment to a task.
@@ -2287,6 +2340,22 @@ class Case(object):
 
         """
         return self._delete_object_comment(self._task_object, task_id, comment_id, cid=cid)
+
+    def update_task_comment(self, task_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of a task.
+
+        Args:
+            task_id: int - Task ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._task_object, task_id, comment_id, comment, cid=cid)
 
     def add_event_comment(self, event_id: int, comment: str, cid: int = None) -> ApiResponse:
         """
@@ -2332,6 +2401,22 @@ class Case(object):
         """
         return self._delete_object_comment(self._event_object, event_id, comment_id, cid=cid)
 
+    def update_event_comment(self, event_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of an event.
+
+        Args:
+            event_id: int - Event ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._event_object, event_id, comment_id, comment, cid=cid)
+
     def add_evidence_comment(self, evidence_id: int, comment: str, cid: int = None) -> ApiResponse:
         """
         Adds a comment to an evidence.
@@ -2376,6 +2461,22 @@ class Case(object):
         """
         return self._delete_object_comment(self._evidence_object, evidence_id, comment_id, cid=cid)
 
+    def update_evidence_comment(self, evidence_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of an evidence.
+
+        Args:
+            evidence_id: int - Evidence ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._evidence_object, evidence_id, comment_id, comment, cid=cid)
+
     def add_ioc_comment(self, ioc_id: int, comment: str, cid: int = None) -> ApiResponse:
         """
         Adds a comment to an ioc.
@@ -2419,3 +2520,19 @@ class Case(object):
 
         """
         return self._delete_object_comment(self._ioc_object, ioc_id, comment_id, cid=cid)
+
+    def update_ioc_comment(self, ioc_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of an ioc.
+
+        Args:
+            ioc_id: int - IOC ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._ioc_object, ioc_id, comment_id, comment, cid=cid)
