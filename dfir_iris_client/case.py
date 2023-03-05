@@ -44,7 +44,12 @@ import urllib.parse
 class Case(object):
     """Handles the case methods"""
 
+    _note_object = 'notes'
     _asset_object = 'assets'
+    _ioc_object = 'ioc'
+    _event_object = 'events'
+    _task_object = 'tasks'
+    _evidence_object = 'evidences'
 
     def __init__(self, session: ClientSession, case_id: int = None):
         self._s = session
@@ -2195,4 +2200,178 @@ class Case(object):
         """
         return self._delete_object_comment(self._asset_object, asset_id, comment_id, cid=cid)
 
-    
+    def add_note_comment(self, note_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to a note.
+
+        Args:
+            note_id: int - Note ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._note_object, note_id, comment, cid=cid)
+
+    def list_note_comment(self, note_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of a note.
+
+        Args:
+            note_id: int - Note ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._note_object, note_id, cid=cid)
+
+    def delete_note_comment(self, note_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of a note.
+
+        Args:
+            note_id: int - Note ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._note_object, note_id, comment_id, cid=cid)
+
+    def add_task_comment(self, task_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to a task.
+
+        Args:
+            task_id: int - Task ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._task_object, task_id, comment, cid=cid)
+
+    def list_task_comment(self, task_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of a task.
+
+        Args:
+            task_id: int - Task ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._task_object, task_id, cid=cid)
+
+    def delete_task_comment(self, task_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of a task.
+
+        Args:
+            task_id: int - Task ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._task_object, task_id, comment_id, cid=cid)
+
+    def add_event_comment(self, event_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to an event.
+
+        Args:
+            event_id: int - Event ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._event_object, event_id, comment, cid=cid)
+
+    def list_event_comment(self, event_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of an event.
+
+        Args:
+            event_id: int - Event ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._event_object, event_id, cid=cid)
+
+    def delete_event_comment(self, event_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of an event.
+
+        Args:
+            event_id: int - Event ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._event_object, event_id, comment_id, cid=cid)
+
+    def add_evidence_comment(self, evidence_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to an evidence.
+
+        Args:
+            evidence_id: int - Evidence ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._evidence_object, evidence_id, comment, cid=cid)
+
+    def list_evidence_comment(self, evidence_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of an evidence.
+
+        Args:
+            evidence_id: int - Evidence ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._evidence_object, evidence_id, cid=cid)
+
+    def delete_evidence_comment(self, evidence_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of an evidence.
+
+        Args:
+            evidence_id: int - Evidence ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._evidence_object, evidence_id, comment_id, cid=cid)
