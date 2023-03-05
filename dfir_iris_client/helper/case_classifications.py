@@ -54,3 +54,14 @@ class CaseClassificationsHelper(object):
 
         return None
 
+    def get_case_classification(self, case_classification_id: int) -> ApiResponse:
+        """
+        Returns a case classification from its ID
+
+        Args:
+          case_classification_id: Case classification ID
+
+        Returns:
+          APIResponse object
+        """
+        return self._s.pi_get(f'manage/case-classifications/{case_classification_id}', cid=1)
