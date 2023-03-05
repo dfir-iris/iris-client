@@ -178,6 +178,7 @@ class CaseTest(InitIrisClientTest):
     def test_update_case(self):
         """ """
         ret = self.case.update_case(case_id=1, case_name='Dummy name', case_description='Dummy description',
+                                    case_classification='other:other',
                                     case_tags=['tag1', 'tag2'])
         assert bool(assert_api_resp(ret)) is True
 

@@ -74,7 +74,7 @@ class Case(object):
         return self._s.pi_get(f'manage/cases/{cid}')
 
     def add_case(self, case_name: str, case_description: str, case_customer: Union[str, int],
-                 case_classification: Union[str, int],soc_id: str, custom_attributes: dict = None,
+                 case_classification: Union[str, int], soc_id: str, custom_attributes: dict = None,
                  create_customer=False) -> ApiResponse:
         """Creates a new case. If create_customer is set to true and the customer doesn't exist,
         it is created. Otherwise an error is returned.
@@ -145,10 +145,11 @@ class Case(object):
         return resp
 
     def update_case(self, case_id: int, case_name: str = None, case_description: str = None,
+                    case_classification: Union[str, int] = None, case_owner: Union[str, int] = None,
                     soc_id: str = None, case_tags: List[str] = None,
                     custom_attributes: dict = None) -> ApiResponse:
         """Updates an existing case. If create_customer is set to true and the customer doesn't exist,
-        it is created. Otherwise an error is returned.
+        it is created. Otherwise, an error is returned.
 
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
@@ -160,20 +161,34 @@ class Case(object):
           case_id: ID of the case to update
           case_name: case_name
           case_description: Description of the case
+          case_classification: Classification of the case
           case_tags: List of tags to add to the case
+          case_owner: Name or ID of the owner
           soc_id: SOC Number
           custom_attributes: Custom attributes of the case
 
         Returns:
             ApiResponse object
-
-            """
+        """
 
         case = self.get_case(case_id)
         if case.is_error():
             return case
 
         case_data = get_data_from_resp(case)
+
+        if case_classification is not None:
+            if isinstance(case_classification, str):
+                csh = CaseClassificationsHelper(self._s)
+                case_classification = csh.lookup_case_classification_name(case_classification_name=case_classification)
+                if case_classification is None:
+                    return ClientApiError(f'Case classification {case_classification} wasn\'t found. Check syntax.')
+
+            else:
+                case_classification = int(case_classification)
+
+        else:
+            case_classification = case_data.get('classification_id')
 
         if custom_attributes is not None and not isinstance(custom_attributes, dict):
             return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
@@ -190,6 +205,23 @@ class Case(object):
         if case_name is None:
             case_name = case_data.get('case_name')
 
+        if case_owner is not None:
+            if isinstance(case_owner, str):
+                # Get the customer ID
+                customer = User(session=self._s)
+                owner_id = customer.lookup_username(username=case_owner)
+
+                if owner_id.is_error():
+                    return owner_id
+
+                if owner_id.is_error():
+                    return owner_id
+
+                case_owner = owner_id.get_data().get('user_id')
+
+        else:
+            case_owner = case_data.get('owner_id')
+
         if case_tags is None:
             case_tags = case_data.get('case_tags')
         else:
@@ -199,7 +231,9 @@ class Case(object):
             "case_name": case_name,
             "case_soc_id": soc_id,
             "case_description": case_description,
+            "classification_id": case_classification,
             "custom_attributes": custom_attributes,
+            "owner_id": case_owner,
             "case_tags": case_tags
         }
 
@@ -2048,4 +2082,3 @@ class Case(object):
         }
 
         return self._s.pi_post(f'case/assets/{asset_id}/comments/add', data=data, cid=cid)
-
