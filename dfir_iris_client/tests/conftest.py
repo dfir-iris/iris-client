@@ -52,6 +52,7 @@ class Case(object):
         self.case_customer = kwargs.get('case_customer')
         self.case_customer_id = kwargs.get('case_customer_id')
         self.soc_id = kwargs.get('soc_id')
+        self.case_classification = kwargs.get('case_classification')
 
 
 @pytest.fixture(scope="class")
@@ -110,5 +111,6 @@ def standard_case(request):
     case.case_customer = "IrisInitialClient"
     case.case_customer_id = 1
     case.soc_id = "Dummy SOC ID"
+    case.case_classification = 'other:other'
 
     request.cls.standard_case = case

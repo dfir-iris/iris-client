@@ -60,6 +60,8 @@ class CaseTest(InitIrisClientTest):
         assert isinstance(parse_api_data(case, 'opened_by_user_id'), int)
         assert isinstance(parse_api_data(case, 'owner'), str)
         assert isinstance(parse_api_data(case, 'owner_id'), int)
+        assert isinstance(parse_api_data(case, 'classification_id'), int)
+        assert isinstance(parse_api_data(case, 'classification'), str)
 
     def test_add_rm_case_with_existing_customer_id(self):
         """ """
@@ -80,6 +82,7 @@ class CaseTest(InitIrisClientTest):
     def test_add_rm_case_with_existing_customer_name(self):
         """ """
         ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_classification=self.standard_case.case_classification,
                                  case_description=self.standard_case.case_description,
                                  case_customer=self.standard_case.case_customer, soc_id=self.standard_case.soc_id,
                                  custom_attributes={},
@@ -97,6 +100,7 @@ class CaseTest(InitIrisClientTest):
     def test_add_case_with_faulty_customer_id(self):
         """ """
         ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_classification=self.standard_case.case_classification,
                                  case_description=self.standard_case.case_description,
                                  case_customer=15551115,  soc_id=self.standard_case.soc_id,
                                  custom_attributes={}, create_customer=False)
@@ -106,6 +110,7 @@ class CaseTest(InitIrisClientTest):
     def test_add_case_with_faulty_customer_name(self):
         """ """
         ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_classification=self.standard_case.case_classification,
                                  case_description=self.standard_case.case_description,
                                  case_customer="Dummy dummy 123", soc_id=self.standard_case.soc_id,
                                  custom_attributes={},
@@ -116,6 +121,7 @@ class CaseTest(InitIrisClientTest):
     def test_add_case_create_customer_name(self):
         """ """
         ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_classification=self.standard_case.case_classification,
                                  case_description=self.standard_case.case_description,
                                  case_customer="Dummy dummy 123",  custom_attributes={"Test":{"Test":"Test"}},
                                  soc_id=self.standard_case.soc_id, create_customer=True)
