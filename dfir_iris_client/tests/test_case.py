@@ -38,6 +38,29 @@ class CaseTest(InitIrisClientTest):
         self.ch = Customer(self.session)
         self.case.set_cid(1)
 
+    def test_list_cases(self):
+        """ """
+        ret = self.case.list_cases()
+        assert bool(assert_api_resp(ret)) is True
+
+        data = get_data_from_resp(ret)
+        assert len(data) > 0
+        case = data[0]
+
+        assert isinstance(parse_api_data(case, 'access_level'), int)
+        assert isinstance(parse_api_data(case, 'case_close_date'), str)
+        assert isinstance(parse_api_data(case, 'case_description'), str)
+        assert isinstance(parse_api_data(case, 'case_id'), int)
+        assert isinstance(parse_api_data(case, 'case_name'), str)
+        assert isinstance(parse_api_data(case, 'case_open_date'), str)
+        assert isinstance(parse_api_data(case, 'case_soc_id'), str)
+        assert isinstance(parse_api_data(case, 'case_uuid'), str)
+        assert isinstance(parse_api_data(case, 'client_name'), str)
+        assert isinstance(parse_api_data(case, 'opened_by'), str)
+        assert isinstance(parse_api_data(case, 'opened_by_user_id'), int)
+        assert isinstance(parse_api_data(case, 'owner'), str)
+        assert isinstance(parse_api_data(case, 'owner_id'), int)
+
     def test_add_rm_case_with_existing_customer_id(self):
         """ """
         ret = self.case.add_case(case_name=self.standard_case.case_name,
