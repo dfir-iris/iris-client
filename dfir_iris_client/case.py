@@ -44,6 +44,8 @@ import urllib.parse
 class Case(object):
     """Handles the case methods"""
 
+    _asset_object = 'assets'
+
     def __init__(self, session: ClientSession, case_id: int = None):
         self._s = session
         self._cid = case_id
@@ -2098,6 +2100,57 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/folder/move/{folder_id}', data=data, cid=cid)
 
+    def _add_object_comment(self, object_name: str, object_id: int, comment: str, cid: int = None):
+        """ Adds a comment to an object.
+
+        Args:
+            object_name: str - Object name
+            object_id: int - Object ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'comment_text': comment
+        }
+
+        return self._s.pi_post(f'case/{object_name}/{object_id}/comments/add', data=data, cid=cid)
+
+    def _list_object_comment(self, object_name: str, object_id: int, cid: int = None):
+        """ List comments of an object.
+
+        Args:
+            object_name: str - Object name
+            object_id: int - Object ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_post(f'case/{object_name}/{object_id}/comments/list', cid=cid)
+
+    def _delete_object_comment(self, object_name: str, object_id: int, comment_id: int, cid: int = None):
+        """ Deletes a comment of an object.
+
+        Args:
+            object_name: str - Object name
+            object_id: int - Object ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_post(f'case/{object_name}/{object_id}/comments/{comment_id}/delete', cid=cid)
+
     def add_asset_comment(self, asset_id: int, comment: str, cid: int = None) -> ApiResponse:
         """
         Adds a comment to an asset.
@@ -2111,10 +2164,35 @@ class Case(object):
             APIResponse object
 
         """
-        cid = self._assert_cid(cid)
+        return self._add_object_comment(self._asset_object, asset_id, comment, cid=cid)
 
-        data = {
-            'comment_text': comment
-        }
+    def list_asset_comment(self, asset_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of an asset.
 
-        return self._s.pi_post(f'case/assets/{asset_id}/comments/add', data=data, cid=cid)
+        Args:
+            asset_id: int - Asset ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._asset_object, asset_id, cid=cid)
+
+    def delete_asset_comment(self, asset_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of an asset.
+
+        Args:
+            asset_id: int - Asset ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._asset_object, asset_id, comment_id, cid=cid)
+
+    
