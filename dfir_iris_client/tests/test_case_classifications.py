@@ -49,7 +49,7 @@ class CaseClassificationsTest(InitIrisClientTest):
         ret = self.ccl.lookup_case_classification_name('invalid')
         assert ret is None
 
-    def test_get_case_classification(self):
+    def test_get_case_classification_valid(self):
         """ """
         ret = self.ccl.get_case_classification(1)
         assert assert_api_resp(ret)
@@ -59,4 +59,9 @@ class CaseClassificationsTest(InitIrisClientTest):
         assert isinstance(parse_api_data(data, 'id'), int)
         assert isinstance(parse_api_data(data, 'name'), str)
         assert isinstance(parse_api_data(data, 'name_expanded'), str)
+
+    def test_get_case_classification_invalid(self):
+        """ """
+        ret = self.ccl.get_case_classification(999999)
+        assert assert_api_resp(ret).is_error() is True
 
