@@ -143,7 +143,7 @@ class Case(object):
         body = {
             "case_name": case_name,
             "case_customer": case_customer,
-            "classification": case_classification,
+            "classification_id": case_classification,
             "case_soc_id": soc_id,
             "case_description": case_description,
             "custom_attributes": custom_attributes

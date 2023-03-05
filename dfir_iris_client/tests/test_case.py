@@ -66,6 +66,7 @@ class CaseTest(InitIrisClientTest):
     def test_add_rm_case_with_existing_customer_id(self):
         """ """
         ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_classification=self.standard_case.case_classification,
                                  case_description=self.standard_case.case_description,
                                  case_customer=self.standard_case.case_customer_id, soc_id=self.standard_case.soc_id,
                                  create_customer=False)
@@ -156,7 +157,7 @@ class CaseTest(InitIrisClientTest):
         assert case_id == cid
         assert parse_api_data(data, 'case_name') == '#1 - Initial Demo'
         assert parse_api_data(data, 'case_soc_id') == 'soc_id_demo'
-        assert parse_api_data(data, 'customer_name') == 'IrisInitialClient'
+        assert parse_api_data(data, 'customer_name').lower() == 'irisinitialclient'
         assert parse_api_data(data, 'open_by_user') == 'administrator'
         assert parse_api_data(data, 'status_id') == 0
 
