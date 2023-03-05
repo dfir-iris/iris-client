@@ -102,6 +102,23 @@ class AdminTest(InitIrisClientTest):
         with self.assertRaises(DeprecationWarning):
             self.adm.update_asset_type(asset_type_id=0, name='dummy asset type', description='dummy description')
 
+    def test_add_case_classification_valid(self):
+        """ """
+        ret = self.adm.add_case_classification(name='dummy case classification',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'description') == 'dummy description'
+        assert parse_api_data(data, 'name') == 'dummy case classification'
+        assert parse_api_data(data, 'name_expanded') == 'dummy case classification expanded'
+        assert type(parse_api_data(data, 'id')) == int
+
+        ret = self.adm.delete_case_classification(parse_api_data(data, 'id'))
+        assert assert_api_resp(ret, soft_fail=False)
+
     def test_add_customer_valid(self):
         """ """
         ret = self.adm.add_customer('dummy customer')

@@ -64,4 +64,3 @@ class CaseClassificationsTest(InitIrisClientTest):
         """ """
         ret = self.ccl.get_case_classification(999999)
         assert assert_api_resp(ret).is_error() is True
-

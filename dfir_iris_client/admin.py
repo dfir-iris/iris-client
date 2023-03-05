@@ -454,6 +454,41 @@ class AdminHelper(object):
         }
         return self._s.pi_post(f'manage/asset-type/add', data=body)
 
+    def add_case_classification(self, name: str, name_expanded: str, description: str) -> ApiResponse:
+        """ Add a new Case Classification.
+
+        !!! tip "Requires admin rights"
+
+        Args:
+            name: Name of the Case Classification
+            name_expanded: Expanded name of the Case Classification
+            description: Description of the Case Classification
+
+
+        Returns:
+            ApiResponse
+        """
+        body = {
+            "name": name,
+            "name_expanded": name_expanded,
+            "description": description,
+            "cid": 1
+        }
+        return self._s.pi_post(f'manage/case-classifications/add', data=body)
+
+    def delete_case_classification(self, case_classification_id: int) -> ApiResponse:
+        """ Delete an existing Case Classification by its ID.
+
+        !!! tip "Requires admin rights"
+
+        Args:
+            case_classification_id: Case Classification to delete
+
+        Returns:
+            ApiResponse
+        """
+        return self._s.pi_post(f'manage/case-classifications/delete/{case_classification_id}', cid=1)
+
     def delete_asset_type(self, asset_type_id: int) -> ApiResponse:
         """
         Delete an existing asset type by its ID.
@@ -467,7 +502,7 @@ class AdminHelper(object):
           ApiResponse
 
         """
-        return self._s.pi_post(f'manage/asset-type/delete/{asset_type_id}')
+        return self._s.pi_post(f'manage/asset-type/delete/{asset_type_id}', cid=1)
 
     @deprecated(reason='This method is deprecated in IRIS > v1.4.3', action="error", version="2.0.0")
     def update_asset_type(self, asset_type_id: int, name: str = None,
