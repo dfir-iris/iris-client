@@ -20,6 +20,7 @@ import warnings
 from requests import Response
 
 from dfir_iris_client.helper.case_classifications import CaseClassificationsHelper
+from dfir_iris_client.helper.outcome_status import CaseOutcomeStatusHelper
 from dfir_iris_client.session import ClientSession
 
 from dfir_iris_client.customer import Customer
@@ -143,6 +144,32 @@ class Case(object):
         resp = self._s.pi_post('manage/cases/add', data=body)
 
         return resp
+
+    def set_case_outcome_status(self, case_id: int, outcome_status: Union[str, int]) -> ApiResponse:
+        """Sets the outcome status of a case
+
+        Args:
+          case_id: ID of the case to update
+          outcome_status: Outcome status to set
+
+        Returns:
+          ApiResponse object
+
+        """
+        if isinstance(outcome_status, str):
+            cosh = CaseOutcomeStatusHelper(self._s)
+            outcome_status = cosh.lookup_case_outcome_status_name(case_outcome_status_name=outcome_status)
+            if outcome_status is None:
+                return ClientApiError(f'Outcome status {outcome_status} wasn\'t found. Check syntax.')
+
+        else:
+            outcome_status = int(outcome_status)
+
+        body = {
+            "outcome_status": outcome_status
+        }
+
+        return self._s.pi_post(f'manage/cases/{case_id}/set_outcome_status', data=body)
 
     def update_case(self, case_id: int, case_name: str = None, case_description: str = None,
                     case_classification: Union[str, int] = None, case_owner: Union[str, int] = None,
