@@ -258,4 +258,3 @@ class AdminTest(InitIrisClientTest):
 
         ret = self.adm.delete_customer(customer='dummy customer')
         assert assert_api_resp(ret, soft_fail=False)
-

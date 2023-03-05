@@ -2536,3 +2536,37 @@ class Case(object):
 
         """
         return self._update_object_comment(self._ioc_object, ioc_id, comment_id, comment, cid=cid)
+
+    def download_investigation_report(self, report_id: int, cid: int = None) -> Response:
+        """
+        Download an investigation report.
+
+        Args:
+            report_id: int - ID of the template report
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'/case/report/generate-investigation/{report_id}', cid=cid, no_wrap=True)
+
+    def download_activity_report(self, report_id: int, cid: int = None) -> Response:
+        """
+        Download an activity report.
+
+        Args:
+            report_id: int - ID of the template report
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'/case/report/generate-activities/{report_id}', cid=cid, no_wrap=True)
+
+    
