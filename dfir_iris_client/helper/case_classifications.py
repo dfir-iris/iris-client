@@ -35,3 +35,22 @@ class CaseClassificationsHelper(object):
         """
         return self._s.pi_get('manage/case-classifications/list', cid=1)
 
+    def lookup_case_classification_name(self, case_classification_name: str) -> Union[None, int]:
+        """
+        Returns a case_classification_name from its name otherwise None
+
+        Args:
+          case_classification_name: Case classification name to lookup
+
+        Returns:
+          case_classification_name matching provided case classification name otherwise none
+
+        """
+        ast_list = self.list_case_classifications()
+        if ast_list:
+            for ast in ast_list.get_data():
+                if ast.get('name').lower() == case_classification_name.lower():
+                    return ast.get('id')
+
+        return None
+

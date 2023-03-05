@@ -39,4 +39,13 @@ class CaseClassificationsTest(InitIrisClientTest):
         assert isinstance(parse_api_data(data[0], 'name'), str)
         assert isinstance(parse_api_data(data[0], 'name_expanded'), str)
 
-    
+    def test_lookup_case_classification_name_valid(self):
+        """ """
+        ret = self.ccl.lookup_case_classification_name('abusive-content:spam')
+        assert isinstance(ret, int)
+
+    def test_lookup_case_classification_name_invalid(self):
+        """ """
+        ret = self.ccl.lookup_case_classification_name('invalid')
+        assert ret is None
+
