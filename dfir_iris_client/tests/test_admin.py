@@ -190,6 +190,7 @@ class AdminTest(InitIrisClientTest):
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
+        fod = parse_api_data(data, 'id')
 
         ret = self.adm.update_case_classification(classification_id=fid,
                                                   name='dummy case classification updated',
@@ -200,8 +201,8 @@ class AdminTest(InitIrisClientTest):
         assert 'Data error' in ret.get_msg()
         assert ret.get_data().get('name') == ['Case classification name already exists']
 
-        ret = self.adm.delete_case_classification(parse_api_data(data, 'id'))
-        assert assert_api_resp(ret, soft_fail=False)
+        self.adm.delete_case_classification(fid)
+        self.adm.delete_case_classification(fod)
 
     def test_add_customer_valid(self):
         """ """

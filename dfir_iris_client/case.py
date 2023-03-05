@@ -19,6 +19,7 @@ import warnings
 
 from requests import Response
 
+from dfir_iris_client.helper.case_classifications import CaseClassificationsHelper
 from dfir_iris_client.session import ClientSession
 
 from dfir_iris_client.customer import Customer
@@ -72,8 +73,8 @@ class Case(object):
         """
         return self._s.pi_get(f'manage/cases/{cid}')
 
-    def add_case(self, case_name: str, case_description: str,
-                 case_customer: Union[str, int], soc_id: str, custom_attributes: dict = None,
+    def add_case(self, case_name: str, case_description: str, case_customer: Union[str, int],
+                 case_classification: Union[str, int],soc_id: str, custom_attributes: dict = None,
                  create_customer=False) -> ApiResponse:
         """Creates a new case. If create_customer is set to true and the customer doesn't exist,
         it is created. Otherwise an error is returned.
@@ -84,6 +85,7 @@ class Case(object):
 
         Args:
           case_name: case_name
+          case_classification: Classification of the case
           case_description: Description of the case
           case_customer: Name or ID of the customer
           soc_id: SOC Number
@@ -118,12 +120,22 @@ class Case(object):
 
             case_customer = c_id.get_data().get('customer_id')
 
+        if isinstance(case_classification, str):
+            csh = CaseClassificationsHelper(self._s)
+            case_classification = csh.lookup_case_classification_name(case_classification_name=case_classification)
+            if case_classification is None:
+                return ClientApiError(f'Case classification {case_classification} wasn\'t found. Check syntax.')
+
+        else:
+            case_classification = int(case_classification)
+
         if custom_attributes is not None and not isinstance(custom_attributes, dict):
             return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
         body = {
             "case_name": case_name,
             "case_customer": case_customer,
+            "classification": case_classification,
             "case_soc_id": soc_id,
             "case_description": case_description,
             "custom_attributes": custom_attributes
