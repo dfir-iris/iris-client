@@ -890,9 +890,8 @@ class AdminHelper(object):
         Returns:
             ApiResponse object
         """
-
         files = {
-            'file': (template_name, template_stream)
+            'file': template_stream
         }
 
         body = {
@@ -904,7 +903,7 @@ class AdminHelper(object):
             "cid": 1
         }
 
-        return self._s.pi_post('manage/report-templates/add', data=body, files=files)
+        return self._s.pi_post_files('manage/templates/add', data=body, files=files, cid=1)
 
     def delete_report_template(self, template_id: int) -> ApiResponse:
         """
@@ -916,4 +915,4 @@ class AdminHelper(object):
         Returns:
             ApiResponse object
         """
-        return self._s.pi_post(f'manage/report-templates/delete/{template_id}', cid=1)
+        return self._s.pi_post(f'manage/templates/delete/{template_id}', cid=1)

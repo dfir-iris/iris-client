@@ -24,6 +24,7 @@ from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.case import Case
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.colors import EventWhite
+from dfir_iris_client.helper.report_template_types import ReportTemplateType, ReportTemplateLanguage
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
@@ -1735,6 +1736,19 @@ class CaseTest(InitIrisClientTest):
 
     def test_download_investigation_report(self):
         """ """
-        ret = self.case.download_investigation_report(report_id=1)
+
+        adm = AdminHelper(session=self.session)
+        ret = adm.add_report_template(template_name='dummy template', template_description='dummy description',
+                                      template_type=ReportTemplateType.InvestigationReport,
+                                      template_stream=open(Path(__file__).parent / 'resources' / 'test_report.md', 'rb'),
+                                      template_language=ReportTemplateLanguage.dutch,
+                                      template_name_format='dummy format')
+
+        assert assert_api_resp(ret, soft_fail=False)
+        report_id = parse_api_data(get_data_from_resp(ret), 'report_id')
+
+        ret = self.case.download_investigation_report(report_id=report_id)
         assert ret.status_code == 200
+
+        assert adm.delete_report_template(template_id=report_id)
 
