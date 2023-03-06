@@ -1732,3 +1732,9 @@ class CaseTest(InitIrisClientTest):
 
         self.case.delete_asset_comment(asset_id=asset_id, comment_id=parse_api_data(data, 'comment_id'))
         self.case.delete_asset(asset_id)
+
+    def test_download_investigation_report(self):
+        """ """
+        ret = self.case.download_investigation_report(report_id=1)
+        assert ret.status_code == 200
+

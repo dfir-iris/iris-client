@@ -2546,12 +2546,12 @@ class Case(object):
             cid: int - Case ID
 
         Returns:
-            APIResponse object
+            Flask Response object
 
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'/case/report/generate-investigation/{report_id}', cid=cid, no_wrap=True)
+        return self._s.pi_get(f'case/report/generate-investigation/{report_id}', cid=cid, no_wrap=True)
 
     def download_activity_report(self, report_id: int, cid: int = None) -> Response:
         """
@@ -2562,11 +2562,10 @@ class Case(object):
             cid: int - Case ID
 
         Returns:
-            APIResponse object
+            Flask Response object
 
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'/case/report/generate-activities/{report_id}', cid=cid, no_wrap=True)
+        return self._s.pi_get(f'case/report/generate-activities/{report_id}', cid=cid, no_wrap=True)
 
-    
