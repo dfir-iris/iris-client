@@ -14,7 +14,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import datetime
+import json
 import logging as logger
+import os
 from ctypes import Union
 from typing import Union
 
@@ -75,6 +78,9 @@ class ClientSession(object):
         self._ssl_verify = ssl_verify
         self._proxy = proxy
         self._timeout = timeout
+        self._do_trace = os.getenv('IRIS_CLIENT_TRACE_REQUESTS', False)
+        if self._do_trace:
+            self._trace = {}
 
         if not self._ssl_verify:
             requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -226,6 +232,8 @@ class ClientSession(object):
                                          timeout=self._timeout,
                                          headers=headers)
 
+                self._trace_request(response)
+
             elif type == "GET":
                 log.debug(f'GET : {self._pi_uri(uri)}')
                 response = requests.get(url=self._pi_uri(uri),
@@ -233,6 +241,8 @@ class ClientSession(object):
                                         timeout=self._timeout,
                                         headers=headers
                                         )
+
+                self._trace_request(response)
 
             else:
                 return ApiResponse()
@@ -280,6 +290,8 @@ class ClientSession(object):
                                      timeout=self._timeout,
                                      headers=headers)
 
+            self._trace_request(response)
+
         except requests.exceptions.ConnectionError as e:
             raise IrisClientException("Unable to connect to endpoint {host}. "
                                       "Please check URL and ports. {e}".format(host=uri, e=e.__str__()))
@@ -291,3 +303,66 @@ class ClientSession(object):
         log.debug(f'Server replied with status {response.status_code}')
 
         return ApiResponse(response.content, uri=uri)
+
+    def _trace_request(self, response: Response) -> None:
+        """ Do a trace of the request and response.
+
+        Args:
+            response: Response object
+
+        Returns:
+            None
+        """
+        if not self._do_trace:
+            return None
+
+        url = response.url
+        method = response.request.method
+        code = response.status_code
+
+        try:
+
+            if response.request.body:
+                body = response.request.body.decode('utf-8')
+                body = json.loads(body)
+
+            else:
+                body = '<No data>'
+
+        except Exception:
+            body = '<Invalid data>'
+
+        try:
+
+            if response.json():
+                resp = response.json()
+
+            else:
+                resp = response.content.decode('utf-8')
+                resp = json.loads(resp)
+
+        except Exception:
+            resp = '<Invalid data>'
+
+        if url in self._trace:
+            if code in self._trace[url]:
+                self._trace[url][code] = {
+                    'body': body,
+                    'method': method,
+                    'response': resp
+                }
+
+            else:
+                self._trace[url][code] = {
+                    'body': body,
+                    'method': method,
+                    'response': resp
+                }
+        else:
+            self._trace[url] = {
+                code: {
+                    'body': body,
+                    'method': method,
+                    'response': resp
+                }
+            }

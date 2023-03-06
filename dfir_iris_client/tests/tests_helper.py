@@ -79,6 +79,22 @@ class InitIrisClientTest(unittest.TestCase):
         if cls.docker_compose is not None:
             cls.docker_compose.stop()
 
+        if cls.session._do_trace:
+            print('Writing traces')
+            from pathlib import Path
+            import datetime
+            import json
+
+            traces_dir = Path(__file__).parent / 'traces'
+            if not traces_dir.exists():
+                traces_dir.mkdir()
+            trace_file = traces_dir / f'{datetime.datetime.now()}.json'
+
+            with open(trace_file, 'w') as f:
+                f.write(json.dumps(cls.session._trace, indent=4))
+
+            print(f'Traces written in {trace_file}')
+
     @staticmethod
     def assertIrisPermissionDenied(method: callable, *args, **kwargs) -> None:
         """
