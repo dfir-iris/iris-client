@@ -274,7 +274,7 @@ class Case(object):
             "case_tags": case_tags
         }
 
-        resp = self._s.pi_post(f'manage/cases/update', data=body, cid=case_id)
+        resp = self._s.pi_post(f'manage/cases/update/{case_id}', data=body, cid=case_id)
 
         return resp
 
