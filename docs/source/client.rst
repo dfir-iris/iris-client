@@ -4,4 +4,4 @@ API
 .. autosummary::
    :toctree: generated
 
-   dfir-iris-client
+   dfir_iris_client
