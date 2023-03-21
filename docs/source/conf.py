@@ -1,6 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 
 # -- Project information
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath('../../dfir_iris_client/'))
 
 project = 'DFIR-IRIS Client'
 copyright = '2023, DFIR-IRIS'
