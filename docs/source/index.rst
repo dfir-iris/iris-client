@@ -21,3 +21,9 @@ Examples
 --------
 Examples of usage are available [here](https://github.com/dfir-iris/iris-client/tree/master/examples).
 
+Contents
+--------
+
+.. toctree::
+
+   client
