@@ -1,2 +1,3 @@
-dfir-iris-client
-myst_parser
+requests
+packaging
+deprecated
