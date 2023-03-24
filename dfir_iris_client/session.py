@@ -14,11 +14,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import datetime
 import json
 import logging as logger
 import os
-from ctypes import Union
 from typing import Union
 
 import requests

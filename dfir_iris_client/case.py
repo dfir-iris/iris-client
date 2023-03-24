@@ -1179,7 +1179,7 @@ class Case(object):
 
         return self._s.pi_get(f'case/timeline/advanced-filter?q={filter_uri}&', cid=cid)
 
-    def add_event(self, title: str, date_time: datetime, content: str = None, raw_content: str = None,
+    def add_event(self, title: str, date_time: datetime.datetime, content: str = None, raw_content: str = None,
                   source: str = None, linked_assets: list = None, linked_iocs: list = None,
                   category: Union[int, str] = None, tags: list = None, color: str = None, display_in_graph: bool = None,
                   display_in_summary: bool = None, custom_attributes: str = None, timezone_string: str = None,
@@ -1258,7 +1258,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/timeline/events/add', data=body)
 
-    def update_event(self, event_id: int, title: str = None, date_time: datetime = None, content: str = None,
+    def update_event(self, event_id: int, title: str = None, date_time: datetime.datetime = None, content: str = None,
                      raw_content: str = None, source: str = None, linked_assets: list = None, linked_iocs: list = None,
                      category: Union[int, str] = None, tags: list = None,
                      color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
