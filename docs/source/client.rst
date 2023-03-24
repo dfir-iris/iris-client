@@ -4,4 +4,7 @@ Client
 .. autosummary::
    :toctree: generated
 
-   dfir_iris_client
+.. automodule:: dfir_iris_client
+    :members:
+    :undoc-members:
+    :show-inheritance:
