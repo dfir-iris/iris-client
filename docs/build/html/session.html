@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session &mdash; DFIR-IRIS Client 2.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Case" href="case.html" />
+    <link rel="prev" title="Welcome to Client’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DFIR-IRIS Client
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Session</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dfir_iris_client.session.API_VERSION"><code class="docutils literal notranslate"><span class="pre">API_VERSION</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dfir_iris_client.session.ClientSession"><code class="docutils literal notranslate"><span class="pre">ClientSession</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.session.ClientSession.pi_get"><code class="docutils literal notranslate"><span class="pre">ClientSession.pi_get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.session.ClientSession.pi_post"><code class="docutils literal notranslate"><span class="pre">ClientSession.pi_post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.session.ClientSession.pi_post_files"><code class="docutils literal notranslate"><span class="pre">ClientSession.pi_post_files()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.session.ClientSession.preload_base_objects"><code class="docutils literal notranslate"><span class="pre">ClientSession.preload_base_objects()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#dfir_iris_client.session.log"><code class="docutils literal notranslate"><span class="pre">log</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="case.html">Case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin.html">Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customer.html">Customers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="global_search.html">Global search</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DFIR-IRIS Client</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Session</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/session.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-dfir_iris_client.session">
+<span id="session"></span><h1>Session<a class="headerlink" href="#module-dfir_iris_client.session" title="Permalink to this heading"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py" id="dfir_iris_client.session.API_VERSION">
+<span class="sig-prename descclassname"><span class="pre">dfir_iris_client.session.</span></span><span class="sig-name descname"><span class="pre">API_VERSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2.0.0'</span></em><a class="headerlink" href="#dfir_iris_client.session.API_VERSION" title="Permalink to this definition"></a></dt>
+<dd><p>client_session
+Defines a global session, accessible by all classes. client_session is of type ClientSession.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dfir_iris_client.session.ClientSession">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dfir_iris_client.session.</span></span><span class="sig-name descname"><span class="pre">ClientSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apikey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'iris-client'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_verify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dfir_iris_client.session.ClientSession" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a client that can interacts with Iris. It is basic wrapper handling authentication and the requests
+to the server.</p>
+<p>Args:</p>
+<p>Returns:</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.session.ClientSession.pi_get">
+<span class="sig-name descname"><span class="pre">pi_get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_wrap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Response</span></span></span><a class="headerlink" href="#dfir_iris_client.session.ClientSession.pi_get" title="Permalink to this definition"></a></dt>
+<dd><p>Adds the CID information needed by the server when issuing GET requests
+and then issue the request itself.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> – URI endpoint to request</p></li>
+<li><p><strong>no_wrap</strong> – Do not wrap the response in ApiResponse object</p></li>
+<li><p><strong>cid</strong> – Target case ID</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse or Response object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.session.ClientSession.pi_post">
+<span class="sig-name descname"><span class="pre">pi_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.session.ClientSession.pi_post" title="Permalink to this definition"></a></dt>
+<dd><p>Issues a POSt request with the provided data. Simple wrapper around _pi_request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> – URI endpoint to request</p></li>
+<li><p><strong>data</strong> – data to be posted. Expect a dict</p></li>
+<li><p><strong>cid</strong> – Target case ID</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.session.ClientSession.pi_post_files">
+<span class="sig-name descname"><span class="pre">pi_post_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.session.ClientSession.pi_post_files" title="Permalink to this definition"></a></dt>
+<dd><p>Issues a POST request in multipart with the provided data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> – URI endpoint to request</p></li>
+<li><p><strong>files</strong> – data to be posted. Expect a dict</p></li>
+<li><p><strong>data</strong> – data to be posted. Expect a dict</p></li>
+<li><p><strong>cid</strong> – Target case ID</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.session.ClientSession.preload_base_objects">
+<span class="sig-name descname"><span class="pre">preload_base_objects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dfir_iris_client.session.ClientSession.preload_base_objects" title="Permalink to this definition"></a></dt>
+<dd><p>Preload the base objects most commonly used. This simply init the BaseObjects
+class, which in turns requests and build all the most common objects such as
+AnalysisStatus, EventCategory, EventType, etc.</p>
+<p>For future use only</p>
+<p>Args:</p>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dfir_iris_client.session.log">
+<span class="sig-prename descclassname"><span class="pre">dfir_iris_client.session.</span></span><span class="sig-name descname"><span class="pre">log</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">dfir_iris_client.session</span> <span class="pre">(WARNING)&gt;</span></em><a class="headerlink" href="#dfir_iris_client.session.log" title="Permalink to this definition"></a></dt>
+<dd><p>API_VERSION
+The API version is not directly correlated with Iris version.
+Server has an endpoint /api/versions which should returns the API compatible versions
+it can handles.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Client’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="case.html" class="btn btn-neutral float-right" title="Case" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, DFIR-IRIS Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
