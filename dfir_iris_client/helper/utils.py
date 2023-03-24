@@ -96,11 +96,6 @@ def map_object(obj, data_obj: dict, obj_type=None, strict=False) -> IrisStatus:
 class ApiResponse(object):
     """Handles API returns and error. It parses the standard API returns and build an
     standard ApiResponse object.
-
-    Args:
-
-    Returns:
-
     """
 
     def __init__(self, response: str = None, uri: str = None):
