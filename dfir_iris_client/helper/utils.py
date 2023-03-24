@@ -103,7 +103,7 @@ class ApiResponse(object):
 
     """
 
-    def __init__(self, response: json = None, uri: str = None):
+    def __init__(self, response: str = None, uri: str = None):
         try:
 
             self._response = json.loads(response)
