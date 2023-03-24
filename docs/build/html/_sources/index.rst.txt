@@ -6,6 +6,10 @@
 Welcome to IRIS Client's documentation!
 ============================================
 
+The IRIS Client is a python client that allows users to easily interact with the IRIS API.
+Examples are available in the `examples` folder. An API key is required to use the client.
+The API reference is available at https://docs.dfir-iris.org/operations/api/#references.
+
 .. toctree::
    :maxdepth: 1
 
@@ -15,6 +19,7 @@ Welcome to IRIS Client's documentation!
    customer
    global_search
    users
+   helpers
 
 Indices and tables
 ==================

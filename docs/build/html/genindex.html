@@ -44,6 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="customer.html">Customers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="global_search.html">Global search</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users.html">Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a></li>
 </ul>
 
         </div>
@@ -76,6 +77,7 @@
  <a href="#A"><strong>A</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
@@ -120,12 +122,12 @@
 </li>
       <li><a href="admin.html#dfir_iris_client.admin.AdminHelper.add_group">add_group() (dfir_iris_client.admin.AdminHelper method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="case.html#dfir_iris_client.case.Case.add_ioc">add_ioc() (dfir_iris_client.case.Case method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.add_ioc_comment">add_ioc_comment() (dfir_iris_client.case.Case method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="admin.html#dfir_iris_client.admin.AdminHelper.add_ioc_type">add_ioc_type() (dfir_iris_client.admin.AdminHelper method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.add_note">add_note() (dfir_iris_client.case.Case method)</a>
@@ -146,9 +148,17 @@
 </li>
       <li><a href="admin.html#dfir_iris_client.admin.AdminHelper">AdminHelper (class in dfir_iris_client.admin)</a>
 </li>
+      <li><a href="helpers.html#dfir_iris_client.helper.analysis_status.AnalysisStatusHelper">AnalysisStatusHelper (class in dfir_iris_client.helper.analysis_status)</a>
+</li>
       <li><a href="session.html#dfir_iris_client.session.API_VERSION">API_VERSION (in module dfir_iris_client.session)</a>
 </li>
+      <li><a href="helpers.html#dfir_iris_client.helper.utils.ApiResponse">ApiResponse (class in dfir_iris_client.helper.utils)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.utils.assert_api_resp">assert_api_resp() (in module dfir_iris_client.helper.utils)</a>
+</li>
       <li><a href="case.html#dfir_iris_client.case.Case.asset_exists">asset_exists() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.assets_type.AssetTypeHelper">AssetTypeHelper (class in dfir_iris_client.helper.assets_type)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -160,11 +170,21 @@
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.case_id_exists">case_id_exists() (dfir_iris_client.case.Case method)</a>
 </li>
+      <li><a href="helpers.html#dfir_iris_client.helper.authorization.CaseAccessLevel">CaseAccessLevel (class in dfir_iris_client.helper.authorization)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.case_classifications.CaseClassificationsHelper">CaseClassificationsHelper (class in dfir_iris_client.helper.case_classifications)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.utils.ClientApiData">ClientApiData() (in module dfir_iris_client.helper.utils)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="helpers.html#dfir_iris_client.helper.utils.ClientApiError">ClientApiError() (in module dfir_iris_client.helper.utils)</a>
+</li>
       <li><a href="session.html#dfir_iris_client.session.ClientSession">ClientSession (class in dfir_iris_client.session)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.close_case">close_case() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.compromise_status.CompromiseStatusHelper">CompromiseStatusHelper (class in dfir_iris_client.helper.compromise_status)</a>
 </li>
       <li><a href="customer.html#dfir_iris_client.customer.Customer">Customer (class in dfir_iris_client.customer)</a>
 </li>
@@ -214,8 +234,6 @@
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.delete_note_comment">delete_note_comment() (dfir_iris_client.case.Case method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="case.html#dfir_iris_client.case.Case.delete_notes_group">delete_notes_group() (dfir_iris_client.case.Case method)</a>
 </li>
       <li><a href="admin.html#dfir_iris_client.admin.AdminHelper.delete_report_template">delete_report_template() (dfir_iris_client.admin.AdminHelper method)</a>
@@ -256,6 +274,99 @@
         <li><a href="global_search.html#module-dfir_iris_client.global_search">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    dfir_iris_client.helper.analysis_status
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.analysis_status">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.assets_type
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.assets_type">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.authorization
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.authorization">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.case_classifications
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.case_classifications">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.colors
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.colors">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.compromise_status
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.compromise_status">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.errors
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.errors">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.events_categories
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.events_categories">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.ioc_types
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.ioc_types">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.report_template_types
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.report_template_types">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.task_status
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.task_status">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.tlps
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.tlps">module</a>
+</li>
+      </ul></li>
+      <li>
+    dfir_iris_client.helper.utils
+
+      <ul>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.utils">module</a>
+</li>
+      </ul></li>
       <li>
     dfir_iris_client.session
 
@@ -279,6 +390,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="helpers.html#dfir_iris_client.helper.events_categories.EventCategoryHelper">EventCategoryHelper (class in dfir_iris_client.helper.events_categories)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -290,15 +409,25 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="helpers.html#dfir_iris_client.helper.analysis_status.AnalysisStatusHelper.get_analysis_status">get_analysis_status() (dfir_iris_client.helper.analysis_status.AnalysisStatusHelper method)</a>
+</li>
       <li><a href="case.html#dfir_iris_client.case.Case.get_asset">get_asset() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.assets_type.AssetTypeHelper.get_asset_type">get_asset_type() (dfir_iris_client.helper.assets_type.AssetTypeHelper method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.get_case">get_case() (dfir_iris_client.case.Case method)</a>
 </li>
+      <li><a href="helpers.html#dfir_iris_client.helper.case_classifications.CaseClassificationsHelper.get_case_classification">get_case_classification() (dfir_iris_client.helper.case_classifications.CaseClassificationsHelper method)</a>
+</li>
       <li><a href="customer.html#dfir_iris_client.customer.Customer.get_customer_by_id">get_customer_by_id() (dfir_iris_client.customer.Customer method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.utils.get_data_from_resp">get_data_from_resp() (in module dfir_iris_client.helper.utils)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.get_ds_file_info">get_ds_file_info() (dfir_iris_client.case.Case method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.get_event">get_event() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.events_categories.EventCategoryHelper.get_event_category">get_event_category() (dfir_iris_client.helper.events_categories.EventCategoryHelper method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.get_evidence">get_evidence() (dfir_iris_client.case.Case method)</a>
 </li>
@@ -306,10 +435,14 @@
 </li>
       <li><a href="admin.html#dfir_iris_client.admin.AdminHelper.get_group">get_group() (dfir_iris_client.admin.AdminHelper method)</a>
 </li>
-      <li><a href="case.html#dfir_iris_client.case.Case.get_ioc">get_ioc() (dfir_iris_client.case.Case method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="case.html#dfir_iris_client.case.Case.get_ioc">get_ioc() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.ioc_types.IocTypeHelper.get_ioc_type">get_ioc_type() (dfir_iris_client.helper.ioc_types.IocTypeHelper method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.utils.get_iris_session">get_iris_session() (in module dfir_iris_client.helper.utils)</a>
+</li>
       <li><a href="case.html#dfir_iris_client.case.Case.get_note">get_note() (dfir_iris_client.case.Case method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.get_notes_group">get_notes_group() (dfir_iris_client.case.Case method)</a>
@@ -317,6 +450,10 @@
       <li><a href="case.html#dfir_iris_client.case.Case.get_summary">get_summary() (dfir_iris_client.case.Case method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.get_task">get_task() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.task_status.TaskStatusHelper.get_task_status">get_task_status() (dfir_iris_client.helper.task_status.TaskStatusHelper method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.tlps.TlpHelper.get_tlp">get_tlp() (dfir_iris_client.helper.tlps.TlpHelper method)</a>
 </li>
       <li><a href="admin.html#dfir_iris_client.admin.AdminHelper.get_user">get_user() (dfir_iris_client.admin.AdminHelper method)</a>
 
@@ -344,6 +481,28 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="helpers.html#dfir_iris_client.helper.ioc_types.IocTypeHelper">IocTypeHelper (class in dfir_iris_client.helper.ioc_types)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.errors.IrisStatus">IrisStatus (class in dfir_iris_client.helper.errors)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.errors.IrisStatusError">IrisStatusError (class in dfir_iris_client.helper.errors)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.errors.IrisStatusSuccess">IrisStatusSuccess (class in dfir_iris_client.helper.errors)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="helpers.html#dfir_iris_client.helper.errors.IrisStatus.is_error">is_error() (dfir_iris_client.helper.errors.IrisStatus method)</a>
+
+      <ul>
+        <li><a href="helpers.html#dfir_iris_client.helper.utils.ApiResponse.is_error">(dfir_iris_client.helper.utils.ApiResponse method)</a>
+</li>
+      </ul></li>
+      <li><a href="helpers.html#dfir_iris_client.helper.errors.IrisStatus.is_success">is_success() (dfir_iris_client.helper.errors.IrisStatus method)</a>
+
+      <ul>
+        <li><a href="helpers.html#dfir_iris_client.helper.utils.ApiResponse.is_success">(dfir_iris_client.helper.utils.ApiResponse method)</a>
+</li>
+      </ul></li>
       <li><a href="admin.html#dfir_iris_client.admin.AdminHelper.is_user_admin">is_user_admin() (dfir_iris_client.admin.AdminHelper method)</a>
 </li>
   </ul></td>
@@ -352,11 +511,19 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="helpers.html#dfir_iris_client.helper.analysis_status.AnalysisStatusHelper.list_analysis_status_types">list_analysis_status_types() (dfir_iris_client.helper.analysis_status.AnalysisStatusHelper method)</a>
+</li>
       <li><a href="case.html#dfir_iris_client.case.Case.list_asset_comments">list_asset_comments() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.assets_type.AssetTypeHelper.list_asset_types">list_asset_types() (dfir_iris_client.helper.assets_type.AssetTypeHelper method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.list_assets">list_assets() (dfir_iris_client.case.Case method)</a>
 </li>
+      <li><a href="helpers.html#dfir_iris_client.helper.case_classifications.CaseClassificationsHelper.list_case_classifications">list_case_classifications() (dfir_iris_client.helper.case_classifications.CaseClassificationsHelper method)</a>
+</li>
       <li><a href="case.html#dfir_iris_client.case.Case.list_cases">list_cases() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.compromise_status.CompromiseStatusHelper.list_compromise_status_types">list_compromise_status_types() (dfir_iris_client.helper.compromise_status.CompromiseStatusHelper method)</a>
 </li>
       <li><a href="customer.html#dfir_iris_client.customer.Customer.list_customers">list_customers() (dfir_iris_client.customer.Customer method)</a>
 </li>
@@ -366,6 +533,8 @@
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.list_events">list_events() (dfir_iris_client.case.Case method)</a>
 </li>
+      <li><a href="helpers.html#dfir_iris_client.helper.events_categories.EventCategoryHelper.list_events_categories">list_events_categories() (dfir_iris_client.helper.events_categories.EventCategoryHelper method)</a>
+</li>
       <li><a href="case.html#dfir_iris_client.case.Case.list_evidence_comments">list_evidence_comments() (dfir_iris_client.case.Case method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.list_evidences">list_evidences() (dfir_iris_client.case.Case method)</a>
@@ -374,27 +543,49 @@
 </li>
       <li><a href="admin.html#dfir_iris_client.admin.AdminHelper.list_groups">list_groups() (dfir_iris_client.admin.AdminHelper method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="case.html#dfir_iris_client.case.Case.list_ioc_comments">list_ioc_comments() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.ioc_types.IocTypeHelper.list_ioc_types">list_ioc_types() (dfir_iris_client.helper.ioc_types.IocTypeHelper method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.list_iocs">list_iocs() (dfir_iris_client.case.Case method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="case.html#dfir_iris_client.case.Case.list_note_comments">list_note_comments() (dfir_iris_client.case.Case method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.list_notes_groups">list_notes_groups() (dfir_iris_client.case.Case method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.list_task_comments">list_task_comments() (dfir_iris_client.case.Case method)</a>
 </li>
+      <li><a href="helpers.html#dfir_iris_client.helper.task_status.TaskStatusHelper.list_task_status_types">list_task_status_types() (dfir_iris_client.helper.task_status.TaskStatusHelper method)</a>
+</li>
       <li><a href="case.html#dfir_iris_client.case.Case.list_tasks">list_tasks() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.tlps.TlpHelper.list_tlps">list_tlps() (dfir_iris_client.helper.tlps.TlpHelper method)</a>
 </li>
       <li><a href="users.html#dfir_iris_client.users.User.list_users">list_users() (dfir_iris_client.users.User method)</a>
 </li>
       <li><a href="session.html#dfir_iris_client.session.log">log (in module dfir_iris_client.session)</a>
 </li>
+      <li><a href="helpers.html#dfir_iris_client.helper.analysis_status.AnalysisStatusHelper.lookup_analysis_status_name">lookup_analysis_status_name() (dfir_iris_client.helper.analysis_status.AnalysisStatusHelper method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.assets_type.AssetTypeHelper.lookup_asset_type_name">lookup_asset_type_name() (dfir_iris_client.helper.assets_type.AssetTypeHelper method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.case_classifications.CaseClassificationsHelper.lookup_case_classification_name">lookup_case_classification_name() (dfir_iris_client.helper.case_classifications.CaseClassificationsHelper method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.compromise_status.CompromiseStatusHelper.lookup_compromise_status_name">lookup_compromise_status_name() (dfir_iris_client.helper.compromise_status.CompromiseStatusHelper method)</a>
+</li>
       <li><a href="customer.html#dfir_iris_client.customer.Customer.lookup_customer">lookup_customer() (dfir_iris_client.customer.Customer method)</a>
 </li>
+      <li><a href="helpers.html#dfir_iris_client.helper.events_categories.EventCategoryHelper.lookup_event_category_name">lookup_event_category_name() (dfir_iris_client.helper.events_categories.EventCategoryHelper method)</a>
+</li>
       <li><a href="admin.html#dfir_iris_client.admin.AdminHelper.lookup_group">lookup_group() (dfir_iris_client.admin.AdminHelper method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.ioc_types.IocTypeHelper.lookup_ioc_type_name">lookup_ioc_type_name() (dfir_iris_client.helper.ioc_types.IocTypeHelper method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.task_status.TaskStatusHelper.lookup_task_status_name">lookup_task_status_name() (dfir_iris_client.helper.task_status.TaskStatusHelper method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.tlps.TlpHelper.lookup_tlp_name">lookup_tlp_name() (dfir_iris_client.helper.tlps.TlpHelper method)</a>
 </li>
       <li><a href="users.html#dfir_iris_client.users.User.lookup_username">lookup_username() (dfir_iris_client.users.User method)</a>
 </li>
@@ -404,6 +595,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="helpers.html#dfir_iris_client.helper.utils.map_object">map_object() (in module dfir_iris_client.helper.utils)</a>
+</li>
       <li>
     module
 
@@ -415,6 +608,32 @@
         <li><a href="customer.html#module-dfir_iris_client.customer">dfir_iris_client.customer</a>
 </li>
         <li><a href="global_search.html#module-dfir_iris_client.global_search">dfir_iris_client.global_search</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.analysis_status">dfir_iris_client.helper.analysis_status</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.assets_type">dfir_iris_client.helper.assets_type</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.authorization">dfir_iris_client.helper.authorization</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.case_classifications">dfir_iris_client.helper.case_classifications</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.colors">dfir_iris_client.helper.colors</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.compromise_status">dfir_iris_client.helper.compromise_status</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.errors">dfir_iris_client.helper.errors</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.events_categories">dfir_iris_client.helper.events_categories</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.ioc_types">dfir_iris_client.helper.ioc_types</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.report_template_types">dfir_iris_client.helper.report_template_types</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.task_status">dfir_iris_client.helper.task_status</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.tlps">dfir_iris_client.helper.tlps</a>
+</li>
+        <li><a href="helpers.html#module-dfir_iris_client.helper.utils">dfir_iris_client.helper.utils</a>
 </li>
         <li><a href="session.html#module-dfir_iris_client.session">dfir_iris_client.session</a>
 </li>
@@ -433,12 +652,16 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="session.html#dfir_iris_client.session.ClientSession.pi_get">pi_get() (dfir_iris_client.session.ClientSession method)</a>
+      <li><a href="helpers.html#dfir_iris_client.helper.utils.parse_api_data">parse_api_data() (in module dfir_iris_client.helper.utils)</a>
 </li>
-      <li><a href="session.html#dfir_iris_client.session.ClientSession.pi_post">pi_post() (dfir_iris_client.session.ClientSession method)</a>
+      <li><a href="helpers.html#dfir_iris_client.helper.authorization.Permissions">Permissions (class in dfir_iris_client.helper.authorization)</a>
+</li>
+      <li><a href="session.html#dfir_iris_client.session.ClientSession.pi_get">pi_get() (dfir_iris_client.session.ClientSession method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="session.html#dfir_iris_client.session.ClientSession.pi_post">pi_post() (dfir_iris_client.session.ClientSession method)</a>
+</li>
       <li><a href="session.html#dfir_iris_client.session.ClientSession.pi_post_files">pi_post_files() (dfir_iris_client.session.ClientSession method)</a>
 </li>
       <li><a href="session.html#dfir_iris_client.session.ClientSession.preload_base_objects">preload_base_objects() (dfir_iris_client.session.ClientSession method)</a>
@@ -453,11 +676,15 @@
 </li>
       <li><a href="admin.html#dfir_iris_client.admin.AdminHelper.recompute_user_cases_access">recompute_user_cases_access() (dfir_iris_client.admin.AdminHelper method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="case.html#dfir_iris_client.case.Case.rename_ds_folder">rename_ds_folder() (dfir_iris_client.case.Case method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="case.html#dfir_iris_client.case.Case.reopen_case">reopen_case() (dfir_iris_client.case.Case method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.report_template_types.ReportTemplateLanguage">ReportTemplateLanguage (class in dfir_iris_client.helper.report_template_types)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.report_template_types.ReportTemplateType">ReportTemplateType (class in dfir_iris_client.helper.report_template_types)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -469,9 +696,13 @@
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.set_case_outcome_status">set_case_outcome_status() (dfir_iris_client.case.Case method)</a>
 </li>
+      <li><a href="case.html#dfir_iris_client.case.Case.set_cid">set_cid() (dfir_iris_client.case.Case method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="case.html#dfir_iris_client.case.Case.set_cid">set_cid() (dfir_iris_client.case.Case method)</a>
+      <li><a href="helpers.html#dfir_iris_client.helper.errors.IrisStatus.set_error">set_error() (dfir_iris_client.helper.errors.IrisStatus method)</a>
+</li>
+      <li><a href="helpers.html#dfir_iris_client.helper.errors.IrisStatus.set_success">set_success() (dfir_iris_client.helper.errors.IrisStatus method)</a>
 </li>
       <li><a href="case.html#dfir_iris_client.case.Case.set_summary">set_summary() (dfir_iris_client.case.Case method)</a>
 </li>
@@ -481,6 +712,12 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="helpers.html#dfir_iris_client.helper.task_status.TaskStatusHelper">TaskStatusHelper (class in dfir_iris_client.helper.task_status)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="helpers.html#dfir_iris_client.helper.tlps.TlpHelper">TlpHelper (class in dfir_iris_client.helper.tlps)</a>
+</li>
       <li><a href="case.html#dfir_iris_client.case.Case.trigger_manual_hook">trigger_manual_hook() (dfir_iris_client.case.Case method)</a>
 </li>
   </ul></td>
