@@ -32,14 +32,14 @@ case.set_cid(cid=1)
 # For efficiency and avoid unnecessary requests, the IDs can also be provided if they are known.
 status = case.add_task(title='Analysis of laptop X',
                        description='Plaso the laptop',
-                       assignee='administrator',
+                       assignees=['administrator'],
                        status='To do')
 
 assert_api_resp(status, soft_fail=False)
 log.info(f'Created new task : {status.as_json()}')
 
 status = case.add_task(title='Analysis of server Y',
-                       assignee='administrator',
+                       assignees=['administrator'],
                        status='In progress')
 
 assert_api_resp(status, soft_fail=False)

@@ -25,6 +25,7 @@ status = case.add_case(case_name='A new case',
                        case_description='Short initial description, or really long '
                                         'description. It\'s up to you',
                        case_customer='IrisClientApiDemo',
+                       case_classification='other:other',
                        soc_id='soc_11',
                        create_customer=True)
 
