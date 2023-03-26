@@ -25,7 +25,8 @@ class TaskStatusHelper(object):
         self._s = session
 
     def list_task_status_types(self) -> ApiResponse:
-        """Returns a list of all tasks statuses
+        """
+        Returns a list of all tasks statuses
 
         Args:
 
@@ -35,7 +36,8 @@ class TaskStatusHelper(object):
         return self._s.pi_get('manage/task-status/list')
 
     def lookup_task_status_name(self, task_status_name: str) -> Union[int, None]:
-        """Returns a task status ID from its name otherwise None
+        """
+        Returns a task status ID from its name otherwise None
 
         Args:
           task_status_name: str: Task name to lookup
@@ -53,7 +55,8 @@ class TaskStatusHelper(object):
         return None
 
     def get_task_status(self, task_status_id: int) -> ApiResponse:
-        """Returns a task status from its ID
+        """
+        Returns a task status from its ID
 
         Args:
           task_status_id: int: Task ID to lookup

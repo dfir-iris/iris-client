@@ -25,17 +25,19 @@ class IocTypeHelper(object):
         self._s = session
 
     def list_ioc_types(self) -> ApiResponse:
-        """Returns a list of all ioc types
+        """
+        Returns a list of all ioc types
 
         Args:
 
         Returns:
             APIResponse object
         """
-        return self._s.pi_get('manage/ioc-types/list')
+        return self._s.pi_get('manage/ioc-types/list', cid=1)
 
     def lookup_ioc_type_name(self, ioc_type_name: str) -> Union[None, int]:
-        """Returns an ioc_type_name from its name otherwise None
+        """
+        Returns an ioc_type_name from its name otherwise None
 
         Args:
           ioc_type_name: IOC type name to lookup
@@ -53,7 +55,8 @@ class IocTypeHelper(object):
         return None
 
     def get_ioc_type(self, ioc_type_id: int) -> ApiResponse:
-        """Returns an ioc type from its ID
+        """
+        Returns an ioc type from its ID
 
         Args:
           ioc_type_id: Type ID to lookup

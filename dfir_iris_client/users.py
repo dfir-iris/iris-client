@@ -14,6 +14,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import warnings
+from typing import Union
+
+from deprecated.classic import deprecated
+
 from dfir_iris_client.helper.utils import ApiResponse
 
 
@@ -22,63 +27,66 @@ class User(object):
     def __init__(self, session):
         self._s = session
 
+    @deprecated('Use the new user_exists method', version="2.0.0", action="error")
     def user_id_exists(self, user_id: int) -> bool:
-        """Returns True if the user ID exists, else false
+        return self.user_exists(user=user_id)
 
-        Args:
-          user_id: User ID to verify
-
-        Returns:
-          bool - Asset type ID matching provided asset type name
-
-        """
-        req = self.get_user(user_id=user_id)
-
-        return req.is_success()
-
+    @deprecated('Use the new user_exists method', version="2.0.0", action="error")
     def username_exists(self, username: str) -> bool:
-        """Returns True if the username (login) exists, else false.
-        This is equivalent to calling lookup_username() and getting the results.
+        return self.user_exists(user=username)
+
+    def user_exists(self, user: Union[str, int]) -> bool:
+        """
+        Returns True if the user (login) exists, else false. User ID can also be looked up.
 
         Args:
-          username: User name (login) to lookup
+          user: Login or user ID to lookup
 
         Returns:
           True if exists else false
-
         """
-        req = self.lookup_username(username=username)
+        if isinstance(user, int):
+            req = self.get_user(user=user)
+        else:
+            req = self.lookup_username(username=user)
 
         return req.is_success()
 
     def lookup_username(self, username: str) -> ApiResponse:
-        """Returns a user ID corresponding to the username, else None
+        """
+        Returns a user ID corresponding to the username, else None
 
         Args:
-          username: User name to lookup
+          username: Username to lookup
 
         Returns:
           ApiResponse
 
         """
-
         return self._s.pi_get(f'manage/users/lookup/login/{username}')
 
-    def get_user(self, user_id: int) -> ApiResponse:
+    def get_user(self, user: Union[int, str], **kwargs) -> ApiResponse:
         """Return a user data
 
         Args:
-          user_id: USer ID to verify
+          user: User ID or login of the user to get
 
         Returns:
-          bool - Asset type ID matching provided asset type name
-
+          ApiResponse object
         """
+        if kwargs.get('user_id') is not None:
+            warnings.warn("\'user_id\' argument is deprecated, use \'user\' instead",
+                          DeprecationWarning)
+            user = kwargs.get('user_id')
 
-        return self._s.pi_get(f'manage/users/lookup/id/{user_id}')
+        if isinstance(user, str):
+            return self.lookup_username(username=user)
+
+        return self._s.pi_get(f'manage/users/lookup/id/{user}')
 
     def list_users(self) -> ApiResponse:
-        """Returns a list of the users with a restricted view so it can be called by unprivileged users.
+        """
+        Returns a list of the users with a restricted view so it can be called by unprivileged users.
 
         Args:
 
@@ -86,3 +94,5 @@ class User(object):
             ApiResponse object
         """
         return self._s.pi_get(f'manage/users/restricted/list')
+
+

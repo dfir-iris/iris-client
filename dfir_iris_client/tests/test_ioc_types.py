@@ -19,15 +19,14 @@ import unittest
 
 from dfir_iris_client.helper.ioc_types import IocTypeHelper
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session
+from dfir_iris_client.tests.tests_helper import new_session, new_adm_session, InitIrisClientTest
 
 
-class IocTypesTest(unittest.TestCase):
+class IocTypesTest(InitIrisClientTest):
     """ """
     def setUp(self):
         """ """
-        session = new_session()
-        self.ioct = IocTypeHelper(session)
+        self.ioct = IocTypeHelper(self.session)
 
     def test_list_ioc_types(self):
         """ """

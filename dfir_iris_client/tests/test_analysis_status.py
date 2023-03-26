@@ -15,19 +15,17 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import unittest
-
 from dfir_iris_client.helper.analysis_status import AnalysisStatusHelper
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session
+from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
-class AnalysisStatusTest(unittest.TestCase):
+class AnalysisStatusTest(InitIrisClientTest):
     """ """
+
     def setUp(self):
         """ """
-        session = new_session()
-        self.asset_type = AnalysisStatusHelper(session)
+        self.asset_type = AnalysisStatusHelper(self.session)
 
     def test_list_analysis_status(self):
         """ """

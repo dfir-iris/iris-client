@@ -1,0 +1,8 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "dfir-iris-client"
+authors = [{name = "DFIR-IRIS", email = "contact@dfir-iris.org"}]
+dynamic = ["version", "description"]

@@ -14,52 +14,37 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import unittest
+import random
 
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session, new_adm_session
+from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
-class AdminTest(unittest.TestCase):
+class AdminTest(InitIrisClientTest):
     """ """
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.adm = AdminHelper(cls.session)
+        cls.customer = Customer(cls.session)
+
+    def test_is_user_admin_valid_deprecated(self):
         """ """
-        session = new_adm_session()
-        self.adm = AdminHelper(session)
-        self.customer = Customer(session)
-
-    def test_is_user_admin_valid(self):
-        """ """
-        ret = self.adm.is_user_admin()
-        assert ret is True
-
-        session_no_adm = new_session()
-        self.failureException(AdminHelper(session_no_adm))
-
-    def test_get_user_valid(self):
-        """ """
-        ret = self.adm.get_user('administrator')
-        assert assert_api_resp(ret, soft_fail=False)
-
-        data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'user_active') is True
-        assert type(parse_api_data(data, 'user_id')) is int
-        assert parse_api_data(data, 'user_login') == "administrator"
-        assert parse_api_data(data, 'user_name') == "administrator"
-        assert type(parse_api_data(data, 'user_roles')) == list
-
-    def test_get_user_invalid(self):
-        """ """
-        ret = self.adm.get_user('dummy user')
-        assert bool(assert_api_resp(ret)) is False
-
-        assert 'Invalid login' in ret.get_msg()
+        # Expect method deprecated exception
+        with self.assertRaises(DeprecationWarning):
+            self.adm.is_user_admin()
 
     def test_add_ioc_type_valid(self):
         """ """
         ret = self.adm.add_ioc_type('dummy ioc type', description='dummy description', taxonomy='dummy taxo')
+        if ret.get_data().get('type_name') == ['IOC type name already exists']:
+            ret = self.adm.delete_ioc_type(parse_api_data(ret.get_data(), 'type_id'))
+
+            assert assert_api_resp(ret, soft_fail=False)
+            ret = self.adm.add_ioc_type('dummy ioc type', description='dummy description', taxonomy='dummy taxo')
+
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
@@ -102,51 +87,133 @@ class AdminTest(unittest.TestCase):
         ret = self.adm.delete_ioc_type(parse_api_data(data, 'type_id'))
         assert assert_api_resp(ret, soft_fail=False)
 
-    def test_add_asset_type_valid(self):
+    def test_add_asset_type_valid_deprecated(self):
         """ """
-        ret = self.adm.add_asset_type('dummy asset type', description='dummy description')
+        with self.assertRaises(DeprecationWarning):
+            self.adm.add_asset_type('dummy asset type', description='dummy description')
+
+    def test_add_asset_type_invalid_already_exists_deprecated(self):
+        """ """
+        with self.assertRaises(DeprecationWarning):
+            self.adm.add_asset_type('WAF', description='dummy description')
+
+    def test_update_asset_type_valid_deprecated(self):
+        """ """
+        with self.assertRaises(DeprecationWarning):
+            self.adm.update_asset_type(asset_type_id=0, name='dummy asset type', description='dummy description')
+
+    def test_add_case_classification_valid(self):
+        """ """
+        ret = self.adm.add_case_classification(name='dummy case classification',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'asset_description') == 'dummy description'
-        assert parse_api_data(data, 'asset_name') == 'dummy asset type'
-        assert type(parse_api_data(data, 'asset_id')) == int
+        assert parse_api_data(data, 'description') == 'dummy description'
+        assert parse_api_data(data, 'name') == 'dummy case classification'
+        assert parse_api_data(data, 'name_expanded') == 'dummy case classification expanded'
+        assert type(parse_api_data(data, 'id')) == int
 
-        ret = self.adm.delete_asset_type(parse_api_data(data, 'asset_id'))
+        ret = self.adm.delete_case_classification(parse_api_data(data, 'id'))
         assert assert_api_resp(ret, soft_fail=False)
 
-    def test_add_asset_type_invalid_already_exists(self):
+    def test_add_case_classification_invalid(self):
         """ """
-        ret = self.adm.add_asset_type('WAF', description='dummy description')
+        ret = self.adm.add_case_classification(name='dummy case classification',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
+        assert assert_api_resp(ret, soft_fail=False)
+        classification_id = parse_api_data(ret.get_data(), 'id')
+
+        ret = self.adm.add_case_classification(name='dummy case classification',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
         assert bool(assert_api_resp(ret, soft_fail=True)) is False
-
         assert 'Data error' in ret.get_msg()
+        assert ret.get_data().get('name') == ['Case classification name already exists']
 
-    def test_update_asset_type_valid(self):
+        self.adm.delete_case_classification(classification_id)
+
+    def test_update_case_classification_valid(self):
         """ """
-        ret = self.adm.add_asset_type('dummy asset type', description='dummy description')
+        ret = self.adm.add_case_classification(name='dummy case classification',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'asset_description') == 'dummy description'
-        assert parse_api_data(data, 'asset_name') == 'dummy asset type'
-        assert type(parse_api_data(data, 'asset_id')) == int
+        assert parse_api_data(data, 'description') == 'dummy description'
+        assert parse_api_data(data, 'name') == 'dummy case classification'
+        assert parse_api_data(data, 'name_expanded') == 'dummy case classification expanded'
+        assert type(parse_api_data(data, 'id')) == int
 
-        ret = self.adm.update_asset_type(asset_type_id=parse_api_data(data, 'asset_id'),
-                                         name='new dummy', description='new dummy description')
+        ret = self.adm.update_case_classification(classification_id=parse_api_data(data, 'id'),
+                                                  name='new dummy case classification',
+                                                  name_expanded='new dummy case classification expanded',
+                                                  description='new dummy description')
+
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'asset_description') == 'new dummy description'
-        assert parse_api_data(data, 'asset_name') == 'new dummy'
-        assert type(parse_api_data(data, 'asset_id')) == int
+        assert parse_api_data(data, 'description') == 'new dummy description'
+        assert parse_api_data(data, 'name') == 'new dummy case classification'
+        assert parse_api_data(data, 'name_expanded') == 'new dummy case classification expanded'
+        assert type(parse_api_data(data, 'id')) == int
 
-        ret = self.adm.delete_asset_type(parse_api_data(data, 'asset_id'))
+        ret = self.adm.delete_case_classification(parse_api_data(data, 'id'))
         assert assert_api_resp(ret, soft_fail=False)
+
+    def test_update_case_classification_invalid(self):
+        """ """
+        ret = self.adm.add_case_classification(name='dummy case classification',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'description') == 'dummy description'
+        assert parse_api_data(data, 'name') == 'dummy case classification'
+        assert parse_api_data(data, 'name_expanded') == 'dummy case classification expanded'
+        assert type(parse_api_data(data, 'id')) == int
+        fid = parse_api_data(data, 'id')
+
+        ret = self.adm.add_case_classification(name='dummy case classification updated',
+                                               name_expanded='dummy case classification expanded',
+                                               description='dummy description')
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        fod = parse_api_data(data, 'id')
+
+        ret = self.adm.update_case_classification(classification_id=fid,
+                                                  name='dummy case classification updated',
+                                                  name_expanded='new dummy case classification expanded',
+                                                  description='new dummy description')
+
+        assert bool(assert_api_resp(ret, soft_fail=True)) is False
+        assert 'Data error' in ret.get_msg()
+        assert ret.get_data().get('name') == ['Case classification name already exists']
+
+        self.adm.delete_case_classification(fid)
+        self.adm.delete_case_classification(fod)
 
     def test_add_customer_valid(self):
         """ """
         ret = self.adm.add_customer('dummy customer')
+
+        if parse_api_data(ret.get_data(), 'customer_name') == ['Customer already exists']:
+            ret = self.adm.delete_customer('dummy customer')
+            assert assert_api_resp(ret, soft_fail=False)
+
+            ret = self.adm.add_customer('dummy customer')
+
         assert assert_api_resp(ret, soft_fail=False)
 
         data = get_data_from_resp(ret)
@@ -170,7 +237,7 @@ class AdminTest(unittest.TestCase):
 
         customer_id = parse_api_data(ret.get_data(), 'customer_id')
 
-        ret = self.adm.update_customer(customer_id=customer_id, customer_name='IrisInitialClient2')
+        ret = self.adm.update_customer(customer_id=customer_id, customer_name=f'IrisInitialClient{random.randint(0,1000)}')
         assert assert_api_resp(ret, soft_fail=False)
 
         ret = self.adm.update_customer(customer_id=customer_id, customer_name='IrisInitialClient')
@@ -191,4 +258,3 @@ class AdminTest(unittest.TestCase):
 
         ret = self.adm.delete_customer(customer='dummy customer')
         assert assert_api_resp(ret, soft_fail=False)
-

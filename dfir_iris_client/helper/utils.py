@@ -21,8 +21,9 @@ import json
 
 from types import SimpleNamespace
 
-from dfir_iris_client.helper.errors import ApiRequestFailure, InvalidApiResponse, OperationSuccess, IrisStatus, OperationFailure, \
-    InvalidObjectMapping, BaseOperationSuccess
+from dfir_iris_client.helper.errors import ApiRequestFailure, InvalidApiResponse, OperationSuccess, IrisStatus, \
+    OperationFailure, \
+    InvalidObjectMapping, BaseOperationSuccess, IrisClientException
 from functools import reduce
 from dfir_iris_client.helper.objects_def import objects_map
 
@@ -39,7 +40,7 @@ def get_iris_session():
     from dfir_iris_client.session import client_session
     if client_session:
         return client_session
-    raise Exception('IRIS client session not found')
+    raise IrisClientException('IRIS client session not found')
 
 
 def map_object(obj, data_obj: dict, obj_type=None, strict=False) -> IrisStatus:
@@ -65,21 +66,23 @@ def map_object(obj, data_obj: dict, obj_type=None, strict=False) -> IrisStatus:
 
     obj_def = objects_map.get(obj.object_name)
     if not obj_def:
-        raise Exception(InvalidObjectMapping(f'Unrecognised {obj_def} for mapping'))
+        raise IrisClientException(InvalidObjectMapping(f'Unrecognised {obj_def} for mapping'))
 
     for attribute in obj_def:
 
         field = obj_def[attribute]
         if not hasattr(obj, attribute) and strict:
             obj_type = obj_type if obj_type else obj.object_name
-            raise Exception(InvalidObjectMapping(message=f'Invalid object mapping for {obj_type}. Missing attribute'
-                                                 f' {attribute} for {field}',
-                                                 data=data_obj))
+            raise IrisClientException(InvalidObjectMapping(message=f'Invalid object mapping for {obj_type}. '
+                                                                   f'Missing attribute'
+                                                                   f' {attribute} for {field}',
+                                                           data=data_obj))
         if field not in data_obj and strict:
             obj_type = obj_type if obj_type else obj.object_name
-            raise Exception(InvalidObjectMapping(message=f'Invalid object mapping for {obj_type}. Missing field'
-                                                 f' {field} in server data',
-                                                 data=data_obj))
+            raise IrisClientException(
+                InvalidObjectMapping(message=f'Invalid object mapping for {obj_type}. Missing field'
+                                             f' {field} in server data',
+                                     data=data_obj))
 
         if attribute == 'id':
             obj.set_id(data_obj.get(field))
@@ -93,13 +96,9 @@ def map_object(obj, data_obj: dict, obj_type=None, strict=False) -> IrisStatus:
 class ApiResponse(object):
     """Handles API returns and error. It parses the standard API returns and build an
     standard ApiResponse object.
-
-    Args:
-
-    Returns:
-
     """
-    def __init__(self, response: json = None, uri: str = None):
+
+    def __init__(self, response: str = None, uri: str = None):
         try:
 
             self._response = json.loads(response)
@@ -108,7 +107,7 @@ class ApiResponse(object):
             log.error(e)
 
         if not response:
-            raise Exception("Empty response")
+            raise IrisClientException("Empty response from server")
 
         self._uri = uri
 
@@ -172,7 +171,8 @@ class ApiResponse(object):
 
 
 def get_data_from_resp(api_response: ApiResponse):
-    """Returns the data of an ApiResponse object
+    """
+    Returns the data of an ApiResponse object
 
     Args:
       api_response: ApiResponse: 
@@ -199,9 +199,9 @@ def assert_api_resp(api_response: ApiResponse, soft_fail=True) -> IrisStatus:
                                      data=api_response.get_data(),
                                      uri=api_response.get_uri())
         else:
-            raise Exception(ApiRequestFailure(message=api_response.get_msg(),
-                                              data=api_response.get_data(),
-                                              uri=api_response.get_uri()))
+            raise IrisClientException(ApiRequestFailure(message=api_response.get_msg(),
+                                                        data=api_response.get_data(),
+                                                        uri=api_response.get_uri()))
 
     return OperationSuccess(message=api_response.get_msg(),
                             data=api_response.get_data(),
@@ -223,7 +223,7 @@ def parse_api_data(data: dict, path: Union[list, str], strict=True) -> any:
     """
     if not isinstance(data, dict):
         if strict:
-            raise Exception(InvalidApiResponse(message=f'Object {path} not found in API response {data}'))
+            raise IrisClientException(InvalidApiResponse(message=f'Object {path} not found in API response {data}'))
         else:
             return None
 
@@ -234,7 +234,7 @@ def parse_api_data(data: dict, path: Union[list, str], strict=True) -> any:
     fdata = reduce(dict.get, path, data)
     if fdata is None and ori_path not in data:
         if strict:
-            raise Exception(InvalidApiResponse(message=f'Object {path} not found in API response {data}'))
+            raise IrisClientException(InvalidApiResponse(message=f'Object {path} not found in API response {data}'))
         else:
             return None
 

@@ -15,19 +15,16 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import unittest
-
 from dfir_iris_client.helper.events_categories import EventCategoryHelper
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session
+from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
-class EventCategoryTest(unittest.TestCase):
+class EventCategoryTest(InitIrisClientTest):
     """ """
     def setUp(self):
         """ """
-        session = new_session()
-        self.ec = EventCategoryHelper(session)
+        self.ec = EventCategoryHelper(self.session)
 
     def test_list_event_categories(self):
         """ """

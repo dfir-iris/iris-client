@@ -15,31 +15,49 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import json
+import warnings
+
+from requests import Response
+
+from dfir_iris_client.helper.case_classifications import CaseClassificationsHelper
+from dfir_iris_client.helper.outcome_status import CaseOutcomeStatusHelper
+from dfir_iris_client.session import ClientSession
 
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.helper.assets_type import AssetTypeHelper
 from dfir_iris_client.helper.analysis_status import AnalysisStatusHelper
+from dfir_iris_client.helper.compromise_status import CompromiseStatusHelper
+from dfir_iris_client.helper.errors import IrisClientException
 from dfir_iris_client.helper.ioc_types import IocTypeHelper
 from dfir_iris_client.helper.events_categories import EventCategoryHelper
 from dfir_iris_client.helper.task_status import TaskStatusHelper
 from dfir_iris_client.users import User
 from dfir_iris_client.helper.tlps import TlpHelper
-from dfir_iris_client.helper.utils import ClientApiError, ApiResponse
+from dfir_iris_client.helper.utils import ClientApiError, ApiResponse, get_data_from_resp
 
-from typing import Union, List
+from typing import Union, List, BinaryIO
 import datetime
 import urllib.parse
 
 
 class Case(object):
     """Handles the case methods"""
-    def __init__(self, session, case_id: int = None):
+
+    _note_object = 'notes'
+    _asset_object = 'assets'
+    _ioc_object = 'ioc'
+    _event_object = 'events'
+    _task_object = 'tasks'
+    _evidence_object = 'evidences'
+
+    def __init__(self, session: ClientSession, case_id: int = None):
         self._s = session
         self._cid = case_id
 
     def list_cases(self) -> ApiResponse:
-        """Returns a list of all the cases
+        """
+        Returns a list of all the cases
         
         :return: ApiResponse
 
@@ -63,8 +81,8 @@ class Case(object):
         """
         return self._s.pi_get(f'manage/cases/{cid}')
 
-    def add_case(self, case_name: str, case_description: str,
-                 case_customer: Union[str, int], soc_id: str, custom_attributes: dict = None,
+    def add_case(self, case_name: str, case_description: str, case_customer: Union[str, int],
+                 case_classification: Union[str, int], soc_id: str, custom_attributes: dict = None,
                  create_customer=False) -> ApiResponse:
         """Creates a new case. If create_customer is set to true and the customer doesn't exist,
         it is created. Otherwise an error is returned.
@@ -75,6 +93,7 @@ class Case(object):
 
         Args:
           case_name: case_name
+          case_classification: Classification of the case
           case_description: Description of the case
           case_customer: Name or ID of the customer
           soc_id: SOC Number
@@ -109,12 +128,22 @@ class Case(object):
 
             case_customer = c_id.get_data().get('customer_id')
 
+        if isinstance(case_classification, str):
+            csh = CaseClassificationsHelper(self._s)
+            case_classification = csh.lookup_case_classification_name(case_classification_name=case_classification)
+            if case_classification is None:
+                return ClientApiError(f'Case classification {case_classification} wasn\'t found. Check syntax.')
+
+        else:
+            case_classification = int(case_classification)
+
         if custom_attributes is not None and not isinstance(custom_attributes, dict):
             return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
         body = {
             "case_name": case_name,
             "case_customer": case_customer,
+            "classification_id": case_classification,
             "case_soc_id": soc_id,
             "case_description": case_description,
             "custom_attributes": custom_attributes
@@ -123,7 +152,165 @@ class Case(object):
 
         return resp
 
-    def delete_case(self, cid: int) -> ApiResponse:
+    def set_case_outcome_status(self, outcome_status: Union[str, int], case_id: int = None) -> ApiResponse:
+        """Sets the outcome status of a case
+
+        Args:
+          case_id: ID of the case to update
+          outcome_status: Outcome status to set
+
+        Returns:
+          ApiResponse object
+
+        """
+        case_id = self._assert_cid(cid=case_id)
+
+        if isinstance(outcome_status, str):
+            cosh = CaseOutcomeStatusHelper(self._s)
+            outcome_status = cosh.lookup_case_outcome_status_name(case_outcome_status_name=outcome_status)
+            if outcome_status is None:
+                return ClientApiError(f'Outcome status {outcome_status} wasn\'t found. Check syntax.')
+
+        else:
+            outcome_status = int(outcome_status)
+
+        body = {
+            "status_id": outcome_status
+        }
+
+        return self._s.pi_post(f'case/update-status', data=body, cid=case_id)
+
+    def update_case(self, case_id: int = None, case_name: str = None, case_description: str = None,
+                    case_classification: Union[str, int] = None, case_owner: Union[str, int] = None,
+                    soc_id: str = None, case_tags: List[str] = None,
+                    custom_attributes: dict = None) -> ApiResponse:
+        """Updates an existing case. If create_customer is set to true and the customer doesn't exist,
+        it is created. Otherwise, an error is returned.
+
+        Custom_attributes is an undefined structure when the call is made. This method does not
+        allow to push a new attribute structure. The submitted structure must follow the one defined
+        by administrators in the UI otherwise it is ignored.
+
+        If a value is not provided, it is not updated.
+
+        Args:
+          case_id: ID of the case to update
+          case_name: case_name
+          case_description: Description of the case
+          case_classification: Classification of the case
+          case_tags: List of tags to add to the case
+          case_owner: Name or ID of the owner
+          soc_id: SOC Number
+          custom_attributes: Custom attributes of the case
+
+        Returns:
+            ApiResponse object
+        """
+        case_id = self._assert_cid(cid=case_id)
+
+        case = self.get_case(case_id)
+        if case.is_error():
+            return case
+
+        case_data = get_data_from_resp(case)
+
+        if case_classification is not None:
+            if isinstance(case_classification, str):
+                csh = CaseClassificationsHelper(self._s)
+                case_classification = csh.lookup_case_classification_name(case_classification_name=case_classification)
+                if case_classification is None:
+                    return ClientApiError(f'Case classification {case_classification} wasn\'t found. Check syntax.')
+
+            else:
+                case_classification = int(case_classification)
+
+        else:
+            case_classification = case_data.get('classification_id')
+
+        if custom_attributes is not None and not isinstance(custom_attributes, dict):
+            return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
+
+        if custom_attributes is None:
+            custom_attributes = case_data.get('custom_attributes')
+
+        if case_description is None:
+            case_description = case_data.get('case_description')
+
+        if soc_id is None:
+            soc_id = case_data.get('case_soc_id')
+
+        if case_name is None:
+            case_name = case_data.get('case_name')
+
+        if case_owner is not None:
+            if isinstance(case_owner, str):
+                # Get the customer ID
+                customer = User(session=self._s)
+                owner_id = customer.lookup_username(username=case_owner)
+
+                if owner_id.is_error():
+                    return owner_id
+
+                if owner_id.is_error():
+                    return owner_id
+
+                case_owner = owner_id.get_data().get('user_id')
+
+        else:
+            case_owner = case_data.get('owner_id')
+
+        if case_tags is None:
+            case_tags = case_data.get('case_tags')
+        else:
+            case_tags = ",".join(case_tags)
+
+        body = {
+            "case_name": case_name,
+            "case_soc_id": soc_id,
+            "case_description": case_description,
+            "classification_id": case_classification,
+            "custom_attributes": custom_attributes,
+            "owner_id": case_owner,
+            "case_tags": case_tags
+        }
+
+        resp = self._s.pi_post(f'manage/cases/update/{case_id}', data=body, cid=case_id)
+
+        return resp
+
+    def reopen_case(self, case_id: int = None) -> ApiResponse:
+        """Reopens a case based on its ID
+
+        Args:
+          case_id: Case ID to open
+
+        Returns:
+          ApiResponse
+
+        """
+        case_id = self._assert_cid(case_id)
+
+        resp = self._s.pi_post(f'manage/cases/reopen/{case_id}', cid=case_id)
+
+        return resp
+
+    def close_case(self, case_id: int = None) -> ApiResponse:
+        """Closes a case based on its ID
+
+        Args:
+          case_id: Case ID to close
+
+        Returns:
+          ApiResponse
+
+        """
+        case_id = self._assert_cid(case_id)
+
+        resp = self._s.pi_post(f'manage/cases/close/{case_id}', cid=case_id)
+
+        return resp
+
+    def delete_case(self, cid: int = None) -> ApiResponse:
         """Deletes a case based on its ID. All objects associated to the case are deleted. This includes :
             - assets,
             - iocs that are only referenced in this case
@@ -140,7 +327,9 @@ class Case(object):
           ApiResponse
 
         """
-        resp = self._s.pi_get(f'manage/cases/delete/{cid}')
+        cid = self._assert_cid(cid)
+
+        resp = self._s.pi_post(f'manage/cases/delete/{cid}', cid=1)
 
         return resp
 
@@ -187,18 +376,19 @@ class Case(object):
 
         """
         if not cid and not self._cid:
-            raise Exception("No case ID provided. Either use cid argument or set_cid method")
+            raise IrisClientException("No case ID provided. Either use cid argument or set_cid method")
 
         if not cid:
             cid = self._cid
 
         if not isinstance(cid, int):
-            raise Exception(f'Invalid CID type. Got {type(cid)} but was expecting int')
+            raise IrisClientException(f'Invalid CID type. Got {type(cid)} but was expecting int')
 
         return cid
 
     def get_summary(self, cid: int = None) -> ApiResponse:
-        """Returns the summary of the specified case id.
+        """
+        Returns the summary of the specified case id.
 
         Args:
           cid: Case ID (Default value = None)
@@ -235,7 +425,8 @@ class Case(object):
         return self._s.pi_post('case/summary/update', data=body)
 
     def list_notes_groups(self, cid: int = None) -> ApiResponse:
-        """Returns a list of notes groups of the target cid case
+        """
+        Returns a list of notes groups of the target cid case
 
         Args:
           cid: Case ID (Default value = None)
@@ -247,8 +438,9 @@ class Case(object):
         cid = self._assert_cid(cid)
         return self._s.pi_get('case/notes/groups/list', cid=cid)
 
-    def get_notes_group(self, group_id:int, cid: int = None) -> ApiResponse:
-        """Returns a notes group based on its ID. The group ID needs to match the CID where it is stored.
+    def get_notes_group(self, group_id: int, cid: int = None) -> ApiResponse:
+        """
+        Returns a notes group based on its ID. The group ID needs to match the CID where it is stored.
 
         Args:
           group_id: Group ID to fetch
@@ -316,7 +508,7 @@ class Case(object):
 
         """
         cid = self._assert_cid(cid)
-        return self._s.pi_get(f'case/notes/groups/delete/{group_id}', cid=cid)
+        return self._s.pi_post(f'case/notes/groups/delete/{group_id}', cid=cid)
 
     def get_note(self, note_id: int, cid: int = None) -> ApiResponse:
         """Fetches a note. note_id needs to be a valid existing note in the target case.
@@ -389,7 +581,7 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/notes/delete/{note_id}', cid=cid)
+        return self._s.pi_post(f'case/notes/delete/{note_id}', cid=cid)
 
     def add_note(self, note_title: str, note_content: str, group_id: int, custom_attributes: dict = None,
                  cid: int = None) -> ApiResponse:
@@ -478,7 +670,8 @@ class Case(object):
         return self._s.pi_post(f'dim/hooks/call', data=body)
 
     def list_assets(self, cid: int = None) -> ApiResponse:
-        """Returns a list of all assets of the target case.
+        """
+        Returns a list of all assets of the target case.
 
         Args:
           cid: int - Case ID
@@ -492,9 +685,10 @@ class Case(object):
         return self._s.pi_get('case/assets/list', cid=cid)
 
     def add_asset(self, name: str, asset_type: Union[str, int], analysis_status: Union[str, int],
-                  compromised: bool = None, tags: List[str] = None,
+                  compromise_status: Union[str, int] = None, tags: List[str] = None,
                   description: str = None, domain: str = None, ip: str = None, additional_info: str = None,
-                  ioc_links: List[int] = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
+                  ioc_links: List[int] = None, custom_attributes: dict = None, cid: int = None,
+                  **kwargs) -> ApiResponse:
         """Adds an asset to the target case id.
         
         If they are strings, asset_types and analysis_status are lookup-ed up before the addition request is issued.
@@ -509,14 +703,15 @@ class Case(object):
           name: Name of the asset to add
           asset_type: Name or ID of the asset type
           description: Description of the asset
+          compromise_status: Compromise status of the asset
           domain: Domain of the asset
           ip: IP of the asset
           additional_info: Additional information,
           analysis_status: Status of the analysis
-          compromised: Set to true if asset is compromised
           tags: List of tags
           ioc_links: List of IOC to link to this asset
           custom_attributes: Custom attributes of the asset
+          kwargs: Additional arguments to pass to the API
           cid: int - Case ID
 
         Returns:
@@ -524,6 +719,9 @@ class Case(object):
 
         """
         cid = self._assert_cid(cid)
+
+        if kwargs.get('compromised') is not None:
+            warnings.warn("compromised argument is deprecated, use compromise_status instead", DeprecationWarning)
 
         if isinstance(asset_type, str):
             ast = AssetTypeHelper(session=self._s)
@@ -545,6 +743,16 @@ class Case(object):
             else:
                 analysis_status = analysis_status_r
 
+        if isinstance(compromise_status, str):
+            csh = CompromiseStatusHelper(self._s)
+            compromise_status_r = csh.lookup_compromise_status_name(compromise_status_name=compromise_status)
+
+            if compromise_status_r is None:
+                return ClientApiError(msg=f"Compromise status {compromise_status} was not found")
+
+            else:
+                compromise_status = compromise_status_r
+
         if custom_attributes is not None and not isinstance(custom_attributes, dict):
             return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
@@ -565,8 +773,8 @@ class Case(object):
             body['asset_info'] = additional_info
         if ioc_links is not None:
             body['ioc_links'] = [str(ioc) for ioc in ioc_links]
-        if compromised is not None:
-            body['asset_compromised'] = compromised
+        if compromise_status is not None:
+            body['asset_compromise_status_id'] = compromise_status
         if tags is not None:
             body['asset_tags'] = ','.join(tags)
         if custom_attributes is not None:
@@ -575,7 +783,8 @@ class Case(object):
         return self._s.pi_post(f'case/assets/add', data=body)
 
     def get_asset(self, asset_id: int, cid: int = None) -> ApiResponse:
-        """Returns an asset information from its ID.
+        """
+        Returns an asset information from its ID.
 
         Args:
           asset_id: ID of the asset to fetch
@@ -590,7 +799,8 @@ class Case(object):
         return self._s.pi_get(f'case/assets/{asset_id}', cid=cid)
 
     def asset_exists(self, asset_id: int, cid: int = None) -> bool:
-        """Returns true if asset_id exists in the context of the current case or cid.
+        """
+        Returns true if asset_id exists in the context of the current case or cid.
         This method is an overlay of get_asset and thus not performant.
 
         Args:
@@ -608,9 +818,11 @@ class Case(object):
 
     def update_asset(self, asset_id: int, name: str = None, asset_type: Union[str, int] = None, tags: List[str] = None,
                      analysis_status: Union[str, int] = None, description: str = None, domain: str = None,
-                     ip: str = None, additional_info: str = None, ioc_links: List[int] = None, compromised: bool = None,
-                     custom_attributes: dict = None, cid: int = None, no_sync = False) -> ApiResponse:
-        """Updates an asset. asset_id needs to be an existing asset in the target case cid.
+                     ip: str = None, additional_info: str = None, ioc_links: List[int] = None,
+                     compromise_status: Union[str, int] = None,
+                     custom_attributes: dict = None, cid: int = None, no_sync=False, **kwargs) -> ApiResponse:
+        """
+        Updates an asset. asset_id needs to be an existing asset in the target case cid.
         
         If they are strings, asset_types and analysis_status are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -631,7 +843,7 @@ class Case(object):
           additional_info: Additional information,
           analysis_status: Status of the analysis
           ioc_links: List of IOC to link to this asset
-          compromised: True is asset is compromised
+          compromise_status: Status of the compromise
           custom_attributes: Custom attributes of the asset
           cid: Case ID
 
@@ -641,6 +853,9 @@ class Case(object):
 
         """
         cid = self._assert_cid(cid)
+
+        if kwargs.get('compromised') is not None:
+            warnings.warn("compromised argument is deprecated, use compromise_status instead", DeprecationWarning)
 
         asset = None
         if not no_sync:
@@ -659,6 +874,16 @@ class Case(object):
 
             else:
                 asset_type = asset_type_r
+
+        if isinstance(compromise_status, str):
+            csh = CompromiseStatusHelper(self._s)
+            compromise_status_r = csh.lookup_compromise_status_name(compromise_status_name=compromise_status)
+
+            if compromise_status_r is None:
+                return ClientApiError(msg=f"Compromise status {compromise_status} was not found")
+
+            else:
+                compromise_status = compromise_status_r
 
         if isinstance(analysis_status, str):
             ant = AnalysisStatusHelper(self._s)
@@ -682,12 +907,14 @@ class Case(object):
         body = {
             "asset_name": name if name is not None or no_sync else asset.get('asset_name'),
             "asset_type_id": asset_type if asset_type is not None or no_sync else int(asset.get('asset_type_id')),
-            "analysis_status_id": analysis_status if analysis_status is not None or no_sync else int(asset.get('analysis_status_id')),
+            "analysis_status_id": analysis_status if analysis_status is not None or no_sync else int(
+                asset.get('analysis_status_id')),
             "asset_description": description if description is not None or no_sync else asset.get('analysis_status'),
             "asset_domain": domain if domain is not None or no_sync else asset.get('asset_domain'),
             "asset_ip": ip if ip is not None or no_sync else asset.get('asset_ip'),
             "asset_info": additional_info if additional_info is not None or no_sync else asset.get('asset_info'),
-            "asset_compromised": compromised if compromised is not None or no_sync else asset.get('asset_compromise'),
+            "asset_compromise_status_id": compromise_status if compromise_status is not None or no_sync else int(
+                asset.get('asset_compromise_status_id')),
             "asset_tags": ','.join(tags) if tags is not None or no_sync else asset.get('asset_tags'),
             "custom_attributes": custom_attributes if custom_attributes else asset.get('custom_attributes'),
             "cid": cid
@@ -711,10 +938,11 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/assets/delete/{asset_id}', cid=cid)
+        return self._s.pi_post(f'case/assets/delete/{asset_id}', cid=cid)
 
     def list_iocs(self, cid: int = None) -> ApiResponse:
-        """Returns a list of all iocs of the target case.
+        """
+        Returns a list of all iocs of the target case.
 
         Args:
           cid: Case ID
@@ -730,7 +958,8 @@ class Case(object):
     def add_ioc(self, value: str, ioc_type: Union[str, int], description: str = None,
                 ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
                 cid: int = None) -> ApiResponse:
-        """Adds an ioc to the target case id.
+        """
+        Adds an ioc to the target case id.
         
         If they are strings, ioc_tlp and ioc_type are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -795,7 +1024,8 @@ class Case(object):
         return self._s.pi_post(f'case/ioc/add', data=body)
 
     def get_ioc(self, ioc_id: int, cid: int = None) -> ApiResponse:
-        """Returns an IOC.  ioc_id needs to be an existing ioc in the provided case ID.
+        """
+        Returns an IOC.  ioc_id needs to be an existing ioc in the provided case ID.
 
         Args:
           ioc_id: IOC ID
@@ -810,9 +1040,10 @@ class Case(object):
         return self._s.pi_get(f'case/ioc/{ioc_id}', cid=cid)
 
     def update_ioc(self, ioc_id: int, value: str = None, ioc_type: Union[str, int] = None, description: str = None,
-                    ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
+                   ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
                    cid: int = None) -> ApiResponse:
-        """Updates an existing IOC. ioc_id needs to be an existing ioc in the provided case ID.
+        """
+        Updates an existing IOC. ioc_id needs to be an existing ioc in the provided case ID.
         
         If they are strings, ioc_tlp and ioc_type are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -881,7 +1112,8 @@ class Case(object):
         return self._s.pi_post(f'case/ioc/update/{ioc_id}', data=body)
 
     def delete_ioc(self, ioc_id: int, cid: int = None) -> ApiResponse:
-        """Deletes an IOC from its ID. CID must match the case in which the ioc is stored.
+        """
+        Deletes an IOC from its ID. CID must match the case in which the ioc is stored.
 
         Args:
           ioc_id: ID of the ioc
@@ -893,10 +1125,11 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/ioc/delete/{ioc_id}', cid=cid)
+        return self._s.pi_post(f'case/ioc/delete/{ioc_id}', cid=cid)
 
     def get_event(self, event_id: int, cid: int = None) -> ApiResponse:
-        """Returns an event from the timeline
+        """
+        Returns an event from the timeline
 
         Args:
           event_id: ID of the event to fetch
@@ -911,7 +1144,8 @@ class Case(object):
         return self._s.pi_get(f'case/timeline/events/{event_id}', cid=cid)
 
     def list_events(self, filter_by_asset: int = 0, cid: int = None) -> ApiResponse:
-        """Returns a list of events from the timeline. filter_by_asset can be used to return only the events
+        """
+        Returns a list of events from the timeline. filter_by_asset can be used to return only the events
         linked to a specific asset. In case the asset doesn't exist, an empty timeline is returned.
 
         Args:
@@ -927,7 +1161,8 @@ class Case(object):
         return self._s.pi_get(f'case/timeline/events/list/filter/{filter_by_asset}', cid=cid)
 
     def filter_events(self, filter_str: dict = None, cid: int = None) -> ApiResponse:
-        """Returns a list of events from the timeline, filtered with the same query types used in
+        """
+        Returns a list of events from the timeline, filtered with the same query types used in
         the UI.
 
         Args:
@@ -944,12 +1179,13 @@ class Case(object):
 
         return self._s.pi_get(f'case/timeline/advanced-filter?q={filter_uri}&', cid=cid)
 
-    def add_event(self, title: str, date_time: datetime, content: str = None, raw_content: str = None,
+    def add_event(self, title: str, date_time: datetime.datetime, content: str = None, raw_content: str = None,
                   source: str = None, linked_assets: list = None, linked_iocs: list = None,
                   category: Union[int, str] = None, tags: list = None, color: str = None, display_in_graph: bool = None,
-                  display_in_summary: bool = None, custom_attributes: str = None, cid: int = None,
-                  timezone_string: str = None) -> ApiResponse:
-        """Adds a new event to the timeline.
+                  display_in_summary: bool = None, custom_attributes: str = None, timezone_string: str = None,
+                  sync_ioc_with_assets: bool = False, cid: int = None) -> ApiResponse:
+        """
+        Adds a new event to the timeline.
         
         If it is a string, category is lookup-ed up before the addition request is issued.
         it can be either a name or an ID. For performances prefer an ID as it is used directly in the request
@@ -974,6 +1210,7 @@ class Case(object):
           tags: A list of strings to add as tags
           custom_attributes: Custom attributes of the event
           timezone_string: Timezone in format +XX:XX or -XX:XX. If none, +00:00 is used
+          sync_ioc_with_assets: Set to true to sync the IOC with the assets
           cid: Case ID
 
         Returns:
@@ -1015,17 +1252,20 @@ class Case(object):
             "event_tags": ','.join(tags) if tags else '',
             "event_tz": timezone_string if timezone_string else "+00:00",
             "custom_attributes": custom_attributes if custom_attributes else {},
+            "event_sync_iocs_assets": sync_ioc_with_assets if sync_ioc_with_assets is True else False,
             "cid": cid
         }
 
         return self._s.pi_post(f'case/timeline/events/add', data=body)
 
-    def update_event(self, event_id: int, title: str = None, date_time: datetime = None, content: str = None,
+    def update_event(self, event_id: int, title: str = None, date_time: datetime.datetime = None, content: str = None,
                      raw_content: str = None, source: str = None, linked_assets: list = None, linked_iocs: list = None,
                      category: Union[int, str] = None, tags: list = None,
                      color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
-                     custom_attributes: dict = None, cid: int = None, timezone_string: str = None) -> ApiResponse:
-        """Updates an event of the timeline. event_id needs to be an existing event in the target case.
+                     custom_attributes: dict = None, cid: int = None, timezone_string: str = None,
+                     sync_ioc_with_assets: bool = False) -> ApiResponse:
+        """
+        Updates an event of the timeline. event_id needs to be an existing event in the target case.
         
         If it is a string, category is lookup-ed up before the addition request is issued.
         it can be either a name or an ID. For performances prefer an ID as it is used directly in the request
@@ -1052,6 +1292,7 @@ class Case(object):
           tags: A list of strings to add as tags
           custom_attributes: Custom attributes of the event
           timezone_string: Timezone in format +XX:XX or -XX:XX. If none, +00:00 is used
+          sync_ioc_with_assets: Set to true to sync the IOC with the assets
           cid: Case ID
 
         Returns:
@@ -1099,13 +1340,15 @@ class Case(object):
             "event_tags": ','.join(tags) if tags else event.get('event_tags'),
             "event_tz": timezone_string if timezone_string else event.get('event_tz'),
             "custom_attributes": custom_attributes if custom_attributes else event.get('custom_attributes'),
+            "event_sync_iocs_assets": sync_ioc_with_assets if sync_ioc_with_assets is True else False,
             "cid": cid
         }
 
         return self._s.pi_post(f'case/timeline/events/update/{event_id}', data=body)
 
     def delete_event(self, event_id: int, cid: int = None) -> ApiResponse:
-        """Deletes an event from its ID. CID must match the case in which the event is stored
+        """
+        Deletes an event from its ID. CID must match the case in which the event is stored
 
         Args:
           event_id: Event to delete
@@ -1117,10 +1360,11 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/timeline/events/delete/{event_id}', cid=cid)
+        return self._s.pi_post(f'case/timeline/events/delete/{event_id}', cid=cid)
 
     def add_task_log(self, message: str, cid: int = None) -> ApiResponse:
-        """Adds a new task log that will appear under activities
+        """
+        Adds a new task log that will appear under activities
 
         Args:
           message: Message to log
@@ -1139,7 +1383,8 @@ class Case(object):
         return self._s.pi_post(f'case/tasklog/add', data=data)
 
     def list_tasks(self, cid: int = None) -> ApiResponse:
-        """Returns a list of tasks linked to the provided case.
+        """
+        Returns a list of tasks linked to the provided case.
 
         Args:
           cid: Case ID
@@ -1153,7 +1398,8 @@ class Case(object):
         return self._s.pi_get(f'case/tasks/list', cid=cid)
 
     def get_task(self, task_id: int, cid: int = None) -> ApiResponse:
-        """Returns a task from its ID. task_id needs to be a valid task in the target case.
+        """
+        Returns a task from its ID. task_id needs to be a valid task in the target case.
 
         Args:
           task_id: Task ID to lookup
@@ -1167,9 +1413,10 @@ class Case(object):
 
         return self._s.pi_get(f'case/tasks/{task_id}', cid=cid)
 
-    def add_task(self, title: str, status: Union[str, int], assignee: Union[str, int], description: str = None,
-                 tags: list = None, custom_attributes :dict = None, cid: int = None) -> ApiResponse:
-        """Adds a new task to the target case.
+    def add_task(self, title: str, status: Union[str, int], assignees: List[Union[str, int]], description: str = None,
+                 tags: list = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
+        """
+        Adds a new task to the target case.
         
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -1182,7 +1429,7 @@ class Case(object):
         Args:
           title: Title of the task
           description: Description of the task
-          assignee: Assignee ID or username
+          assignees: List of assignees ID or username
           cid: Case ID
           tags: Tags of the task
           status: String or status ID, need to be a valid status
@@ -1193,19 +1440,23 @@ class Case(object):
 
         """
         cid = self._assert_cid(cid)
+        assignees_list = []
 
-        if isinstance(assignee, str):
-            user = User(self._s)
-            assignee_r = user.lookup_username(username=assignee)
-            if assignee_r.is_error():
-                return assignee_r
+        for assignee in assignees:
+            if isinstance(assignee, str):
+                user = User(self._s)
+                assignee_r = user.lookup_username(username=assignee)
+                if assignee_r.is_error():
+                    return assignee_r
 
-            assignee = assignee_r.get_data().get('user_id')
-            if not assignee:
-                return ClientApiError(msg=f'Error while looking up username {assignee}')
+                assignee = assignee_r.get_data().get('user_id')
+                if not assignee:
+                    return ClientApiError(msg=f'Error while looking up username {assignee}')
 
-        elif not isinstance(assignee, int):
-            return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+            elif not isinstance(assignee, int):
+                return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+
+            assignees_list.append(assignee)
 
         if isinstance(status, str):
             tsh = TaskStatusHelper(self._s)
@@ -1218,11 +1469,11 @@ class Case(object):
             return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
         body = {
-            "task_assignee_id": assignee,
+            "task_assignees_id": assignees_list,
             "task_description": description if description else "",
             "task_status_id": status,
             "task_tags": ','.join(tags) if tags else "",
-            "task_title":  title,
+            "task_title": title,
             "custom_attributes": custom_attributes if custom_attributes else {},
             "cid": cid
         }
@@ -1230,9 +1481,10 @@ class Case(object):
         return self._s.pi_post(f'case/tasks/add', data=body)
 
     def update_task(self, task_id: int, title: str = None, status: Union[str, int] = None,
-                    assignee: Union[int, str] = None, description: str = None, tags: list = None,
+                    assignees: List[Union[int, str]] = None, description: str = None, tags: list = None,
                     custom_attributes: dict = None, cid: int = None) -> ApiResponse:
-        """Updates a task. task_id needs to be a valid task in the target case.
+        """
+        Updates a task. task_id needs to be a valid task in the target case.
         
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -1246,7 +1498,7 @@ class Case(object):
           task_id: ID of the task to update
           title: Title of the task
           description: Description of the task
-          assignee: Assignee ID or assignee username
+          assignees: List of assignee ID or assignee username
           cid: Case ID
           tags: Tags of the task
           status: String status, need to be a valid status
@@ -1263,18 +1515,23 @@ class Case(object):
         if task_req.is_error():
             return ClientApiError(msg=f'Unable to fetch task #{task_id} for update', error=task_req.get_msg())
 
-        if assignee and isinstance(assignee, str):
-            user = User(self._s)
-            assignee_r = user.lookup_username(username=assignee)
-            if assignee_r.is_error():
-                return assignee_r
+        assignees_list = []
+        if assignees:
+            for assignee in assignees:
+                if assignee and isinstance(assignee, str):
+                    user = User(self._s)
+                    assignee_r = user.lookup_username(username=assignee)
+                    if assignee_r.is_error():
+                        return assignee_r
 
-            assignee = assignee_r.get_data().get('user_id')
-            if not assignee:
-                return ClientApiError(msg=f'Error while looking up username {assignee}')
+                    assignee = assignee_r.get_data().get('user_id')
+                    if not assignee:
+                        return ClientApiError(msg=f'Error while looking up username {assignee}')
 
-        elif assignee and not isinstance(assignee, int):
-            return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+                elif assignee and not isinstance(assignee, int):
+                    return ClientApiError(msg=f'Invalid assignee type {type(assignee)}')
+
+                assignees_list.append(assignee)
 
         if status and isinstance(status, str):
             tsh = TaskStatusHelper(self._s)
@@ -1288,12 +1545,15 @@ class Case(object):
 
         task = task_req.get_data()
 
+        if not assignees_list:
+            assignees_list = [u.get('id') for u in task.get('task_assignees')]
+
         body = {
-            "task_assignee_id": assignee if assignee else task.get('task_assignee_id'),
+            "task_assignees_id": assignees_list,
             "task_description": description if description else task.get('task_description'),
             "task_status_id": status if status else task.get('task_status_id'),
             "task_tags": ",".join(tags) if tags else task.get('task_tags'),
-            "task_title":  title if title else task.get('task_title'),
+            "task_title": title if title else task.get('task_title'),
             "custom_attributes": custom_attributes if custom_attributes else task.get('custom_attributes'),
             "cid": cid
         }
@@ -1301,7 +1561,8 @@ class Case(object):
         return self._s.pi_post(f'case/tasks/update/{task_id}', data=body)
 
     def delete_task(self, task_id: int, cid: int = None) -> ApiResponse:
-        """Deletes a task from its ID. CID must match the case in which the task is stored.
+        """
+        Deletes a task from its ID. CID must match the case in which the task is stored.
 
         Args:
           task_id: Task to delete
@@ -1313,10 +1574,11 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/tasks/delete/{task_id}', cid=cid)
+        return self._s.pi_post(f'case/tasks/delete/{task_id}', cid=cid)
 
     def list_evidences(self, cid: int = None) -> ApiResponse:
-        """Returns a list of evidences.
+        """
+        Returns a list of evidences.
 
         Args:
           cid: Case ID
@@ -1330,7 +1592,8 @@ class Case(object):
         return self._s.pi_get(f'case/evidences/list', cid=cid)
 
     def get_evidence(self, evidence_id: int, cid: int = None) -> ApiResponse:
-        """Returns an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
+        """
+        Returns an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
 
         Args:
           evidence_id: Evidence ID to lookup
@@ -1346,7 +1609,8 @@ class Case(object):
 
     def add_evidence(self, filename: str, file_size: int, description: str = None,
                      file_hash: str = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
-        """Adds a new evidence to the target case.
+        """
+        Adds a new evidence to the target case.
         
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
@@ -1382,7 +1646,8 @@ class Case(object):
 
     def update_evidence(self, evidence_id: int, filename: str = None, file_size: int = None, description: str = None,
                         file_hash: str = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
-        """Updates an evidence of the matching case. evidence_id needs to be an existing evidence in the target case.
+        """
+        Updates an evidence of the matching case. evidence_id needs to be an existing evidence in the target case.
         
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
@@ -1425,7 +1690,8 @@ class Case(object):
         return self._s.pi_post(f'case/evidences/update/{evidence_id}', data=body)
 
     def delete_evidence(self, evidence_id: int, cid: int = None):
-        """Deletes an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
+        """
+        Deletes an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
 
         Args:
           evidence_id: int - Evidence to delete
@@ -1437,7 +1703,7 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
-        return self._s.pi_get(f'case/evidences/delete/{evidence_id}', cid=cid)
+        return self._s.pi_post(f'case/evidences/delete/{evidence_id}', cid=cid)
 
     def list_global_tasks(self) -> ApiResponse:
         """
@@ -1451,7 +1717,8 @@ class Case(object):
         return self._s.pi_get(f'global/tasks/list', cid=1)
 
     def get_global_task(self, task_id: int) -> ApiResponse:
-        """Returns a global task from its ID.
+        """
+        Returns a global task from its ID.
 
         Args:
           task_id: Task ID to lookup
@@ -1464,11 +1731,12 @@ class Case(object):
         return self._s.pi_get(f'global/tasks/{task_id}', cid=1)
 
     def add_global_task(self, title: str, status: Union[str, int], assignee: Union[str, int], description: str = None,
-                 tags: list = None) -> ApiResponse:
-        """Adds a new task.
+                        tags: list = None) -> ApiResponse:
+        """
+        Adds a new task.
         
-        If they are strings, status and assignee are lookup-ed up before the addition request is issued.
-        Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
+        If set as strings, status and assignee are lookup-ed up before the addition request is issued.
+        Both can be either a name or an ID. For performances prefer an ID as it is used directly in the request
         without prior lookup.
 
         Args:
@@ -1508,16 +1776,17 @@ class Case(object):
             "task_description": description if description else "",
             "task_status_id": status,
             "task_tags": ','.join(tags) if tags else "",
-            "task_title":  title,
+            "task_title": title,
             "cid": 1
         }
 
         return self._s.pi_post(f'global/tasks/add', data=body)
 
     def update_global_task(self, task_id: int, title: str = None, status: Union[str, int] = None,
-                    assignee: Union[int, str] = None, description: str = None,
-                    tags: list = None) -> ApiResponse:
-        """Updates a task. task_id needs to be an existing task in the database.
+                           assignee: Union[int, str] = None, description: str = None,
+                           tags: list = None) -> ApiResponse:
+        """
+        Updates a task. task_id needs to be an existing task in the database.
         
         If they are strings, status and assignee are lookup-ed up before the addition request is issued.
         Both can be either a name or an ID. For performances prefer an ID as they're used directly in the request
@@ -1568,13 +1837,14 @@ class Case(object):
             "task_description": description if description else task.get('task_description'),
             "task_status_id": status if status else task.get('task_status_id'),
             "task_tags": ",".join(tags) if tags else task.get('task_tags'),
-            "task_title":  title if title else task.get('task_title'),
+            "task_title": title if title else task.get('task_title'),
         }
 
         return self._s.pi_post(f'global/tasks/update/{task_id}', data=body)
 
     def delete_global_task(self, task_id: int) -> ApiResponse:
-        """Deletes a global task from its ID. task_id needs to be an existing task in the database.
+        """
+        Deletes a global task from its ID. task_id needs to be an existing task in the database.
 
         Args:
           task_id: int - Task to delete
@@ -1584,4 +1854,718 @@ class Case(object):
 
         """
 
-        return self._s.pi_get(f'global/tasks/delete/{task_id}', cid=1)
+        return self._s.pi_post(f'global/tasks/delete/{task_id}', cid=1)
+
+    def list_ds_tree(self, cid: int = None) -> ApiResponse:
+        """
+        Returns the tree of the Datastore
+
+        Args:
+          cid: Case ID
+
+        Returns:
+          APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'datastore/list/tree', cid=cid)
+
+    def add_ds_file(self, parent_id: int, file_stream: BinaryIO, filename: str, file_description: str,
+                    file_is_ioc: bool = False, file_is_evidence: bool = False, file_password: str = None,
+                    file_tags: list[str] = None, cid: int = None) -> ApiResponse:
+        """
+        Adds a file to the Datastore.
+
+        Args:
+          file_stream: BinaryIO - File stream to upload
+          filename: str - File name
+          file_description: str - File description
+          file_is_ioc: bool - Is the file an IOC
+          file_is_evidence: bool - Is the file an evidence
+          parent_id: int - Parent ID
+          file_password: str - File password
+          file_tags: str - File tags
+          cid: int - Case ID
+
+        Returns:
+          APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        files = {
+            'file_content': (filename, file_stream)
+        }
+
+        data = {
+            'file_original_name': filename,
+            'file_password': file_password if file_password else '',
+            'file_is_ioc': 'y' if file_is_ioc else 'n',
+            'file_is_evidence': 'y' if file_is_evidence else 'n',
+            'file_description': file_description,
+            'file_tags': ','.join(file_tags) if file_tags else ''
+        }
+
+        return self._s.pi_post_files(f'datastore/file/add/{parent_id}', files=files, data=data, cid=cid)
+
+    def get_ds_file_info(self, file_id: int, cid: int = None) -> ApiResponse:
+        """
+        Returns information from file of the Datastore.
+
+        Args:
+            file_id: int - File ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'datastore/file/info/{file_id}', cid=cid)
+
+    def update_ds_file(self, file_id: int, file_name: str = None, file_description: str = None,
+                       file_is_ioc: bool = False, file_is_evidence: bool = False, file_password: str = None,
+                       file_tags: list[str] = None,
+                       cid: int = None) -> ApiResponse:
+        """
+        Updates a file in the Datastore.
+
+        Args:
+            file_id: int - File ID
+            file_name: str - File name
+            file_description: str - File description
+            file_is_ioc: bool - Is the file an IOC
+            file_is_evidence: bool - Is the file an evidence
+            file_password: str - File password
+            file_tags: str - File tags
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        ds_file_req = self.get_ds_file_info(file_id=file_id, cid=cid)
+        if ds_file_req.is_error():
+            return ds_file_req
+
+        ds_file = get_data_from_resp(ds_file_req)
+
+        if file_is_ioc is None:
+            file_is_ioc = ds_file.get('file_is_ioc')
+
+        if file_is_evidence is None:
+            file_is_evidence = ds_file.get('file_is_evidence')
+
+        data = {
+            'file_original_name': file_name if file_name is not None else ds_file.get('file_original_name'),
+            'file_password': file_password if file_password is not None else ds_file.get('file_password'),
+            'file_is_ioc': 'y' if file_is_ioc else 'n',
+            'file_is_evidence': 'y' if file_is_evidence else 'n',
+            'file_description': file_description if file_description is not None else ds_file.get('file_description'),
+            'file_tags': ','.join(file_tags) if file_tags is not None else ds_file.get('file_tags')
+        }
+
+        return self._s.pi_post_files(f'datastore/file/update/{file_id}', data=data, cid=cid)
+
+    def delete_ds_file(self, file_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a file from the Datastore.
+
+        Args:
+            file_id: int - File ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_post(f'datastore/file/delete/{file_id}', cid=cid)
+
+    def download_ds_file(self, file_id: int, cid: int = None) -> Response:
+        """
+        Downloads a file from the Datastore.
+
+        Args:
+            file_id: int - File ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'datastore/file/view/{file_id}', cid=cid, no_wrap=True)
+
+    def move_ds_file(self, file_id: int, parent_id: int, cid: int = None) -> ApiResponse:
+        """
+        Moves a file from a folder to another.
+
+        Args:
+            file_id: int - File ID
+            parent_id: int - New parent ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'destination-node': parent_id
+        }
+
+        return self._s.pi_post(f'datastore/file/move/{file_id}', data=data, cid=cid)
+
+    def add_ds_folder(self, parent_id: int, folder_name: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a folder to the Datastore.
+
+        Args:
+            parent_id: int - Parent ID
+            folder_name: str - Folder name
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'parent_node': parent_id,
+            'folder_name': folder_name
+        }
+
+        return self._s.pi_post(f'datastore/folder/add', data=data, cid=cid)
+
+    def delete_ds_folder(self, folder_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a folder from the Datastore.
+
+        Args:
+            folder_id: int - Folder ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_post(f'datastore/folder/delete/{folder_id}', cid=cid)
+
+    def rename_ds_folder(self, folder_id: int, new_name: str, cid: int = None) -> ApiResponse:
+        """
+        Renames a folder in the Datastore.
+
+        Args:
+            folder_id: int - Folder ID
+            new_name: str - New name
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'folder_name': new_name,
+            'parent_node': folder_id
+        }
+
+        return self._s.pi_post(f'datastore/folder/rename/{folder_id}', data=data, cid=cid)
+
+    def move_ds_folder(self, folder_id: int, parent_id: int, cid: int = None) -> ApiResponse:
+        """
+        Moves a folder from a folder to another.
+
+        Args:
+            folder_id: int - Folder ID
+            parent_id: int - New parent ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'destination-node': parent_id
+        }
+
+        return self._s.pi_post(f'datastore/folder/move/{folder_id}', data=data, cid=cid)
+
+    def _add_object_comment(self, object_name: str, object_id: int, comment: str, cid: int = None):
+        """ Adds a comment to an object.
+
+        Args:
+            object_name: str - Object name
+            object_id: int - Object ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'comment_text': comment
+        }
+
+        return self._s.pi_post(f'case/{object_name}/{object_id}/comments/add', data=data, cid=cid)
+
+    def _list_object_comment(self, object_name: str, object_id: int, cid: int = None):
+        """ List comments of an object.
+
+        Args:
+            object_name: str - Object name
+            object_id: int - Object ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_post(f'case/{object_name}/{object_id}/comments/list', cid=cid)
+
+    def _delete_object_comment(self, object_name: str, object_id: int, comment_id: int, cid: int = None):
+        """ Deletes a comment of an object.
+
+        Args:
+            object_name: str - Object name
+            object_id: int - Object ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_post(f'case/{object_name}/{object_id}/comments/{comment_id}/delete', cid=cid)
+
+    def _update_object_comment(self, object_name: str, object_id: int, comment_id: int, comment: str, cid: int = None):
+        """ Updates a comment of an object.
+
+        Args:
+            object_name: str - Object name
+            object_id: int - Object ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+        """
+        cid = self._assert_cid(cid)
+
+        data = {
+            'comment_text': comment
+        }
+
+        return self._s.pi_post(f'case/{object_name}/{object_id}/comments/{comment_id}/edit', data=data, cid=cid)
+
+    def add_asset_comment(self, asset_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to an asset.
+
+        Args:
+            asset_id: int - Asset ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._asset_object, asset_id, comment, cid=cid)
+
+    def list_asset_comments(self, asset_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of an asset.
+
+        Args:
+            asset_id: int - Asset ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._asset_object, asset_id, cid=cid)
+
+    def delete_asset_comment(self, asset_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of an asset.
+
+        Args:
+            asset_id: int - Asset ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._asset_object, asset_id, comment_id, cid=cid)
+
+    def update_asset_comment(self, asset_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of an asset.
+
+        Args:
+            asset_id: int - Asset ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._asset_object, asset_id, comment_id, comment, cid=cid)
+
+    def add_note_comment(self, note_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to a note.
+
+        Args:
+            note_id: int - Note ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._note_object, note_id, comment, cid=cid)
+
+    def list_note_comments(self, note_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of a note.
+
+        Args:
+            note_id: int - Note ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._note_object, note_id, cid=cid)
+
+    def delete_note_comment(self, note_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of a note.
+
+        Args:
+            note_id: int - Note ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._note_object, note_id, comment_id, cid=cid)
+
+    def update_note_comment(self, note_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of a note.
+
+        Args:
+            note_id: int - Note ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._note_object, note_id, comment_id, comment, cid=cid)
+
+    def add_task_comment(self, task_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to a task.
+
+        Args:
+            task_id: int - Task ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._task_object, task_id, comment, cid=cid)
+
+    def list_task_comments(self, task_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of a task.
+
+        Args:
+            task_id: int - Task ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._task_object, task_id, cid=cid)
+
+    def delete_task_comment(self, task_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of a task.
+
+        Args:
+            task_id: int - Task ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._task_object, task_id, comment_id, cid=cid)
+
+    def update_task_comment(self, task_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of a task.
+
+        Args:
+            task_id: int - Task ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._task_object, task_id, comment_id, comment, cid=cid)
+
+    def add_event_comment(self, event_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to an event.
+
+        Args:
+            event_id: int - Event ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._event_object, event_id, comment, cid=cid)
+
+    def list_event_comments(self, event_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of an event.
+
+        Args:
+            event_id: int - Event ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._event_object, event_id, cid=cid)
+
+    def delete_event_comment(self, event_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of an event.
+
+        Args:
+            event_id: int - Event ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._event_object, event_id, comment_id, cid=cid)
+
+    def update_event_comment(self, event_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of an event.
+
+        Args:
+            event_id: int - Event ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._event_object, event_id, comment_id, comment, cid=cid)
+
+    def add_evidence_comment(self, evidence_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to an evidence.
+
+        Args:
+            evidence_id: int - Evidence ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._evidence_object, evidence_id, comment, cid=cid)
+
+    def list_evidence_comments(self, evidence_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of an evidence.
+
+        Args:
+            evidence_id: int - Evidence ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._evidence_object, evidence_id, cid=cid)
+
+    def delete_evidence_comment(self, evidence_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of an evidence.
+
+        Args:
+            evidence_id: int - Evidence ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._evidence_object, evidence_id, comment_id, cid=cid)
+
+    def update_evidence_comment(self, evidence_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of an evidence.
+
+        Args:
+            evidence_id: int - Evidence ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._evidence_object, evidence_id, comment_id, comment, cid=cid)
+
+    def add_ioc_comment(self, ioc_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Adds a comment to an ioc.
+
+        Args:
+            ioc_id: int - IOC ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._add_object_comment(self._ioc_object, ioc_id, comment, cid=cid)
+
+    def list_ioc_comments(self, ioc_id: int, cid: int = None) -> ApiResponse:
+        """
+        List comments of an ioc.
+
+        Args:
+            ioc_id: int - IOC ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._list_object_comment(self._ioc_object, ioc_id, cid=cid)
+
+    def delete_ioc_comment(self, ioc_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+        """
+        Deletes a comment of an ioc.
+
+        Args:
+            ioc_id: int - IOC ID
+            comment_id: int - Comment ID
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._delete_object_comment(self._ioc_object, ioc_id, comment_id, cid=cid)
+
+    def update_ioc_comment(self, ioc_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+        """
+        Updates a comment of an ioc.
+
+        Args:
+            ioc_id: int - IOC ID
+            comment_id: int - Comment ID
+            comment: str - Comment
+            cid: int - Case ID
+
+        Returns:
+            APIResponse object
+
+        """
+        return self._update_object_comment(self._ioc_object, ioc_id, comment_id, comment, cid=cid)
+
+    def download_investigation_report(self, report_id: int, cid: int = None) -> Response:
+        """
+        Download an investigation report.
+
+        Args:
+            report_id: int - ID of the template report
+            cid: int - Case ID
+
+        Returns:
+            Flask Response object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'case/report/generate-investigation/{report_id}', cid=cid, no_wrap=True)
+
+    def download_activity_report(self, report_id: int, cid: int = None) -> Response:
+        """
+        Download an activity report.
+
+        Args:
+            report_id: int - ID of the template report
+            cid: int - Case ID
+
+        Returns:
+            Flask Response object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'case/report/generate-activities/{report_id}', cid=cid, no_wrap=True)
+

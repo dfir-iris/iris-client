@@ -1,0 +1,12 @@
+version = 1
+
+exclude_patterns = [
+  "examples/**",
+  "dfir_iris_client/tests/*.py"
+]
+
+[[analyzers]]
+name = "python"
+
+  [analyzers.meta]
+  runtime_version = "3.x.x"

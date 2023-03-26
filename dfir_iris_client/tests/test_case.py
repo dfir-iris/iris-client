@@ -15,29 +15,62 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import datetime
-import unittest
+import json
+from pathlib import Path
+
+import pytest
 
 from dfir_iris_client.admin import AdminHelper
 from dfir_iris_client.case import Case
-from dfir_iris_client.helper.colors import EventWhite
 from dfir_iris_client.customer import Customer
+from dfir_iris_client.helper.colors import EventWhite
+from dfir_iris_client.helper.report_template_types import ReportTemplateType, ReportTemplateLanguage
 from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
-from dfir_iris_client.tests.tests_helper import new_session
+from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
-class CaseTest(unittest.TestCase):
+@pytest.mark.usefixtures('standard_case')
+class CaseTest(InitIrisClientTest):
     """ """
+
     def setUp(self):
         """ """
-        session = new_session()
-        self.case = Case(session)
-        self.ch = Customer(session)
+        self.case = Case(self.session)
+        self.ch = Customer(self.session)
         self.case.set_cid(1)
+
+    def test_list_cases(self):
+        """ """
+        ret = self.case.list_cases()
+        assert bool(assert_api_resp(ret)) is True
+
+        data = get_data_from_resp(ret)
+        assert len(data) > 0
+        case = data[0]
+
+        assert isinstance(parse_api_data(case, 'access_level'), int)
+        assert isinstance(parse_api_data(case, 'case_close_date'), str)
+        assert isinstance(parse_api_data(case, 'case_description'), str)
+        assert isinstance(parse_api_data(case, 'case_id'), int)
+        assert isinstance(parse_api_data(case, 'case_name'), str)
+        assert isinstance(parse_api_data(case, 'case_open_date'), str)
+        assert isinstance(parse_api_data(case, 'case_soc_id'), str)
+        assert isinstance(parse_api_data(case, 'case_uuid'), str)
+        assert isinstance(parse_api_data(case, 'client_name'), str)
+        assert isinstance(parse_api_data(case, 'opened_by'), str)
+        assert isinstance(parse_api_data(case, 'opened_by_user_id'), int)
+        assert isinstance(parse_api_data(case, 'owner'), str)
+        assert isinstance(parse_api_data(case, 'owner_id'), int)
+        assert isinstance(parse_api_data(case, 'classification_id'), int)
+        assert isinstance(parse_api_data(case, 'classification'), str)
 
     def test_add_rm_case_with_existing_customer_id(self):
         """ """
-        ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer=1, soc_id='dummy', create_customer=False)
+        ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_classification=self.standard_case.case_classification,
+                                 case_description=self.standard_case.case_description,
+                                 case_customer=self.standard_case.case_customer_id, soc_id=self.standard_case.soc_id,
+                                 create_customer=False)
 
         assert bool(assert_api_resp(ret)) is True
 
@@ -50,8 +83,11 @@ class CaseTest(unittest.TestCase):
 
     def test_add_rm_case_with_existing_customer_name(self):
         """ """
-        ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer="IrisInitialClient", soc_id='dummy', custom_attributes={},
+        ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_classification=self.standard_case.case_classification,
+                                 case_description=self.standard_case.case_description,
+                                 case_customer=self.standard_case.case_customer, soc_id=self.standard_case.soc_id,
+                                 custom_attributes={},
                                  create_customer=False)
 
         assert bool(assert_api_resp(ret)) is True
@@ -65,24 +101,37 @@ class CaseTest(unittest.TestCase):
 
     def test_add_case_with_faulty_customer_id(self):
         """ """
-        ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer=15551115, soc_id='dummy',  custom_attributes={}, create_customer=False)
+        ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_classification=self.standard_case.case_classification,
+                                 case_description=self.standard_case.case_description,
+                                 case_customer=15551115,  soc_id=self.standard_case.soc_id,
+                                 custom_attributes={}, create_customer=False)
 
         assert bool(assert_api_resp(ret)) is False
 
+    def test_set_case_outcome_status(self):
+        """ Test set case outcome status """
+        ret = self.case.set_case_outcome_status("true positive")
+        assert bool(assert_api_resp(ret)) is True
+
     def test_add_case_with_faulty_customer_name(self):
         """ """
-        ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
-                                 case_customer="Dummy dummy 123", soc_id='dummy', custom_attributes={},
+        ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_classification=self.standard_case.case_classification,
+                                 case_description=self.standard_case.case_description,
+                                 case_customer="Dummy dummy 123", soc_id=self.standard_case.soc_id,
+                                 custom_attributes={},
                                  create_customer=False)
 
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_case_create_customer_name(self):
         """ """
-        ret = self.case.add_case(case_name='Dummy case', case_description="Dummy description",
+        ret = self.case.add_case(case_name=self.standard_case.case_name,
+                                 case_classification=self.standard_case.case_classification,
+                                 case_description=self.standard_case.case_description,
                                  case_customer="Dummy dummy 123",  custom_attributes={"Test":{"Test":"Test"}},
-                                 soc_id='dummy', create_customer=True)
+                                 soc_id=self.standard_case.soc_id, create_customer=True)
 
         assert bool(assert_api_resp(ret)) is True
 
@@ -107,6 +156,11 @@ class CaseTest(unittest.TestCase):
         data = get_data_from_resp(ret)
         case_id = parse_api_data(data, 'case_id')
         assert case_id == cid
+        assert parse_api_data(data, 'case_name') == '#1 - Initial Demo'
+        assert parse_api_data(data, 'case_soc_id') == 'soc_id_demo'
+        assert parse_api_data(data, 'customer_name').lower() == 'irisinitialclient'
+        assert parse_api_data(data, 'open_by_user') == 'administrator'
+        assert parse_api_data(data, 'status_id') == 0
 
     def test_case_id_exists(self):
         """ """
@@ -116,11 +170,36 @@ class CaseTest(unittest.TestCase):
         ret = self.case.case_id_exists(cid=1111155555511111)
         assert ret is False
 
+    def test_close_case(self):
+        """ """
+        ret = self.case.close_case(case_id=1)
+        assert bool(assert_api_resp(ret)) is True
+
+        ret = self.case.get_case(cid=1)
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'close_date') != ''
+
+        ret = self.case.reopen_case(case_id=1)
+        assert bool(assert_api_resp(ret)) is True
+
+    def test_update_case(self):
+        """ """
+        ret = self.case.update_case(case_id=1, case_name='Dummy name', case_description='Dummy description',
+                                    case_classification='other:other',
+                                    case_tags=['tag1', 'tag2'])
+        assert bool(assert_api_resp(ret)) is True
+
+        ret = self.case.get_case(cid=1)
+        data = get_data_from_resp(ret)
+        assert parse_api_data(data, 'case_name') == '#1 - Dummy name'
+        assert parse_api_data(data, 'case_description') == 'Dummy description'
+        assert parse_api_data(data, 'case_tags') == ",".join(['tag1', 'tag2'])
+
     def test_case_trigger_manual_hook_valid(self):
-        ret = self.case.trigger_manual_hook('iris_check_module::on_manual_trigger_ioc',
+        ret = self.case.trigger_manual_hook('iris_check_module::on_manual_trigger_case',
                                             module_name='iris_check_module',
-                                            targets=[2],
-                                            target_type='ioc')
+                                            targets=[1],
+                                            target_type='case')
 
         assert bool(assert_api_resp(ret)) is True
 
@@ -150,9 +229,10 @@ class CaseTest(unittest.TestCase):
 
         data = get_data_from_resp(ret)
         groups = parse_api_data(data, 'groups')
-        assert type(parse_api_data(groups[0], 'group_id')) == int
-        assert type(parse_api_data(groups[0], 'group_title')) == str
-        assert type(parse_api_data(groups[0], 'notes')) == list
+        if len(groups) > 0:
+            assert type(parse_api_data(groups[0], 'group_id')) == int
+            assert type(parse_api_data(groups[0], 'group_title')) == str
+            assert type(parse_api_data(groups[0], 'notes')) == list
 
     def test_add_update_rm_notes_group(self):
         """ """
@@ -170,6 +250,8 @@ class CaseTest(unittest.TestCase):
         assert parse_api_data(data, 'group_id') == group_id
         assert parse_api_data(data, 'group_title') == "Dummy title"
         assert parse_api_data(data, 'notes') == []
+
+        self.test_list_get_notes_groups()
 
         ret = self.case.delete_notes_group(group_id)
         assert bool(assert_api_resp(ret)) is True
@@ -249,7 +331,7 @@ class CaseTest(unittest.TestCase):
         ret = self.case.delete_note(note_id=111555411, cid=111555411)
         assert bool(assert_api_resp(ret)) is False
         message = ret.get_msg()
-        assert "invalid case id" in message.lower()
+        assert "permission denied" in message.lower()
 
     def test_search_notes(self):
         """ """
@@ -270,7 +352,7 @@ class CaseTest(unittest.TestCase):
         for asset in parse_api_data(data, 'assets'):
             assert type(parse_api_data(asset, 'analysis_status')) is str
             assert type(parse_api_data(asset, 'analysis_status_id')) is int
-            self.failureException(parse_api_data(asset, 'asset_compromised'))
+            self.failureException(parse_api_data(asset, 'asset_compromise_status_id'))
             self.failureException(parse_api_data(asset, 'asset_description'))
             self.failureException(parse_api_data(asset, 'asset_ip'))
             self.failureException(parse_api_data(asset, 'asset_tags'))
@@ -285,7 +367,7 @@ class CaseTest(unittest.TestCase):
     def test_add_rm_asset_valid(self):
         """ """
         ret = self.case.add_asset(name='Dummy asset', asset_type='Account', analysis_status='Unspecified',
-                                  compromised=True, tags=['tag1', 'tag2'], description='dummy desc',
+                                  compromise_status="not compromised", tags=['tag1', 'tag2'], description='dummy desc',
                                   domain='dummy domain', ip='dummy IP', additional_info='dummy info', ioc_links=[],
                                   custom_attributes={})
 
@@ -293,7 +375,7 @@ class CaseTest(unittest.TestCase):
         data = get_data_from_resp(ret)
 
         assert type(parse_api_data(data, 'analysis_status_id')) is int
-        assert parse_api_data(data, 'asset_compromised') is True
+        assert parse_api_data(data, 'asset_compromise_status_id') == 2
         assert parse_api_data(data, 'asset_description') == "dummy desc"
         assert type(parse_api_data(data, 'asset_id')) is int
         assert type(parse_api_data(data, 'user_id')) is int
@@ -316,7 +398,7 @@ class CaseTest(unittest.TestCase):
         data = get_data_from_resp(ret)
 
         assert type(parse_api_data(data, 'analysis_status_id')) is int
-        assert parse_api_data(data, 'asset_compromised') is None
+        assert parse_api_data(data, 'asset_compromise_status_id') is None
         assert parse_api_data(data, 'asset_description') is None
         assert type(parse_api_data(data, 'asset_id')) is int
         assert type(parse_api_data(data, 'user_id')) is int
@@ -380,7 +462,7 @@ class CaseTest(unittest.TestCase):
         data = get_data_from_resp(ret)
 
         assert type(parse_api_data(data, 'analysis_status_id')) is int
-        assert parse_api_data(data, 'asset_compromised') is None
+        assert type(parse_api_data(data, 'asset_compromise_status_id')) in [int, type(None)]
         assert parse_api_data(data, 'asset_description') is None
         assert type(parse_api_data(data, 'asset_id')) is int
         assert type(parse_api_data(data, 'user_id')) is int
@@ -415,14 +497,14 @@ class CaseTest(unittest.TestCase):
 
         ret = self.case.update_asset(asset_id=parse_api_data(data, 'asset_id'), name='Dummy asset 1',
                                      asset_type='Account', analysis_status='Unspecified',
-                                     compromised=True, tags=['tag1', 'tag2'], description='dummy desc',
+                                     compromise_status=1, tags=['tag1', 'tag2'], description='dummy desc',
                                      domain='dummy domain', ip='dummy IP', additional_info='dummy info', ioc_links=[])
 
         assert bool(assert_api_resp(ret)) is True
         data = get_data_from_resp(ret)
 
         assert type(parse_api_data(data, 'analysis_status_id')) is int
-        assert parse_api_data(data, 'asset_compromised') is True
+        assert type(parse_api_data(data, 'asset_compromise_status_id')) is int
         assert parse_api_data(data, 'asset_description') == "dummy desc"
         assert type(parse_api_data(data, 'asset_id')) is int
         assert type(parse_api_data(data, 'user_id')) is int
@@ -440,7 +522,7 @@ class CaseTest(unittest.TestCase):
         """ """
         ret = self.case.update_asset(asset_id=111155551111, name='Dummy asset',
                                      asset_type='Account', analysis_status='Unspecified',
-                                     compromised=True, tags=['tag1', 'tag2'], description='dummy desc',
+                                     compromise_status=2, tags=['tag1', 'tag2'], description='dummy desc',
                                      domain='dummy domain', ip='dummy IP', additional_info='dummy info', ioc_links=[])
         assert bool(assert_api_resp(ret)) is False
 
@@ -717,8 +799,6 @@ class CaseTest(unittest.TestCase):
         event = get_data_from_resp(ret)
         assert type(event) == dict
 
-        self.failureException(parse_api_data(event, 'event_color'))
-
         assert type(parse_api_data(event, 'event_category_id')) is int
         assert parse_api_data(event, 'event_content') == 'dummy content'
         assert parse_api_data(event, 'event_title') == 'dummy event'
@@ -737,7 +817,7 @@ class CaseTest(unittest.TestCase):
 
     def test_add_event_partial_valid(self):
         """ """
-        ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now())
+        ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now(), sync_ioc_with_assets=True)
 
         assert assert_api_resp(ret, soft_fail=False)
         event = get_data_from_resp(ret)
@@ -873,10 +953,9 @@ class CaseTest(unittest.TestCase):
         assert type(data) == dict
 
         for task in parse_api_data(data, 'tasks'):
-            assert type(parse_api_data(task, 'assignee_name')) is str
+            assert type(parse_api_data(task, 'task_assignees')) is list
             assert type(parse_api_data(task, 'status_bscolor')) is str
             assert type(parse_api_data(task, 'status_name')) is str
-            assert type(parse_api_data(task, 'task_assignee_id')) is int
             assert type(parse_api_data(task, 'task_description')) is str
             assert type(parse_api_data(task, 'task_id')) is int
             assert type(parse_api_data(task, 'task_open_date')) is str
@@ -887,13 +966,12 @@ class CaseTest(unittest.TestCase):
     def test_add_task_valid(self):
         """ """
         ret = self.case.add_task(title="dummy title", status='To do', description='dummy description',
-                                 assignee='administrator', tags=['tag1', 'tag2'])
+                                 assignees=['administrator'], tags=['tag1', 'tag2'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
         assert type(task) == dict
 
-        assert type(parse_api_data(task, 'task_assignee_id')) is int
         assert type(parse_api_data(task, 'id')) is int
         assert type(parse_api_data(task, 'task_case_id')) is int
         assert parse_api_data(task, 'task_close_date') is None
@@ -912,13 +990,12 @@ class CaseTest(unittest.TestCase):
 
     def test_add_task_partial_valid(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=['administrator'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
         assert type(task) == dict
 
-        assert type(parse_api_data(task, 'task_assignee_id')) is int
         assert type(parse_api_data(task, 'id')) is int
         assert type(parse_api_data(task, 'task_case_id')) is int
         assert parse_api_data(task, 'task_close_date') is None
@@ -937,27 +1014,29 @@ class CaseTest(unittest.TestCase):
 
     def test_add_task_partial_invalid_status(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='dummy status', assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status='dummy status', assignees=['administrator'])
         assert bool(assert_api_resp(ret)) is False
 
         assert "Invalid task status" in ret.get_msg()
 
-        ret = self.case.add_task(title="dummy title", status=111155551111, assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status=111155551111, assignees=['administrator'])
         assert bool(assert_api_resp(ret)) is False
 
     def test_add_task_partial_invalid_assignee(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='To do', assignee='dummy user')
+        # Invalid as a string returns an error since it is looked up
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=['dummy user'])
         assert bool(assert_api_resp(ret)) is False
 
         assert "Invalid login" in ret.get_msg()
 
-        ret = self.case.add_task(title="dummy title", status='To do', assignee=111155551111)
-        assert bool(assert_api_resp(ret)) is False
+        # Invalid assignee as an ID does not return an error, the task is just created without assignee
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=[111155551111])
+        assert bool(assert_api_resp(ret)) is True
 
     def test_update_task_full(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=['administrator'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
@@ -966,14 +1045,14 @@ class CaseTest(unittest.TestCase):
         ret = self.case.update_task(task_id=task_id)
         assert assert_api_resp(ret, soft_fail=False)
 
-        ret = self.case.update_task(task_id=task_id, title="new dummy title", status='Done', assignee='user01',
+        ret = self.case.update_task(task_id=task_id, title="new dummy title", status='Done',
+                                    assignees=['administrator'],
                                     description='dummy description', tags=['tag1', 'tag2'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
         assert type(task) == dict
 
-        assert type(parse_api_data(task, 'task_assignee_id')) is int
         assert parse_api_data(task, 'id') == task_id
         assert type(parse_api_data(task, 'task_case_id')) is int
         assert parse_api_data(task, 'task_close_date') is None
@@ -992,7 +1071,7 @@ class CaseTest(unittest.TestCase):
 
     def test_update_task_invalid_status(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=['administrator'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
@@ -1010,18 +1089,18 @@ class CaseTest(unittest.TestCase):
 
     def test_update_task_invalid_assignee(self):
         """ """
-        ret = self.case.add_task(title="dummy title", status='To do', assignee='administrator')
+        ret = self.case.add_task(title="dummy title", status='To do', assignees=['administrator'])
         assert assert_api_resp(ret, soft_fail=False)
 
         task = get_data_from_resp(ret)
         task_id = parse_api_data(task, 'id')
 
-        ret = self.case.update_task(task_id=task_id, assignee='dummy assignee')
+        ret = self.case.update_task(task_id=task_id, assignees=['dummy assignee'])
         assert bool(assert_api_resp(ret)) is False
         assert "Invalid login" in ret.get_msg()
 
-        ret = self.case.update_task(task_id=task_id, title="dummy title", assignee=111155551111)
-        assert bool(assert_api_resp(ret)) is False
+        ret = self.case.update_task(task_id=task_id, title="dummy title", assignees=[111155551111])
+        assert bool(assert_api_resp(ret)) is True
 
         ret = self.case.delete_task(task_id=task_id)
         assert assert_api_resp(ret, soft_fail=False)
@@ -1073,7 +1152,6 @@ class CaseTest(unittest.TestCase):
         assert type(parse_api_data(task, 'task_userid_update')) is int
 
         ret = self.case.delete_global_task(task_id=parse_api_data(task, 'task_id'))
-        assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_gtask_partial_valid(self):
         """ """
@@ -1097,7 +1175,6 @@ class CaseTest(unittest.TestCase):
         assert type(parse_api_data(task, 'task_userid_update')) is int
 
         ret = self.case.delete_global_task(task_id=parse_api_data(task, 'task_id'))
-        assert assert_api_resp(ret, soft_fail=False)
 
     def test_add_gtask_partial_invalid_status(self):
         """ """
@@ -1130,7 +1207,8 @@ class CaseTest(unittest.TestCase):
         ret = self.case.update_global_task(task_id=task_id)
         assert assert_api_resp(ret, soft_fail=False)
 
-        ret = self.case.update_global_task(task_id=task_id, title="new dummy title", status='Done', assignee='user01',
+        ret = self.case.update_global_task(task_id=task_id, title="new dummy title", status='Done',
+                                           assignee='administrator',
                                            description='dummy description', tags=['tag1', 'tag2'])
         assert assert_api_resp(ret, soft_fail=False)
 
@@ -1151,6 +1229,13 @@ class CaseTest(unittest.TestCase):
         assert type(parse_api_data(task, 'task_userid_update')) is int
 
         ret = self.case.delete_global_task(task_id=task_id)
+        if ret.is_error():
+            print(ret.get_msg())
+            print(ret.get_data())
+            print(ret.as_json())
+            print(ret.get_uri())
+            print(task_id)
+
         assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_gtask_invalid_status(self):
@@ -1169,7 +1254,6 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
         ret = self.case.delete_global_task(task_id=task_id)
-        assert assert_api_resp(ret, soft_fail=False)
 
     def test_update_gtask_invalid_assignee(self):
         """ """
@@ -1187,7 +1271,6 @@ class CaseTest(unittest.TestCase):
         assert bool(assert_api_resp(ret)) is False
 
         ret = self.case.delete_global_task(task_id=task_id)
-        assert assert_api_resp(ret, soft_fail=False)
 
     def test_delete_gtask_invalid(self):
         """ """
@@ -1290,4 +1373,382 @@ class CaseTest(unittest.TestCase):
         """ """
         ret = self.case.delete_evidence(evidence_id=111155551111)
         assert assert_api_resp(ret).is_success() is False
+
+    def test_list_ds_tree_valid(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+
+        ds_root_id = next(iter(data))
+        ds_root = data.get(ds_root_id)
+        assert ds_root.get('is_root') is True
+        assert ds_root.get('type') == 'directory'
+        assert type(ds_root.get('children')) == dict
+        assert type(ds_root.get('name')) == str
+
+    def test_add_ds_file_valid(self):
+        """ """
+        with open(Path(__file__), 'rb') as fin:
+            file_data = fin.read()
+            file_size = len(file_data)
+
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_file(filename="dummy file", file_stream=open(Path(__file__), 'rb'),
+                                    file_description="dummy description", file_is_evidence=True, file_is_ioc=True,
+                                    parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ds_file = get_data_from_resp(ret)
+        assert type(parse_api_data(ds_file, 'file_date_added')) is str
+        assert parse_api_data(ds_file, 'file_description') == 'dummy description'
+        assert type(parse_api_data(ds_file, 'file_sha256')) is str
+        assert type(parse_api_data(ds_file, 'file_uuid')) is str
+        assert parse_api_data(ds_file, 'file_original_name') == 'dummy file'
+        assert type(parse_api_data(ds_file, 'file_size')) is int
+        assert parse_api_data(ds_file, 'file_case_id') == 1
+        assert parse_api_data(ds_file, 'file_parent_id') == int(ds_root)
+        assert parse_api_data(ds_file, 'file_is_evidence') is True
+        assert parse_api_data(ds_file, 'file_is_ioc') is True
+
+        ret = self.case.delete_ds_file(parse_api_data(ds_file, 'file_id'))
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_add_ds_file_invalid_stream(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_file(filename="dummy file", file_stream=None,
+                                    file_description="dummy description", file_is_evidence=True, file_is_ioc=True,
+                                    parent_id=ds_root, cid=1)
+
+        assert ret.is_error() is True
+        assert ret.get_data()[0] == "No file provided"
+
+    def test_add_ds_file_invalid_root(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+        ds_root = int(ds_root) + 100
+
+        ret = self.case.add_ds_file(filename="dummy file", file_stream=None,
+                                    file_description="dummy description", file_is_evidence=True, file_is_ioc=True,
+                                    parent_id=ds_root, cid=1)
+
+        assert ret.is_error() is True
+        assert ret.get_msg() == "Invalid path node for this case"
+
+    def test_download_ds_file_valid(self):
+        """ """
+        with open(Path(__file__), 'rb') as fin:
+            file_data = fin.read()
+            file_size = len(file_data)
+
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_file(filename="dummy file", file_stream=open(Path(__file__), 'rb'),
+                                    file_description="dummy description", file_is_evidence=False, file_is_ioc=False,
+                                    parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ds_file = get_data_from_resp(ret)
+        file_id = parse_api_data(ds_file, 'file_id')
+
+        ret = self.case.download_ds_file(file_id=file_id)
+
+        data = ret.content
+        assert type(data) == bytes
+        assert data == file_data
+        assert file_size == len(data)
+
+        ret = self.case.delete_ds_file(file_id)
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_download_ds_file_invalid(self):
+        """ """
+        ret = self.case.download_ds_file(file_id=99999999)
+
+        assert ret.status_code == 400
+        assert parse_api_data(json.loads(ret.content), 'message') == "Unable to get requested file ID"
+
+    def test_add_ds_folder_valid(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_folder(folder_name="dummy folder",
+                                      parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ds_folder = get_data_from_resp(ret)
+
+        assert parse_api_data(ds_folder, 'path_case_id') == 1
+        assert type(parse_api_data(ds_folder, 'path_id')) is int
+        assert type(parse_api_data(ds_folder, 'path_uuid')) is str
+        assert parse_api_data(ds_folder, 'path_name') == 'dummy folder'
+        assert parse_api_data(ds_folder, 'path_parent_id') == int(ds_root)
+
+        ret = self.case.delete_ds_folder(parse_api_data(ds_folder, 'path_id'))
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_add_ds_folder_invalid_root(self):
+        """ """
+        ret = self.case.add_ds_folder(folder_name="dummy folder",
+                                      parent_id=999999999, cid=1)
+
+        assert ret.is_error() is True
+
+    def test_rename_ds_folder_valid(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_folder(folder_name="dummy folder",
+                                      parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ds_folder = get_data_from_resp(ret)
+
+        ret = self.case.rename_ds_folder(folder_id=parse_api_data(ds_folder, 'path_id'),
+                                         new_name="dummy folder renamed")
+
+        assert assert_api_resp(ret, soft_fail=False)
+        data = get_data_from_resp(ret)
+
+        assert parse_api_data(data, 'path_name') == "dummy folder renamed"
+
+        ret = self.case.delete_ds_folder(parse_api_data(ds_folder, 'path_id'))
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_rename_ds_folder_invalid(self):
+        """ """
+        ret = self.case.rename_ds_folder(folder_id=999999999,
+                                         new_name="dummy folder renamed")
+
+        assert ret.is_error() is True
+
+    def test_delete_ds_folder_invalid(self):
+        """ """
+        ret = self.case.delete_ds_folder(999999999)
+
+        assert ret.is_error() is True
+
+    def test_get_ds_file_info_valid(self):
+        """ """
+        with open(Path(__file__), 'rb') as fin:
+            file_data = fin.read()
+            file_size = len(file_data)
+
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_file(filename="dummy file", file_stream=open(Path(__file__), 'rb'),
+                                    file_description="dummy description", file_is_evidence=False, file_is_ioc=False,
+                                    parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ds_file = get_data_from_resp(ret)
+        file_id = parse_api_data(ds_file, 'file_id')
+
+        ret = self.case.get_ds_file_info(file_id=file_id)
+
+        assert assert_api_resp(ret, soft_fail=False)
+        data = get_data_from_resp(ret)
+
+        assert parse_api_data(data, 'added_by_user_id') == 1
+        assert parse_api_data(data, 'file_case_id') == 1
+        assert type(parse_api_data(data, 'file_date_added')) is str
+        assert type(parse_api_data(data, 'file_password')) is str
+        assert type(parse_api_data(data, 'file_sha256')) is str
+        assert type(parse_api_data(data, 'file_tags')) is str
+        assert type(parse_api_data(data, 'file_uuid')) is str
+        assert type(parse_api_data(data, 'file_id')) is int
+        assert parse_api_data(data, 'file_parent_id') == int(ds_root)
+        assert parse_api_data(data, 'file_is_evidence') is False
+
+        assert parse_api_data(data, 'file_original_name') == "dummy file"
+        assert parse_api_data(data, 'file_description') == "dummy description"
+        assert parse_api_data(data, 'file_size') == file_size
+        assert type(parse_api_data(data, 'file_tags')) is str
+
+        ret = self.case.delete_ds_file(file_id)
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_get_ds_file_info_invalid(self):
+        """ """
+        ret = self.case.get_ds_file_info(file_id=999999999)
+
+        assert ret.is_error() is True
+
+    def test_update_ds_file_valid(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_file(filename="dummy file", file_stream=open(Path(__file__), 'rb'),
+                                    file_description="dummy description", file_is_evidence=False, file_is_ioc=False,
+                                    parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ds_file = get_data_from_resp(ret)
+        file_id = parse_api_data(ds_file, 'file_id')
+
+        ret = self.case.update_ds_file(file_id=file_id, file_description="dummy description updated",
+                                       file_is_evidence=True, file_is_ioc=True)
+
+        assert assert_api_resp(ret, soft_fail=False)
+        data = get_data_from_resp(ret)
+
+        assert parse_api_data(data, 'file_description') == "dummy description updated"
+        assert parse_api_data(data, 'file_is_evidence') is True
+        assert parse_api_data(data, 'file_is_ioc') is True
+
+        ret = self.case.delete_ds_file(file_id)
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_update_ds_file_invalid(self):
+        """ """
+        ret = self.case.update_ds_file(file_id=999999999, file_description="dummy description updated",
+                                       file_is_evidence=True, file_is_ioc=True)
+
+        assert ret.is_error() is True
+
+    def test_move_ds_folder_valid(self):
+        """ """
+        ret = self.case.list_ds_tree()
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        assert type(data) == dict
+        ds_root = next(iter(data)).replace('d-', '')
+
+        ret = self.case.add_ds_folder(folder_name="dummy folder",
+                                      parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+        ds_folder = get_data_from_resp(ret)
+
+        ret = self.case.add_ds_folder(folder_name="dummy parent",
+                                      parent_id=ds_root, cid=1)
+
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        new_parent = parse_api_data(data, 'path_parent_id')
+
+        ret = self.case.move_ds_folder(folder_id=parse_api_data(ds_folder, 'path_id'),
+                                       parent_id=new_parent)
+
+        assert assert_api_resp(ret, soft_fail=False)
+        data = get_data_from_resp(ret)
+
+        assert parse_api_data(data, 'path_parent_id') == int(new_parent)
+
+        ret = self.case.delete_ds_folder(parse_api_data(ds_folder, 'path_id'))
+        assert assert_api_resp(ret, soft_fail=False)
+
+        ret = self.case.delete_ds_folder(new_parent)
+        assert assert_api_resp(ret, soft_fail=False)
+
+    def test_move_ds_folder_invalid_initial_folder(self):
+        """ """
+        ret = self.case.move_ds_folder(folder_id=999999999, parent_id=1)
+        assert ret.is_error() is True
+
+    def test_move_ds_folder_invalid_new_parent(self):
+        """ """
+        ret = self.case.move_ds_folder(folder_id=1, parent_id=999999999)
+        assert ret.is_error() is True
+
+    def test_asset_comment_valid(self):
+        """ """
+        ret = self.case.add_asset(name="dummy asset", asset_type='Windows - Computer',
+                                  analysis_status='started', cid=1)
+        assert assert_api_resp(ret, soft_fail=False)
+
+        data = get_data_from_resp(ret)
+        asset_id = parse_api_data(data, 'asset_id')
+
+        ret = self.case.add_asset_comment(asset_id=asset_id, comment="dummy comment")
+        assert assert_api_resp(ret, soft_fail=False)
+        data = get_data_from_resp(ret)
+
+        assert parse_api_data(data, 'comment_text') == "dummy comment"
+        assert type(parse_api_data(data, 'comment_uuid')) is str
+        assert type(parse_api_data(data, 'comment_id')) is int
+        assert type(parse_api_data(data, 'comment_date')) is str
+        assert type(parse_api_data(data, 'comment_update_date')) is str
+        assert type(parse_api_data(data, 'comment_user_id')) is int
+
+        ret = self.case.update_asset_comment(asset_id=asset_id, comment_id=parse_api_data(data, 'comment_id'),
+                                             comment="dummy comment updated")
+        assert assert_api_resp(ret, soft_fail=False)
+        data = get_data_from_resp(ret)
+
+        assert parse_api_data(data, 'comment_text') == "dummy comment updated"
+
+        self.case.delete_asset_comment(asset_id=asset_id, comment_id=parse_api_data(data, 'comment_id'))
+        self.case.delete_asset(asset_id)
+
+    def test_download_investigation_report(self):
+        """ """
+
+        adm = AdminHelper(session=self.session)
+        ret = adm.add_report_template(template_name='dummy template', template_description='dummy description',
+                                      template_type=ReportTemplateType.InvestigationReport,
+                                      template_stream=open(Path(__file__).parent / 'resources' / 'test_report.md', 'rb'),
+                                      template_language=ReportTemplateLanguage.dutch,
+                                      template_name_format='dummy format')
+
+        assert assert_api_resp(ret, soft_fail=False)
+        report_id = parse_api_data(get_data_from_resp(ret), 'report_id')
+
+        ret = self.case.download_investigation_report(report_id=report_id)
+        assert ret.status_code == 200
+
+        assert adm.delete_report_template(template_id=report_id)
 

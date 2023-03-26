@@ -1,0 +1,5 @@
+Client documentation
+====================
+
+.. autoclass:: dfir_iris_client.case.Case
+   :members:

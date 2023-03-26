@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administration &mdash; DFIR-IRIS Client 2.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Customers" href="customer.html" />
+    <link rel="prev" title="Case" href="case.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DFIR-IRIS Client
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="case.html">Case</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Administration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper"><code class="docutils literal notranslate"><span class="pre">AdminHelper</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.add_asset_type"><code class="docutils literal notranslate"><span class="pre">AdminHelper.add_asset_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.add_case_classification"><code class="docutils literal notranslate"><span class="pre">AdminHelper.add_case_classification()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.add_customer"><code class="docutils literal notranslate"><span class="pre">AdminHelper.add_customer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.add_group"><code class="docutils literal notranslate"><span class="pre">AdminHelper.add_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.add_ioc_type"><code class="docutils literal notranslate"><span class="pre">AdminHelper.add_ioc_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.add_report_template"><code class="docutils literal notranslate"><span class="pre">AdminHelper.add_report_template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.add_user"><code class="docutils literal notranslate"><span class="pre">AdminHelper.add_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.deactivate_user"><code class="docutils literal notranslate"><span class="pre">AdminHelper.deactivate_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.delete_asset_type"><code class="docutils literal notranslate"><span class="pre">AdminHelper.delete_asset_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.delete_case_classification"><code class="docutils literal notranslate"><span class="pre">AdminHelper.delete_case_classification()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.delete_customer"><code class="docutils literal notranslate"><span class="pre">AdminHelper.delete_customer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.delete_group"><code class="docutils literal notranslate"><span class="pre">AdminHelper.delete_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.delete_ioc_type"><code class="docutils literal notranslate"><span class="pre">AdminHelper.delete_ioc_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.delete_report_template"><code class="docutils literal notranslate"><span class="pre">AdminHelper.delete_report_template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.delete_user"><code class="docutils literal notranslate"><span class="pre">AdminHelper.delete_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.delete_user_by_id"><code class="docutils literal notranslate"><span class="pre">AdminHelper.delete_user_by_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.get_group"><code class="docutils literal notranslate"><span class="pre">AdminHelper.get_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.get_user"><code class="docutils literal notranslate"><span class="pre">AdminHelper.get_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.get_user_cases_access_trace"><code class="docutils literal notranslate"><span class="pre">AdminHelper.get_user_cases_access_trace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.has_permission"><code class="docutils literal notranslate"><span class="pre">AdminHelper.has_permission()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.is_user_admin"><code class="docutils literal notranslate"><span class="pre">AdminHelper.is_user_admin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.list_groups"><code class="docutils literal notranslate"><span class="pre">AdminHelper.list_groups()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.lookup_group"><code class="docutils literal notranslate"><span class="pre">AdminHelper.lookup_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.recompute_all_users_cases_access"><code class="docutils literal notranslate"><span class="pre">AdminHelper.recompute_all_users_cases_access()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.recompute_user_cases_access"><code class="docutils literal notranslate"><span class="pre">AdminHelper.recompute_user_cases_access()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.update_asset_type"><code class="docutils literal notranslate"><span class="pre">AdminHelper.update_asset_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.update_case_classification"><code class="docutils literal notranslate"><span class="pre">AdminHelper.update_case_classification()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.update_customer"><code class="docutils literal notranslate"><span class="pre">AdminHelper.update_customer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.update_group"><code class="docutils literal notranslate"><span class="pre">AdminHelper.update_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.update_group_cases_access"><code class="docutils literal notranslate"><span class="pre">AdminHelper.update_group_cases_access()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.update_group_members"><code class="docutils literal notranslate"><span class="pre">AdminHelper.update_group_members()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.update_ioc_type"><code class="docutils literal notranslate"><span class="pre">AdminHelper.update_ioc_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.update_user"><code class="docutils literal notranslate"><span class="pre">AdminHelper.update_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dfir_iris_client.admin.AdminHelper.update_user_cases_access"><code class="docutils literal notranslate"><span class="pre">AdminHelper.update_user_cases_access()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="customer.html">Customers</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DFIR-IRIS Client</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Administration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/admin.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-dfir_iris_client.admin">
+<span id="administration"></span><h1>Administration<a class="headerlink" href="#module-dfir_iris_client.admin" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dfir_iris_client.admin.</span></span><span class="sig-name descname"><span class="pre">AdminHelper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper" title="Permalink to this definition"></a></dt>
+<dd><p>Handles administrative tasks</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.add_asset_type">
+<span class="sig-name descname"><span class="pre">add_asset_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.add_asset_type" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new Asset Type.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the Asset type</p></li>
+<li><p><strong>description</strong> – Description of the Asset type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.add_case_classification">
+<span class="sig-name descname"><span class="pre">add_case_classification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_expanded</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.add_case_classification" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new Case Classification.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the Case Classification</p></li>
+<li><p><strong>name_expanded</strong> – Expanded name of the Case Classification</p></li>
+<li><p><strong>description</strong> – Description of the Case Classification</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.add_customer">
+<span class="sig-name descname"><span class="pre">add_customer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">customer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.add_customer" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a new customer. A new customer can be added if:</p>
+<ul class="simple">
+<li><p>customer_name is unique</p></li>
+</ul>
+<p>!!! tip “Requires admin rights”
+:param customer_name: Name of the customer to add.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.add_group">
+<span class="sig-name descname"><span class="pre">add_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_permissions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Permissions</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.add_group" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new group with permissions. Cases access and members can be set later on with
+<cite>set_group_access</cite> and <cite>set_group_members</cite> methods. Permissions must be a list of known
+permissions from the Permission enum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group_name</strong> – Name of the group</p></li>
+<li><p><strong>group_description</strong> – Description of the group</p></li>
+<li><p><strong>group_permissions</strong> – List of permission from Permission enum</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.add_ioc_type">
+<span class="sig-name descname"><span class="pre">add_ioc_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxonomy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.add_ioc_type" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new IOC Type.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the IOC type</p></li>
+<li><p><strong>description</strong> – Description of the IOC type</p></li>
+<li><p><strong>taxonomy</strong> – Taxonomy of the IOC Type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.add_report_template">
+<span class="sig-name descname"><span class="pre">add_report_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ReportTemplateType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_name_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ReportTemplateLanguage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BinaryIO</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.add_report_template" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new report template. template_type must be a ReportTemplateType enum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template_name</strong> – Name of the template</p></li>
+<li><p><strong>template_description</strong> – Description of the template</p></li>
+<li><p><strong>template_type</strong> – ReportTemplateType enum</p></li>
+<li><p><strong>template_language</strong> – ReportTemplateLanguage enum</p></li>
+<li><p><strong>template_name_format</strong> – Name format of the template</p></li>
+<li><p><strong>template_stream</strong> – Template data</p></li>
+<li><p><strong>cid</strong> – Case ID</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.add_user">
+<span class="sig-name descname"><span class="pre">add_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">login</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.add_user" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a new user. A new user can be successfully added if</p>
+<ul class="simple">
+<li><p>login is unique</p></li>
+<li><p>email is unique</p></li>
+<li><p>password meets the requirements of IRIS</p></li>
+</ul>
+<p>!!! tip “Requires server administrator rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>login</strong> – Username (login name) of the user to add</p></li>
+<li><p><strong>name</strong> – Full name of the user</p></li>
+<li><p><strong>password</strong> – Password of the user</p></li>
+<li><p><strong>email</strong> – Email of the user</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.deactivate_user">
+<span class="sig-name descname"><span class="pre">deactivate_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user:</span> <span class="pre">[&lt;class</span> <span class="pre">'int'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'str'&gt;]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.deactivate_user" title="Permalink to this definition"></a></dt>
+<dd><p>Deactivate a user from its user ID or login. Disabled users can’t log in interactively nor user their API keys.
+They do not appear in proposed user lists.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user</strong> – User ID or login to deactivate</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.delete_asset_type">
+<span class="sig-name descname"><span class="pre">delete_asset_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_type_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.delete_asset_type" title="Permalink to this definition"></a></dt>
+<dd><p>Delete an existing asset type by its ID.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>asset_type_id</strong> – Asset type to delete</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.delete_case_classification">
+<span class="sig-name descname"><span class="pre">delete_case_classification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_classification_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.delete_case_classification" title="Permalink to this definition"></a></dt>
+<dd><p>Delete an existing Case Classification by its ID.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>case_classification_id</strong> – Case Classification to delete</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.delete_customer">
+<span class="sig-name descname"><span class="pre">delete_customer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">customer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.delete_customer" title="Permalink to this definition"></a></dt>
+<dd><p>Deletes a customer from its ID or name.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>customer</strong> – Customer name or customer ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.delete_group">
+<span class="sig-name descname"><span class="pre">delete_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.delete_group" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a group by its ID or name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>group</strong> – Group ID or group name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.delete_ioc_type">
+<span class="sig-name descname"><span class="pre">delete_ioc_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ioc_type_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.delete_ioc_type" title="Permalink to this definition"></a></dt>
+<dd><p>Delete an existing IOC Type by its ID.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ioc_type_id</strong> – IOC type to delete</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.delete_report_template">
+<span class="sig-name descname"><span class="pre">delete_report_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.delete_report_template" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a report template by its ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>template_id</strong> – Template ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.delete_user">
+<span class="sig-name descname"><span class="pre">delete_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">[&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'str'&gt;],</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.delete_user" title="Permalink to this definition"></a></dt>
+<dd><p>Deletes a user based on its login. A user can only be deleted if it does not have any
+activities in IRIS. This is to maintain coherence in the database. The user needs to be
+deactivated first.</p>
+<p>!!! tip “Requires administrative rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user</strong> – Username or user ID of the user to delete</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.delete_user_by_id">
+<span class="sig-name descname"><span class="pre">delete_user_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.delete_user_by_id" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a user based on its ID. A user can only be deleted if it does not have any
+activities in IRIS. This is to maintain coherence in the database.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_id</strong> – UserID of the user to delete</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.get_group">
+<span class="sig-name descname"><span class="pre">get_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.get_group" title="Permalink to this definition"></a></dt>
+<dd><p>Get a group by its ID or name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>group</strong> – Group ID or group name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.get_user">
+<span class="sig-name descname"><span class="pre">get_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.get_user" title="Permalink to this definition"></a></dt>
+<dd><p>Return a user data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user</strong> – User ID or login of the user to get</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.get_user_cases_access_trace">
+<span class="sig-name descname"><span class="pre">get_user_cases_access_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.get_user_cases_access_trace" title="Permalink to this definition"></a></dt>
+<dd><p>Get the trace of the cases access of a user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user</strong> – User ID or login to update</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.has_permission">
+<span class="sig-name descname"><span class="pre">has_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">permission</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Permissions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.has_permission" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true if the user has the given permissions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>permission</strong> – Permission to check</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.is_user_admin">
+<span class="sig-name descname"><span class="pre">is_user_admin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.is_user_admin" title="Permalink to this definition"></a></dt>
+<dd><p>Deprecated in IRIS v1.5.0. Use the new has_permission(&lt;permission&gt;) method.
+Returns True if the calling user is administrator</p>
+<p>Args:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Bool - true if the calling is administrator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.list_groups">
+<span class="sig-name descname"><span class="pre">list_groups</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.list_groups" title="Permalink to this definition"></a></dt>
+<dd><p>List all groups.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.lookup_group">
+<span class="sig-name descname"><span class="pre">lookup_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.lookup_group" title="Permalink to this definition"></a></dt>
+<dd><p>Lookup a group by its name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>group_name</strong> – Group name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.recompute_all_users_cases_access">
+<span class="sig-name descname"><span class="pre">recompute_all_users_cases_access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.recompute_all_users_cases_access" title="Permalink to this definition"></a></dt>
+<dd><p>Recompute the cases access of all users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.recompute_user_cases_access">
+<span class="sig-name descname"><span class="pre">recompute_user_cases_access</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.recompute_user_cases_access" title="Permalink to this definition"></a></dt>
+<dd><p>Recompute the cases access of a user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user</strong> – User ID or login to update</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.update_asset_type">
+<span class="sig-name descname"><span class="pre">update_asset_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset_type_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.update_asset_type" title="Permalink to this definition"></a></dt>
+<dd><p>Updates an Asset type. <cite>asset_type_id</cite> needs to be a valid existing AssetType ID.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>asset_type_id</strong> – Asset type to update</p></li>
+<li><p><strong>name</strong> – Name of the IOC type</p></li>
+<li><p><strong>description</strong> – Description of the IOC type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.update_case_classification">
+<span class="sig-name descname"><span class="pre">update_case_classification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classification_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_expanded</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.update_case_classification" title="Permalink to this definition"></a></dt>
+<dd><p>Updates a Case Classification. <cite>case_classification_id</cite> needs to be a valid existing CaseClassification ID.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>classification_id</strong> – Case Classification to update</p></li>
+<li><p><strong>name</strong> – Name of the Case Classification</p></li>
+<li><p><strong>name_expanded</strong> – Expanded name of the Case Classification</p></li>
+<li><p><strong>description</strong> – Description of the Case Classification</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.update_customer">
+<span class="sig-name descname"><span class="pre">update_customer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">customer_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.update_customer" title="Permalink to this definition"></a></dt>
+<dd><p>Updates an existing customer. A customer can be updated if :</p>
+<ul class="simple">
+<li><p><cite>customer_id</cite> is a know customer ID in IRIS</p></li>
+<li><p><cite>customer_name</cite> is unique</p></li>
+</ul>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>customer_id</strong> – ID of the customer to update</p></li>
+<li><p><strong>customer_name</strong> – Customer name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.update_group">
+<span class="sig-name descname"><span class="pre">update_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_permissions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Permissions</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.update_group" title="Permalink to this definition"></a></dt>
+<dd><p>Update a group. Cases access and members can be with
+<cite>set_group_access</cite> and <cite>set_group_members</cite> methods. Permissions must be a list of known
+permissions from the Permission enum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group</strong> – Group ID or group name</p></li>
+<li><p><strong>group_name</strong> – Name of the group</p></li>
+<li><p><strong>group_description</strong> – Description of the group</p></li>
+<li><p><strong>group_permissions</strong> – List of permission from Permission enum</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.update_group_cases_access">
+<span class="sig-name descname"><span class="pre">update_group_cases_access</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cases_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CaseAccessLevel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_follow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.update_group_cases_access" title="Permalink to this definition"></a></dt>
+<dd><p>Update the cases access of a group. Cases access must be a list of case IDs. access_level must be
+a CaseAccessLevel enum.
+If auto_follow is True, the cases will be automatically added to the group when they are created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group</strong> – Group ID or group name</p></li>
+<li><p><strong>cases_list</strong> – List of case IDs</p></li>
+<li><p><strong>access_level</strong> – CaseAccessLevel enum</p></li>
+<li><p><strong>auto_follow</strong> – Set to true to auto follow cases new cases</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.update_group_members">
+<span class="sig-name descname"><span class="pre">update_group_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">members</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.update_group_members" title="Permalink to this definition"></a></dt>
+<dd><p>Update the members of a group. Members must be a list of user IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group</strong> – Group ID or group name</p></li>
+<li><p><strong>members</strong> – List of user IDs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.update_ioc_type">
+<span class="sig-name descname"><span class="pre">update_ioc_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ioc_type_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxonomy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.update_ioc_type" title="Permalink to this definition"></a></dt>
+<dd><p>Updates an IOC type. <cite>ioc_type_id</cite> needs to be a valid existing IocType ID.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ioc_type_id</strong> – IOC type to update</p></li>
+<li><p><strong>name</strong> – Name of the IOC type</p></li>
+<li><p><strong>description</strong> – Description of the IOC type</p></li>
+<li><p><strong>taxonomy</strong> – Taxonomy of the IOC Type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.update_user">
+<span class="sig-name descname"><span class="pre">update_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.update_user" title="Permalink to this definition"></a></dt>
+<dd><p>Updates a user. The user can be updated if :</p>
+<ul class="simple">
+<li><p>login is unique</p></li>
+<li><p>email is unique</p></li>
+<li><p>password meets the requirements of IRIS</p></li>
+</ul>
+<p>Only set the parameters that needs to be updated.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user</strong> – User ID or login to update</p></li>
+<li><p><strong>login</strong> – Login of the user</p></li>
+<li><p><strong>name</strong> – Full name of the user</p></li>
+<li><p><strong>password</strong> – Password of the user</p></li>
+<li><p><strong>email</strong> – Email of the user</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dfir_iris_client.admin.AdminHelper.update_user_cases_access">
+<span class="sig-name descname"><span class="pre">update_user_cases_access</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cases_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CaseAccessLevel</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ApiResponse</span></span></span><a class="headerlink" href="#dfir_iris_client.admin.AdminHelper.update_user_cases_access" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the cases that a user can access.</p>
+<p>!!! tip “Requires admin rights”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user</strong> – User ID or login to update</p></li>
+<li><p><strong>cases_list</strong> – List of case IDs</p></li>
+<li><p><strong>access_level</strong> – Access level to set for the user</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ApiResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="case.html" class="btn btn-neutral float-left" title="Case" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="customer.html" class="btn btn-neutral float-right" title="Customers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, DFIR-IRIS Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
