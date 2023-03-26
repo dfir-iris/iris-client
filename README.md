@@ -5,7 +5,7 @@
 It relies exclusively on the API, which means output of the methods are the same as specified in the API reference.
 
 ## Versions
-The Python client version follows the API versions (until the patch level). Meaning for API v1.0.1, one need to install `dfir_iris_client-1.0.1`. 
+The Python client version follows the API versions (until the patch level). Meaning for API v2.0.0, one need to install `dfir_iris_client-2.0.0`. 
 Please refer to the [documentation](https://dfir-iris.github.io/operations/api/#references) to check which version applies to your IRIS instance. 
 
 ## Install 
