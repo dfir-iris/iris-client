@@ -64,7 +64,8 @@ log.info(f'Created IOC ID {ioc_id}. Server returned {status_ioc}')
 
 # Let's add an asset and associate the ioc with an update
 status_asset = case.add_asset(name='API asset', asset_type='Windows - Computer',
-                              description='A comprehensive description', compromised=True, analysis_status='Started')
+                              description='A comprehensive description', compromise_status=1,
+                              analysis_status='Started')
 assert_api_resp(status_asset, soft_fail=False)
 
 # We keep the asset ID so we can update it
