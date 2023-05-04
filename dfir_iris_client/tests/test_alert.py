@@ -125,3 +125,27 @@ class AlertTest(InitIrisClientTest):
         for alert in parse_api_data(data, 'alerts'):
             assert_alert_isvalid(alert, parse_api_data(alert, 'alert_id'))
 
+    def test_add_alert(self):
+        """ """
+        with open(Path(__file__).parent / 'resources' / 'alert.json') as f:
+            alert_data = json.load(f)
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        data = get_data_from_resp(resp)
+        assert_alert_isvalid(data, parse_api_data(data, 'alert_id'))
+
+    def test_delete_alert(self):
+        """ """
+        with open(Path(__file__).parent / 'resources' / 'alert.json') as f:
+            alert_data = json.load(f)
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        data = get_data_from_resp(resp)
+        alert_id = parse_api_data(data, 'alert_id')
+
+        resp = self.alert.delete_alert(alert_id)
+        assert bool(assert_api_resp(resp)) is True

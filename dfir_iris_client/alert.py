@@ -42,7 +42,7 @@ class Alert(object):
             alert_id (int): Alert id
 
         Returns:
-            Response: Response object
+            ApiResponse: Response object
         """
         return self._s.pi_get(f"/alerts/{alert_id}")
 
@@ -53,7 +53,7 @@ class Alert(object):
             alert_ids (list): Alert ids
 
         Returns:
-            Response: Response object
+            ApiResponse: Response object
         """
 
         if not all(isinstance(element, int) for element in alert_ids):
@@ -61,4 +61,36 @@ class Alert(object):
 
         return self._s.pi_get(f"/alerts/filter?alert_ids={','.join(str(element) for element in alert_ids)}")
 
+    def add_alert(self, alert_data: dict) -> ApiResponse:
+        """Add an alert
 
+        Args:
+            alert_data (dict): Alert data - The data is defined in the API documentation
+
+        Returns:
+            ApiResponse: Response object
+        """
+        return self._s.pi_post("/alerts/add", alert_data)
+
+    def update_alert(self, alert_id: int, alert_data: dict) -> ApiResponse:
+        """Update an alert
+
+        Args:
+            alert_id (int): Alert id
+            alert_data (dict): Alert data - The data is defined in the API documentation
+
+        Returns:
+            ApiResponse: Response object
+        """
+        return self._s.pi_post(f"/alerts/update/{alert_id}", alert_data)
+
+    def delete_alert(self, alert_id: int) -> ApiResponse:
+        """Delete an alert
+
+        Args:
+            alert_id (int): Alert id
+
+        Returns:
+            ApiResponse: Response object
+        """
+        return self._s.pi_post(f"/alerts/delete/{alert_id}")
