@@ -30,6 +30,12 @@ from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, p
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
+def load_alert_data():
+    """Load alert data from a file"""
+    with open(Path(__file__).parent / 'resources' / 'alert.json') as f:
+        return json.load(f)
+
+
 def assert_alert_isvalid(data, alert_id, has_related_alerts=False):
     """Assert that the alert data is valid"""
     assert parse_api_data(data, 'alert_id') == alert_id
@@ -127,8 +133,7 @@ class AlertTest(InitIrisClientTest):
 
     def test_add_alert(self):
         """ """
-        with open(Path(__file__).parent / 'resources' / 'alert.json') as f:
-            alert_data = json.load(f)
+        alert_data = load_alert_data()
 
         resp = self.alert.add_alert(alert_data)
         assert bool(assert_api_resp(resp)) is True
@@ -138,8 +143,7 @@ class AlertTest(InitIrisClientTest):
 
     def test_delete_alert(self):
         """ """
-        with open(Path(__file__).parent / 'resources' / 'alert.json') as f:
-            alert_data = json.load(f)
+        alert_data = load_alert_data()
 
         resp = self.alert.add_alert(alert_data)
         assert bool(assert_api_resp(resp)) is True
@@ -149,3 +153,19 @@ class AlertTest(InitIrisClientTest):
 
         resp = self.alert.delete_alert(alert_id)
         assert bool(assert_api_resp(resp)) is True
+
+    def test_update_alert(self):
+        """ """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        data = get_data_from_resp(resp)
+        alert_id = parse_api_data(data, 'alert_id')
+
+        resp = self.alert.update_alert(alert_id, {'alert_title': 'test'})
+        assert bool(assert_api_resp(resp)) is True
+
+        data = get_data_from_resp(resp)
+        assert parse_api_data(data, 'alert_title') == 'test'
