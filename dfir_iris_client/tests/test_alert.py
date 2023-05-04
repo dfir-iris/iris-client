@@ -30,6 +30,74 @@ from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, p
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
+def assert_alert_isvalid(data, alert_id, has_related_alerts=False):
+    """Assert that the alert data is valid"""
+    assert parse_api_data(data, 'alert_id') == alert_id
+    assets = parse_api_data(data, 'assets')
+
+    assert isinstance(assets, list)
+
+    assert isinstance(parse_api_data(data, 'alert_severity_id'), int)
+    assert isinstance(parse_api_data(data, 'alert_owner_id'), int) or parse_api_data(data, 'alert_owner_id') is None
+
+    alert_source_content = parse_api_data(data, 'alert_source_content')
+    assert isinstance(alert_source_content, dict)
+
+    comments = parse_api_data(data, 'comments')
+    assert isinstance(comments, list)
+
+    modification_history = parse_api_data(data, 'modification_history')
+    assert isinstance(modification_history, dict)
+
+    customer = parse_api_data(data, 'customer')
+    assert isinstance(customer, dict)
+
+    owner = parse_api_data(data, 'owner')
+    assert isinstance(owner, dict) or owner is None
+
+    assert isinstance(parse_api_data(data, 'alert_source_link'), str)
+
+    cases = parse_api_data(data, 'cases')
+    assert isinstance(cases, list)
+
+    assert isinstance(parse_api_data(data, 'alert_classification_id'), int)
+    assert isinstance(parse_api_data(data, 'alert_source'), str)
+    assert isinstance(parse_api_data(data, 'alert_tags'), str)
+    assert isinstance(parse_api_data(data, 'alert_context'), dict)
+    assert isinstance(parse_api_data(data, 'alert_id'), int)
+
+    severity = parse_api_data(data, 'severity')
+    assert isinstance(severity, dict)
+
+    alert_creation_time = parse_api_data(data, 'alert_creation_time')
+    assert isinstance(alert_creation_time, str)
+
+    classification = parse_api_data(data, 'classification')
+    assert isinstance(classification, dict)
+
+    assert isinstance(parse_api_data(data, 'alert_title'), str)
+    assert isinstance(parse_api_data(data, 'alert_uuid'), str)
+    assert isinstance(parse_api_data(data, 'alert_source_ref'), str)
+    assert isinstance(parse_api_data(data, 'alert_note'), str)
+    assert isinstance(parse_api_data(data, 'alert_customer_id'), int)
+
+    iocs = parse_api_data(data, 'iocs')
+    assert isinstance(iocs, list)
+
+    assert isinstance(parse_api_data(data, 'alert_description'), str)
+    assert isinstance(parse_api_data(data, 'alert_status_id'), int)
+
+    alert_source_event_time = parse_api_data(data, 'alert_source_event_time')
+    assert isinstance(alert_source_event_time, str)
+
+    status = parse_api_data(data, 'status')
+    assert isinstance(status, dict)
+
+    if has_related_alerts:
+        related_alerts = parse_api_data(data, 'related_alerts')
+        assert isinstance(related_alerts, dict)
+
+
 class AlertTest(InitIrisClientTest):
 
     def setUp(self) -> None:
@@ -43,66 +111,17 @@ class AlertTest(InitIrisClientTest):
         assert bool(assert_api_resp(resp)) is True
         data = get_data_from_resp(resp)
 
-        assert parse_api_data(data, 'alert_id') == 1
-        assets = parse_api_data(data, 'assets')
+        assert_alert_isvalid(data,1, has_related_alerts=True)
 
-        assert isinstance(assets, list)
+    def test_get_alerts(self):
+        """ """
+        resp = self.alert.get_alerts([1, 2, 3, 4, 5, 6])
 
-        assert isinstance(parse_api_data(data, 'alert_severity_id'), int)
-        assert isinstance(parse_api_data(data, 'alert_owner_id'), int) or parse_api_data(data, 'alert_owner_id') is None
+        assert bool(assert_api_resp(resp)) is True
+        data = get_data_from_resp(resp)
 
-        alert_source_content = parse_api_data(data, 'alert_source_content')
-        assert isinstance(alert_source_content, dict)
+        assert isinstance(data, dict)
 
-        comments = parse_api_data(data, 'comments')
-        assert isinstance(comments, list)
+        for alert in parse_api_data(data, 'alerts'):
+            assert_alert_isvalid(alert, parse_api_data(alert, 'alert_id'))
 
-        modification_history = parse_api_data(data, 'modification_history')
-        assert isinstance(modification_history, dict)
-
-        customer = parse_api_data(data, 'customer')
-        assert isinstance(customer, dict)
-
-        owner = parse_api_data(data, 'owner')
-        assert isinstance(owner, dict) or owner is None
-
-        assert isinstance(parse_api_data(data, 'alert_source_link'), str)
-
-        cases = parse_api_data(data, 'cases')
-        assert isinstance(cases, list)
-
-        assert isinstance(parse_api_data(data, 'alert_classification_id'), int)
-        assert isinstance(parse_api_data(data, 'alert_source'), str)
-        assert isinstance(parse_api_data(data, 'alert_tags'), str)
-        assert isinstance(parse_api_data(data, 'alert_context'), dict)
-        assert isinstance(parse_api_data(data, 'alert_id'), int)
-
-        severity = parse_api_data(data, 'severity')
-        assert isinstance(severity, dict)
-
-        alert_creation_time = parse_api_data(data, 'alert_creation_time')
-        assert isinstance(alert_creation_time, str)
-
-        classification = parse_api_data(data, 'classification')
-        assert isinstance(classification, dict)
-
-        assert isinstance(parse_api_data(data, 'alert_title'), str)
-        assert isinstance(parse_api_data(data, 'alert_uuid'), str)
-        assert isinstance(parse_api_data(data, 'alert_source_ref'), str)
-        assert isinstance(parse_api_data(data, 'alert_note'), str)
-        assert isinstance(parse_api_data(data, 'alert_customer_id'), int)
-
-        iocs = parse_api_data(data, 'iocs')
-        assert isinstance(iocs, list)
-
-        assert isinstance(parse_api_data(data, 'alert_description'), str)
-        assert isinstance(parse_api_data(data, 'alert_status_id'), int)
-
-        alert_source_event_time = parse_api_data(data, 'alert_source_event_time')
-        assert isinstance(alert_source_event_time, str)
-
-        status = parse_api_data(data, 'status')
-        assert isinstance(status, dict)
-
-        related_alerts = parse_api_data(data, 'related_alerts')
-        assert isinstance(related_alerts, dict)

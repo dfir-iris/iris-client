@@ -16,10 +16,11 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import json
 import warnings
+from typing import List
 
 from requests import Response
 
-from dfir_iris_client.helper.utils import ApiResponse
+from dfir_iris_client.helper.utils import ApiResponse, ClientApiError
 from dfir_iris_client.session import ClientSession
 
 
@@ -44,4 +45,20 @@ class Alert(object):
             Response: Response object
         """
         return self._s.pi_get(f"/alerts/{alert_id}")
+
+    def get_alerts(self, alert_ids: List[int]) -> ApiResponse:
+        """Get alerts from their ids
+
+        Args:
+            alert_ids (list): Alert ids
+
+        Returns:
+            Response: Response object
+        """
+
+        if not all(isinstance(element, int) for element in alert_ids):
+            return ClientApiError('Expected a list of integers for alert_ids')
+
+        return self._s.pi_get(f"/alerts/filter?alert_ids={','.join(str(element) for element in alert_ids)}")
+
 
