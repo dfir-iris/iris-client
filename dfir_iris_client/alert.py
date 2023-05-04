@@ -94,3 +94,33 @@ class Alert(object):
             ApiResponse: Response object
         """
         return self._s.pi_post(f"/alerts/delete/{alert_id}")
+
+    def escalate_alert(self, alert_id: int, iocs_import_list: List[str], assets_import_list: List[str],
+                       escalation_note: str, case_title:str, case_tags: str, case_template_id: int = None,
+                       import_as_event: bool = False) -> ApiResponse:
+        """Escalate an alert
+
+        Args:
+            alert_id (int): Alert id
+            iocs_import_list (list): List of IOCs UUID from the alert to import
+            assets_import_list (list): List of assets UUIDs from the alert to import
+            escalation_note (str): Escalation note
+            case_title (str): Case title
+            case_tags (str): Case tags, a string of comma separated tags
+            case_template_id (int): Case template id
+            import_as_event (bool): Import as event
+
+        Returns:
+            ApiResponse: Response object
+        """
+        payload = {
+            "iocs_import_list": iocs_import_list,
+            "assets_import_list": assets_import_list,
+            "note": escalation_note,
+            "case_title": case_title,
+            "case_tags": case_tags,
+            "case_template_id": case_template_id,
+            "import_as_event": import_as_event
+        }
+
+        return self._s.pi_post(f"/alerts/escalate/{alert_id}", data=payload)

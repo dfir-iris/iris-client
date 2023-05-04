@@ -26,7 +26,7 @@ from dfir_iris_client.case import Case
 from dfir_iris_client.customer import Customer
 from dfir_iris_client.helper.colors import EventWhite
 from dfir_iris_client.helper.report_template_types import ReportTemplateType, ReportTemplateLanguage
-from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data
+from dfir_iris_client.helper.utils import assert_api_resp, get_data_from_resp, parse_api_data, get_data
 from dfir_iris_client.tests.tests_helper import InitIrisClientTest
 
 
@@ -202,9 +202,40 @@ class AlertTest(InitIrisClientTest):
         resp = self.alert.add_alert(alert_data)
         assert bool(assert_api_resp(resp)) is True
 
-        data = get_data_from_resp(resp)
-        alert_id = parse_api_data(data, 'alert_id')
+        alert_id = get_data(resp, 'alert_id')
 
         invalid_update_data = {'alert_title': None}
         resp = self.alert.update_alert(alert_id, invalid_update_data)
         assert bool(assert_api_resp(resp)) is False
+
+    def test_escalate_alert(self):
+        """ Test escalating an alert """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        alert_id = resp.get_data_field('alert_id')
+
+        iocs = resp.get_data_field('iocs')
+        ioc_uid = iocs[0].get('ioc_uid')
+
+        asset = resp.get_data_field('assets')
+        asset_uid = asset[0].get('asset_uid')
+
+        resp = self.alert.escalate_alert(alert_id, iocs_import_list=[ioc_uid],
+                                         assets_import_list=[asset_uid], escalation_note='test',
+                                         case_title='test', case_tags='defender,test', import_as_event=True)
+
+        assert bool(assert_api_resp(resp)) is True
+
+        data = get_data_from_resp(resp)
+        assert 'classification_id' in data
+        assert 'case_uuid' in data
+        assert 'case_name' in data and 'test' in data['case_name']
+        assert 'case_id' in data
+        assert 'case_customer' in data
+        assert 'modification_history' in data
+        assert 'case_description' in data
+        assert 'case_soc_id' in data
+        assert 'status_id' in data

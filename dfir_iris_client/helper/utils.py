@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from typing import Union
+from typing import Union, List
 
 import logging as log
 import json
@@ -142,6 +142,19 @@ class ApiResponse(object):
 
         return self._response.get('data')
 
+    def get_data_field(self, field: Union[List[str], str]):
+        """ """
+        if not hasattr(self, "_response"):
+            return None
+
+        if isinstance(field, str):
+            return self._response.get('data').get(field)
+
+        if isinstance(field, list):
+            return reduce(lambda d, key: d.get(key) if d else None, field, self._response.get('data'))
+
+        return None
+
     def get_msg(self):
         """ """
         if not hasattr(self, "_response"):
@@ -239,6 +252,22 @@ def parse_api_data(data: dict, path: Union[list, str], strict=True) -> any:
             return None
 
     return fdata
+
+
+def get_data(api_response: ApiResponse, path: Union[list, str], strict=True) -> any:
+    """Parses the data field of an API response. Path describes a path to fetch a specific value in data.
+    If strict is set, an exception is raised, otherwise None is returned.
+
+    Args:
+      api_response: ApiResponse:
+      path: Value to get from within data
+      strict: Set to true to fails if path is not found in data (default)
+
+    Returns:
+      ApiResponse
+
+    """
+    return parse_api_data(get_data_from_resp(api_response), path, strict)
 
 
 def ClientApiError(error=None, msg=None):
