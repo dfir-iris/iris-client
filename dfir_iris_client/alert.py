@@ -44,7 +44,7 @@ class Alert(object):
         Returns:
             ApiResponse: Response object
         """
-        return self._s.pi_get(f"/alerts/{alert_id}")
+        return self._s.pi_get(f"alerts/{alert_id}")
 
     def get_alerts(self, alert_ids: List[int]) -> ApiResponse:
         """Get alerts from their ids
@@ -59,7 +59,7 @@ class Alert(object):
         if not all(isinstance(element, int) for element in alert_ids):
             return ClientApiError('Expected a list of integers for alert_ids')
 
-        return self._s.pi_get(f"/alerts/filter?alert_ids={','.join(str(element) for element in alert_ids)}")
+        return self._s.pi_get(f"alerts/filter?alert_ids={','.join(str(element) for element in alert_ids)}")
 
     def add_alert(self, alert_data: dict) -> ApiResponse:
         """Add an alert
@@ -70,7 +70,7 @@ class Alert(object):
         Returns:
             ApiResponse: Response object
         """
-        return self._s.pi_post("/alerts/add", alert_data)
+        return self._s.pi_post("alerts/add", alert_data)
 
     def update_alert(self, alert_id: int, alert_data: dict) -> ApiResponse:
         """Update an alert
@@ -82,7 +82,7 @@ class Alert(object):
         Returns:
             ApiResponse: Response object
         """
-        return self._s.pi_post(f"/alerts/update/{alert_id}", alert_data)
+        return self._s.pi_post(f"alerts/update/{alert_id}", alert_data)
 
     def delete_alert(self, alert_id: int) -> ApiResponse:
         """Delete an alert
@@ -93,7 +93,7 @@ class Alert(object):
         Returns:
             ApiResponse: Response object
         """
-        return self._s.pi_post(f"/alerts/delete/{alert_id}")
+        return self._s.pi_post(f"alerts/delete/{alert_id}")
 
     def escalate_alert(self, alert_id: int, iocs_import_list: List[str], assets_import_list: List[str],
                        escalation_note: str, case_title:str, case_tags: str, case_template_id: int = None,
@@ -123,4 +123,30 @@ class Alert(object):
             "import_as_event": import_as_event
         }
 
-        return self._s.pi_post(f"/alerts/escalate/{alert_id}", data=payload)
+        return self._s.pi_post(f"alerts/escalate/{alert_id}", data=payload)
+
+    def merge_alert(self, alert_id: int, target_case_id: int, iocs_import_list: List[str],
+                    assets_import_list: List[str], merge_note: str, import_as_event: bool = False) -> ApiResponse:
+        """Merge an alert
+
+        Args:
+            alert_id (int): Alert id
+            target_case_id (int): Target case id
+            iocs_import_list (list): List of IOCs UUID from the alert to import
+            assets_import_list (list): List of assets UUIDs from the alert to import
+            merge_note (str): Merge note
+            import_as_event (bool): Import as event
+
+        Returns:
+            ApiResponse: Response object
+        """
+        payload = {
+            "target_case_id": target_case_id,
+            "iocs_import_list": iocs_import_list,
+            "assets_import_list": assets_import_list,
+            "note": merge_note,
+            "import_as_event": import_as_event
+        }
+
+        return self._s.pi_post(f"alerts/merge/{alert_id}", data=payload)
+

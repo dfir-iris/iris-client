@@ -239,3 +239,35 @@ class AlertTest(InitIrisClientTest):
         assert 'case_description' in data
         assert 'case_soc_id' in data
         assert 'status_id' in data
+
+    def test_merge_alert(self):
+        """ Test merging an alert """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        alert_id = resp.get_data_field('alert_id')
+
+        iocs = resp.get_data_field('iocs')
+        ioc_uid = iocs[0].get('ioc_uid')
+
+        asset = resp.get_data_field('assets')
+        asset_uid = asset[0].get('asset_uid')
+
+        resp = self.alert.merge_alert(alert_id, iocs_import_list=[ioc_uid],
+                                      assets_import_list=[asset_uid], merge_note='test',
+                                      import_as_event=True, target_case_id=1)
+
+        assert bool(assert_api_resp(resp)) is True
+
+        data = get_data_from_resp(resp)
+        assert 'classification_id' in data
+        assert 'case_uuid' in data
+        assert 'case_name' in data and 'test' in data['case_name']
+        assert 'case_id' in data
+        assert 'case_customer' in data
+        assert 'modification_history' in data
+        assert 'case_description' in data
+        assert 'case_soc_id' in data
+        assert 'status_id' in data
