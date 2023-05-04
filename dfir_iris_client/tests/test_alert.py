@@ -271,3 +271,51 @@ class AlertTest(InitIrisClientTest):
         assert 'case_description' in data
         assert 'case_soc_id' in data
         assert 'status_id' in data
+
+    def test_merge_alert_invalid_target_case_id(self):
+        """ Test merging an alert with an invalid target case ID """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        alert_id = resp.get_data_field('alert_id')
+
+        iocs = resp.get_data_field('iocs')
+        ioc_uid = iocs[0].get('ioc_uid')
+
+        asset = resp.get_data_field('assets')
+        asset_uid = asset[0].get('asset_uid')
+
+        invalid_target_case_id = -1
+        resp = self.alert.merge_alert(alert_id, iocs_import_list=[ioc_uid],
+                                      assets_import_list=[asset_uid], merge_note='test',
+                                      import_as_event=True, target_case_id=invalid_target_case_id)
+
+        assert bool(assert_api_resp(resp)) is False
+
+    def test_merge_alert_without_iocs_assets(self):
+        """ Test merging an alert with invalid IOCs or assets """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        alert_id = resp.get_data_field('alert_id')
+
+        resp = self.alert.merge_alert(alert_id, iocs_import_list=['INVALID'],
+                                      assets_import_list=['INVALID'], merge_note='test',
+                                      import_as_event=True, target_case_id=1)
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_merge_alert_non_existent_alert(self):
+        """ Test merging a non-existent alert """
+        non_existent_alert_id = -1
+
+        resp = self.alert.merge_alert(non_existent_alert_id, iocs_import_list=['dummy_ioc_uid'],
+                                      assets_import_list=['dummy_asset_uid'], merge_note='test',
+                                      import_as_event=True, target_case_id=1)
+
+        assert bool(assert_api_resp(resp)) is False
+
