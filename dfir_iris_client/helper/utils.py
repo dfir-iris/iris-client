@@ -142,10 +142,26 @@ class ApiResponse(object):
 
         return self._response.get('data')
 
-    def get_data_field(self, field: Union[List[str], str]):
-        """ """
+    def get_data_field(self, field: Union[List[str], str], index: int = None):
+        """
+        Return the value of a field in the data section of the response
+
+        Args:
+            field: Field to return
+            index: Index of the data section to return (Default value = None). Allows to iterate over a list of data
+
+        Returns:
+            Value of the field
+        """
         if not hasattr(self, "_response"):
             return None
+
+        if index is not None:
+            if isinstance(field, str):
+                return self._response.get('data')[index].get(field)
+
+            if isinstance(field, list):
+                return reduce(lambda d, key: d.get(key) if d else None, field, self._response.get('data')[index])
 
         if isinstance(field, str):
             return self._response.get('data').get(field)
