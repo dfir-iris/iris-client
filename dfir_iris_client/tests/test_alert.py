@@ -36,6 +36,17 @@ def load_alert_data():
         return json.load(f)
 
 
+def load_invalid_alert_data():
+    """Load invalid alert data from a file"""
+    with open(Path(__file__).parent / 'resources' / 'alert.json') as f:
+        data = json.load(f)
+
+    data['alert_title'] = None
+    del data['alert_description']
+
+    return data
+
+
 def assert_alert_isvalid(data, alert_id, has_related_alerts=False):
     """Assert that the alert data is valid"""
     assert parse_api_data(data, 'alert_id') == alert_id
@@ -169,3 +180,31 @@ class AlertTest(InitIrisClientTest):
 
         data = get_data_from_resp(resp)
         assert parse_api_data(data, 'alert_title') == 'test'
+
+    def test_add_alert_failure(self):
+        """Test adding an alert with invalid data should fail."""
+        alert_data = load_invalid_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is False
+
+    def test_delete_alert_failure(self):
+        """Test deleting a non-existent alert should fail."""
+        non_existent_alert_id = -1
+
+        resp = self.alert.delete_alert(non_existent_alert_id)
+        assert bool(assert_api_resp(resp)) is False
+
+    def test_update_alert_failure(self):
+        """Test updating an alert with invalid data should fail."""
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        data = get_data_from_resp(resp)
+        alert_id = parse_api_data(data, 'alert_id')
+
+        invalid_update_data = {'alert_title': None}
+        resp = self.alert.update_alert(alert_id, invalid_update_data)
+        assert bool(assert_api_resp(resp)) is False
