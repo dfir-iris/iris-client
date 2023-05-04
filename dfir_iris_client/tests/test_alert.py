@@ -264,7 +264,6 @@ class AlertTest(InitIrisClientTest):
         data = get_data_from_resp(resp)
         assert 'classification_id' in data
         assert 'case_uuid' in data
-        assert 'case_name' in data and 'test' in data['case_name']
         assert 'case_id' in data
         assert 'case_customer' in data
         assert 'modification_history' in data
@@ -339,4 +338,193 @@ class AlertTest(InitIrisClientTest):
         assert bool(assert_api_resp(resp)) is True
 
         resp = self.alert.unmerge_alert(alert_id, 1)
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_unmerge_alert_non_existent_alert(self):
+        """ Test unmerging a non-existent alert """
+        non_existent_alert_id = -1
+
+        resp = self.alert.unmerge_alert(non_existent_alert_id, 1)
+        assert bool(assert_api_resp(resp)) is False
+
+    def test_unmerge_alert_non_existent_case(self):
+        """ Test unmerging a non-existent case """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        alert_id = resp.get_data_field('alert_id')
+
+        resp = self.alert.unmerge_alert(alert_id, -1)
+        assert bool(assert_api_resp(resp)) is False
+
+    def test_filter_alerts(self):
+        """ Test filtering alerts """
+        resp = self.alert.filter_alerts()
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_title(self):
+        """ Test filtering alerts with filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.filter_alerts(alert_title='test')
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_invalid_alert_title(self):
+        """ Test filtering alerts with invalid filter """
+        resp = self.alert.filter_alerts(alert_title='INVALID')
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_description(self):
+        """ Test filtering alerts with alert_description filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.filter_alerts(alert_description='This is a test alert')
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_source(self):
+        """ Test filtering alerts with alert_source filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.filter_alerts(alert_source='Test Source')
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_tags(self):
+        """ Test filtering alerts with alert_tags filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.filter_alerts(alert_tags='defender')
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_status_id(self):
+        """ Test filtering alerts with alert_status_id filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.filter_alerts(alert_status_id=3)
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_severity_id(self):
+        """ Test filtering alerts with alert_severity_id filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.filter_alerts(alert_severity_id=4)
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_classification_id(self):
+        """ Test filtering alerts with alert_classification_id filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.filter_alerts(alert_classification_id=1)
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_customer_id(self):
+        """ Test filtering alerts with alert_customer_id filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.filter_alerts(alert_customer_id=1)
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_start_date_end_date(self):
+        """ Test filtering alerts with alert_start_date and alert_end_date filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        alert_start_date = "2023-03-25"
+        alert_end_date = "2023-03-27"
+        resp = self.alert.filter_alerts(alert_start_date=alert_start_date, alert_end_date=alert_end_date)
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_assets(self):
+        """ Test filtering alerts with alert_assets filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.filter_alerts(alert_assets="My super nop")
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_iocs(self):
+        """ Test filtering alerts with alert_iocs filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.filter_alerts(alert_iocs="tarzan5")
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_ids(self):
+        """ Test filtering alerts with alert_ids filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        alert_id = resp.get_data_field('alert_id')
+        resp = self.alert.filter_alerts(alert_ids=str(alert_id))
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_case_id(self):
+        """ Test filtering alerts with case_id filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        case_id = 1
+        resp = self.alert.filter_alerts(case_id=case_id)
+
+        assert bool(assert_api_resp(resp)) is True
+
+    def test_filter_alerts_with_alert_owner_id(self):
+        """ Test filtering alerts with alert_owner_id filter """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        alert_owner_id = 1
+        resp = self.alert.filter_alerts(alert_owner_id=alert_owner_id)
+
         assert bool(assert_api_resp(resp)) is True

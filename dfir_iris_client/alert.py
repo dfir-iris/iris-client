@@ -166,3 +166,82 @@ class Alert(object):
 
         return self._s.pi_post(f"alerts/unmerge/{alert_id}", data=payload)
 
+    def filter_alerts(self, alert_title: str = None, alert_description: str = None, alert_source: str = None,
+                      alert_tags: str = None, alert_status_id: int = None, alert_severity_id: int = None,
+                      alert_classification_id: int = None, alert_customer_id: int = None, alert_start_date: str = None,
+                      alert_end_date: str = None, alert_assets: str = None, alert_iocs: str = None, alert_ids: str = None,
+                      case_id: int = None, alert_owner_id: int = None,
+                      page: int = 1, per_page: int = 20, sort: str = 'desc') -> ApiResponse:
+        """ Filter alerts
+
+        Args:
+            alert_title (str): Alert title
+            alert_description (str): Alert description
+            alert_source (str): Alert source
+            alert_tags (str): Alert tags
+            alert_status_id (int): Alert status id
+            alert_severity_id (int): Alert severity id
+            alert_classification_id (int): Alert classification id
+            alert_customer_id (int): Alert customer id
+            alert_start_date (str): Alert start date
+            alert_end_date (str): Alert end date
+            alert_assets (str): Alert assets
+            alert_iocs (str): Alert IOCs
+            alert_ids (str): Alert ids
+            case_id (int): Case id
+            alert_owner_id (int): Alert owner id
+            page (int): Page number
+            per_page (int): Number of alerts per page
+            sort (str): Sort order
+
+
+        Returns:
+            ApiResponse: Response object
+        """
+        uri = f"alerts/filter?page={page}&per_page={per_page}&sort={sort}"
+        if alert_title:
+            uri += f"&alert_title={alert_title}"
+
+        if alert_description:
+            uri += f"&alert_description={alert_description}"
+
+        if alert_source:
+            uri += f"&alert_source={alert_source}"
+
+        if alert_tags:
+            uri += f"&alert_tags={alert_tags}"
+
+        if alert_status_id:
+            uri += f"&alert_status_id={alert_status_id}"
+
+        if alert_severity_id:
+            uri += f"&alert_severity_id={alert_severity_id}"
+
+        if alert_classification_id:
+            uri += f"&alert_classification_id={alert_classification_id}"
+
+        if alert_customer_id:
+            uri += f"&alert_customer_id={alert_customer_id}"
+
+        if alert_start_date:
+            uri += f"&alert_start_date={alert_start_date}"
+
+        if alert_end_date:
+            uri += f"&alert_end_date={alert_end_date}"
+
+        if alert_assets:
+            uri += f"&alert_assets={alert_assets}"
+
+        if alert_iocs:
+            uri += f"&alert_iocs={alert_iocs}"
+
+        if alert_ids:
+            uri += f"&alert_ids={alert_ids}"
+
+        if case_id:
+            uri += f"&case_id={case_id}"
+
+        if alert_owner_id:
+            uri += f"&alert_owner_id={alert_owner_id}"
+
+        return self._s.pi_get(uri)
