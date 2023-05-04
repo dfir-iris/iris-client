@@ -319,3 +319,24 @@ class AlertTest(InitIrisClientTest):
 
         assert bool(assert_api_resp(resp)) is False
 
+    def test_unmerge_alert(self):
+        """ Test unmerging an alert """
+        alert_data = load_alert_data()
+
+        resp = self.alert.add_alert(alert_data)
+        assert bool(assert_api_resp(resp)) is True
+
+        alert_id = resp.get_data_field('alert_id')
+
+        iocs = resp.get_data_field('iocs')
+
+        asset = resp.get_data_field('assets')
+
+        resp = self.alert.merge_alert(alert_id, iocs_import_list=[iocs[0].get('ioc_uid')],
+                                      assets_import_list=[asset[0].get('asset_uid')], merge_note='test',
+                                      import_as_event=True, target_case_id=1)
+
+        assert bool(assert_api_resp(resp)) is True
+
+        resp = self.alert.unmerge_alert(alert_id, 1)
+        assert bool(assert_api_resp(resp)) is True

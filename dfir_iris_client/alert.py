@@ -150,3 +150,19 @@ class Alert(object):
 
         return self._s.pi_post(f"alerts/merge/{alert_id}", data=payload)
 
+    def unmerge_alert(self, alert_id: int, target_case_id: int) -> ApiResponse:
+        """ Unmerge an alert
+
+        Args:
+            alert_id (int): Alert id
+            target_case_id (int): Target case id
+
+        Returns:
+            ApiResponse: Response object
+        """
+        payload = {
+            "target_case_id": target_case_id
+        }
+
+        return self._s.pi_post(f"alerts/unmerge/{alert_id}", data=payload)
+
