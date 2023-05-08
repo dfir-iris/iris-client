@@ -206,7 +206,7 @@ class AdminTest(InitIrisClientTest):
 
     def test_add_customer_valid(self):
         """ """
-        ret = self.adm.add_customer('dummy customer')
+        ret = self.adm.add_customer('dummy customer', 'dummy description', 'dummy sla')
 
         if parse_api_data(ret.get_data(), 'customer_name') == ['Customer already exists']:
             ret = self.adm.delete_customer('dummy customer')
