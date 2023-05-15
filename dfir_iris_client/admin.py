@@ -98,7 +98,8 @@ class AdminHelper(object):
 
         return self._s.pi_get(f'manage/users/{user}')
 
-    def add_user(self, login: str, name: str, password: str, email: str, **kwargs) -> ApiResponse:
+    def add_user(self, login: str, name: str, password: str, email: str, is_service_account: bool = False,
+                 **kwargs) -> ApiResponse:
         """
         Adds a new user. A new user can be successfully added if
         
@@ -113,6 +114,7 @@ class AdminHelper(object):
           name: Full name of the user
           password: Password of the user
           email: Email of the user
+          is_service_account: True if the user is a service account
 
         Returns:
           ApiResponse
@@ -123,6 +125,7 @@ class AdminHelper(object):
             "user_name": name,
             "user_password": password,
             "user_email": email,
+            "user_is_service_account": is_service_account,
             "cid": 1
         }
 
@@ -562,21 +565,28 @@ class AdminHelper(object):
         }
         return self._s.pi_post(f'manage/asset-type/update/{asset_type_id}', data=body)
 
-    def add_customer(self, customer_name: str):
+    def add_customer(self, customer_name: str, customer_description: str = None,
+                     customer_sla: str = None, custom_attributes: dict = {}) -> ApiResponse:
         """
         Creates a new customer. A new customer can be added if:
         
         - customer_name is unique
 
         Args:
-          customer_name: Name of the customer to add.
+            customer_name: Name of the customer to add.
+            customer_description: Description of the customer
+            customer_sla: SLA of the customer
+            custom_attributes: Custom attributes of the customer
 
         Returns:
           ApiResponse object
 
         """
         body = {
-            "customer_name": customer_name.lower()
+            "customer_name": customer_name.lower(),
+            "customer_description": customer_description,
+            "customer_sla": customer_sla,
+            "custom_attributes": custom_attributes
         }
         resp = self._s.pi_post('manage/customers/add',
                                data=body)

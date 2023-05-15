@@ -1,0 +1,48 @@
+{
+    "alert_title": "Super alert 5",
+    "alert_description": "This is a test alert",
+    "alert_source": "Test Source",
+    "alert_source_ref": "Test-123",
+    "alert_source_link": "https://source_link.com",
+    "alert_source_content": {},
+    "alert_severity_id": 4,
+    "alert_status_id": 3,
+    "alert_context": {
+        "context_key": "context_value"
+    },
+    "alert_source_event_time": "2023-03-26T03:00:30",
+    "alert_note": "Test note",
+    "alert_tags": "defender",
+    "alert_iocs": [
+        {
+            "ioc_value": "tarzan5",
+            "ioc_description": "description kwekwe",
+            "ioc_tlp_id": 1,
+            "ioc_type_id": 2,
+            "ioc_tags": "tag1,tag2",
+            "ioc_enrichment": { "provider_1": { "data": 2, "new_data": 3 }, "provider_3": { "enric": "true" }
+            }
+
+        },
+        {
+            "ioc_value": "tarzan2",
+            "ioc_description": "description_hey",
+            "ioc_tlp_id": 2,
+            "ioc_type_id": 4,
+            "ioc_tags": "tag1,tag2",
+            "ioc_enrichment": { "provider_1": { "data": "a very long\nblablablabdjsjofiasofiasjdxaisjhfaiosxhd bla\nddijwedoijwedw\ndhasdhaifuhafiassfsakjfhaskljfhaslkfjhaslkfdjhdqwleiuhxioauwedhoqwiuhzndoqwuehxdnzoiuwehfoqwiufhxnwoquhoiwefhxnqwoiuhwqomifuhqzwofuhqwofeuzhqwofeiuqhwe fifuhqwiofuh qwofuqh fuq hwfoiqwhfoiquhfe quhfqiouwhf qoufhq hufou qufhqowiufhowufih qwfuhqwioufh wqoufh wifhufdhas", "new_data": 3 }, "provider_3": { "enric": "true" }}
+
+        }
+    ],
+    "alert_assets": [{
+        "asset_name": "My super nop",
+        "asset_description": "Asset description",
+        "asset_type_id": 1,
+        "asset_ip": "1.1.1.1",
+        "asset_domain": "",
+        "asset_tags": "tag1,tag2",
+        "asset_enrichment": {"enrich": {"enrich2": "super_enrich"}}
+    }],
+    "alert_customer_id": 1,
+    "alert_classification_id": 1
+}
