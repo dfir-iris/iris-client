@@ -36,6 +36,7 @@ it can handles.
 """
 API_VERSION = "2.0.1"
 
+
 """client_session
 Defines a global session, accessible by all classes. client_session is of type ClientSession.
 """
