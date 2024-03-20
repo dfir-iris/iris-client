@@ -440,6 +440,20 @@ class Case(object):
         cid = self._assert_cid(cid)
         return self._s.pi_get('case/notes/groups/list', cid=cid)
 
+    def list_notes_directories(self, cid: int = None) -> ApiResponse:
+        """
+        Returns a list of notes groups of the target cid case
+
+        Args:
+          cid: Case ID (Default value = None)
+
+        Returns:
+          APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+        return self._s.pi_get('case/notes/directories/filter', cid=cid)
+
     @deprecated('Use get_notes_directory method', version="2.0.1", action="error")
     def get_notes_group(self, group_id: int, cid: int = None) -> ApiResponse:
         """

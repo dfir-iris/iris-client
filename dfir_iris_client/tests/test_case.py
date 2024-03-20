@@ -221,49 +221,37 @@ class CaseTest(InitIrisClientTest):
 
         self.case.set_summary(summary)
 
-    def test_list_get_notes_groups(self):
+    def test_list_get_notes_groups_deprecated(self):
         """ """
+        with self.assertRaises(DeprecationWarning):
+            self.case.list_notes_groups()
 
-        ret = self.case.list_notes_groups()
-        assert bool(assert_api_resp(ret)) is True
-
-        data = get_data_from_resp(ret)
-        groups = parse_api_data(data, 'groups')
-        if len(groups) > 0:
-            assert type(parse_api_data(groups[0], 'group_id')) == int
-            assert type(parse_api_data(groups[0], 'group_title')) == str
-            assert type(parse_api_data(groups[0], 'notes')) == list
-
-    def test_add_update_rm_notes_group(self):
+    def test_list_get_notes_directories(self):
         """ """
-        ret = self.case.add_notes_group("Dummy title")
+        ret = self.case.list_notes_directories()
         assert bool(assert_api_resp(ret)) is True
 
         data = get_data_from_resp(ret)
-        group_id = parse_api_data(data, 'group_id')
-        assert type(group_id) == int
+        assert type(data) == list
 
-        ret = self.case.get_notes_group(group_id=group_id)
-        assert bool(assert_api_resp(ret)) is True
+        for directory in data:
+            assert type(parse_api_data(directory, 'id')) is int
+            assert type(parse_api_data(directory, 'name')) is str
+            assert type(parse_api_data(directory, 'note_count')) is int
+            assert type(parse_api_data(directory, 'subdirectories')) is list
+            assert type(parse_api_data(directory, 'notes')) is list
 
-        data = get_data_from_resp(ret)
-        assert parse_api_data(data, 'group_id') == group_id
-        assert parse_api_data(data, 'group_title') == "Dummy title"
-        assert parse_api_data(data, 'notes') == []
 
-        self.test_list_get_notes_groups()
+    def test_add_update_rm_notes_group_deprecated(self):
+        """ """
+        with self.assertRaises(DeprecationWarning):
+            self.case.add_notes_group("Dummy title")
 
-        ret = self.case.delete_notes_group(group_id)
-        assert bool(assert_api_resp(ret)) is True
-
-        ret = self.case.get_notes_group(group_id=group_id)
-        assert bool(assert_api_resp(ret)) is False
-
-    def test_add_update_delete_note_valid_group_id(self):
+    def test_add_update_delete_note_valid_directory_id(self):
         """ """
         note_title = "Dummy title"
         note_content = "# Dummy content with markdown\n## Very dummy"
-        ret = self.case.add_notes_group("Dummy title")
+        ret = self.case.add_notes_directory("Dummy title")
         assert bool(assert_api_resp(ret)) is True
 
         data = get_data_from_resp(ret)
