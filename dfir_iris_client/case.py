@@ -471,6 +471,22 @@ class Case(object):
 
         return self._s.pi_get(f'case/notes/groups/{group_id}', cid=cid)
 
+    def get_notes_directory(self, directory_id: int, cid: int = None) -> ApiResponse:
+        """
+        Returns a notes group based on its ID. The group ID needs to match the CID where it is stored.
+
+        Args:
+          directory_id: Group ID to fetch
+          cid:  Case ID (Default value = None)
+
+        Returns:
+          APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+
+        return self._s.pi_get(f'case/notes/directories/{directory_id}', cid=cid)
+
     @deprecated('Use add_notes_directory method', version="2.0.1", action="error")
     def add_notes_group(self, group_title: str = None, cid: int = None) -> ApiResponse:
         """Creates a new notes group in the target cid case.
@@ -491,6 +507,28 @@ class Case(object):
         }
         return self._s.pi_post('case/notes/groups/add', data=body)
 
+    def add_notes_directory(self, directory_name: str = None, parent_directory_id: int = None,
+                            cid: int = None) -> ApiResponse:
+        """Creates a new notes directory in the target cid case.
+        directory_title can be an existing directory, there is no uniqueness.
+
+        Args:
+          cid: Case ID
+          directory_name: Name of the directory to add
+          parent_directory_id: ID of the parent directory. Set to 0 for root directory
+
+        Returns:
+          APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+        body = {
+            "name": directory_name
+        }
+        if parent_directory_id is not None:
+            body['parent_id'] = parent_directory_id
+        return self._s.pi_post('case/notes/directories/add', data=body, cid=cid)
+
     @deprecated('Use update_notes_directory method', version="2.0.1", action="error")
     def update_notes_group(self, group_id: int, group_title: str, cid: int = None) -> ApiResponse:
         """Updates a notes group in the target cid case.
@@ -509,10 +547,31 @@ class Case(object):
         cid = self._assert_cid(cid)
         body = {
             "group_title": group_title,
-            "group_id": group_id,
-            "cid": cid
+            "group_id": group_id
         }
-        return self._s.pi_post('case/notes/groups/update', data=body)
+        return self._s.pi_post('case/notes/groups/update', data=body, cid=cid)
+
+    def update_notes_directory(self, directory_id: int, directory_name: str,
+                               parent_directory_id: int = None, cid: int = None) -> ApiResponse:
+        """Updates a notes directory in the target cid case.
+        `directory_id` need to be an existing directory in the target case.
+        `directory_title` can be an existing directory, there is no uniqueness.
+
+        Args:
+          cid: Case ID
+          directory_id: Group ID to update
+          directory_name: Name of the group
+          parent_directory_id: ID of the parent directory. Set to None to keep the current parent
+
+        Returns:
+          APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+        body = {
+            "name": directory_name,
+        }
+        return self._s.pi_post(f'case/notes/directories/update/{directory_id}', data=body, cid=cid)
 
     @deprecated('Use delete_notes_directory method', version="2.0.1", action="error")
     def delete_notes_group(self, group_id: int, cid: int = None) -> ApiResponse:
@@ -529,6 +588,21 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
         return self._s.pi_post(f'case/notes/groups/delete/{group_id}', cid=cid)
+
+    def delete_notes_directory(self, directory_id: int, cid: int = None) -> ApiResponse:
+        """Deletes a notes directory. All notes in the target directory are deleted ! There is not way to get the notes back.
+         Case ID needs to match the case where the directory is stored.
+
+        Args:
+          cid: Case ID
+          directory_id: ID of the directory
+
+        Returns:
+          APIResponse object
+
+        """
+        cid = self._assert_cid(cid)
+        return self._s.pi_post(f'case/notes/directories/delete/{directory_id}', cid=cid)
 
     def get_note(self, note_id: int, cid: int = None) -> ApiResponse:
         """Fetches a note. note_id needs to be a valid existing note in the target case.

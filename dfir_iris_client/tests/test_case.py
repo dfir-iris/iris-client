@@ -241,11 +241,25 @@ class CaseTest(InitIrisClientTest):
             assert type(parse_api_data(directory, 'subdirectories')) is list
             assert type(parse_api_data(directory, 'notes')) is list
 
-
     def test_add_update_rm_notes_group_deprecated(self):
         """ """
         with self.assertRaises(DeprecationWarning):
             self.case.add_notes_group("Dummy title")
+
+    def test_add_update_rm_notes_directory(self):
+        """ """
+        ret = self.case.add_notes_directory("Dummy title")
+        assert bool(assert_api_resp(ret)) is True
+
+        data = get_data_from_resp(ret)
+        dir_id = parse_api_data(data, 'id')
+        assert type(dir_id) == int
+
+        ret = self.case.update_notes_directory(directory_id=dir_id, directory_name='New dummy title')
+        assert bool(assert_api_resp(ret)) is True
+
+        ret = self.case.delete_notes_directory(directory_id=dir_id)
+        assert bool(assert_api_resp(ret)) is True
 
     def test_add_update_delete_note_valid_directory_id(self):
         """ """
