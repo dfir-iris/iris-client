@@ -34,7 +34,7 @@ The API version is not directly correlated with Iris version.
 Server has an endpoint /api/versions which should returns the API compatible versions 
 it can handles. 
 """
-API_VERSION = "2.0.1"
+API_VERSION = "2.0.4"
 
 
 """client_session

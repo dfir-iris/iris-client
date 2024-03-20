@@ -17,6 +17,7 @@
 import json
 import warnings
 
+from deprecated.classic import deprecated
 from requests import Response
 
 from dfir_iris_client.helper.case_classifications import CaseClassificationsHelper
@@ -424,6 +425,7 @@ class Case(object):
 
         return self._s.pi_post('case/summary/update', data=body)
 
+    @deprecated('Use list_notes_directories method', version="2.0.1", action="error")
     def list_notes_groups(self, cid: int = None) -> ApiResponse:
         """
         Returns a list of notes groups of the target cid case
@@ -438,6 +440,7 @@ class Case(object):
         cid = self._assert_cid(cid)
         return self._s.pi_get('case/notes/groups/list', cid=cid)
 
+    @deprecated('Use get_notes_directory method', version="2.0.1", action="error")
     def get_notes_group(self, group_id: int, cid: int = None) -> ApiResponse:
         """
         Returns a notes group based on its ID. The group ID needs to match the CID where it is stored.
@@ -454,6 +457,7 @@ class Case(object):
 
         return self._s.pi_get(f'case/notes/groups/{group_id}', cid=cid)
 
+    @deprecated('Use add_notes_directory method', version="2.0.1", action="error")
     def add_notes_group(self, group_title: str = None, cid: int = None) -> ApiResponse:
         """Creates a new notes group in the target cid case.
         Group_title can be an existing group, there is no uniqueness.
@@ -473,6 +477,7 @@ class Case(object):
         }
         return self._s.pi_post('case/notes/groups/add', data=body)
 
+    @deprecated('Use update_notes_directory method', version="2.0.1", action="error")
     def update_notes_group(self, group_id: int, group_title: str, cid: int = None) -> ApiResponse:
         """Updates a notes group in the target cid case.
         `group_id` need to be an existing group in the target case.
@@ -495,6 +500,7 @@ class Case(object):
         }
         return self._s.pi_post('case/notes/groups/update', data=body)
 
+    @deprecated('Use delete_notes_directory method', version="2.0.1", action="error")
     def delete_notes_group(self, group_id: int, cid: int = None) -> ApiResponse:
         """Deletes a notes group. All notes in the target groups are deleted ! There is not way to get the notes back.
          Case ID needs to match the case where the group is stored.
@@ -583,9 +589,9 @@ class Case(object):
 
         return self._s.pi_post(f'case/notes/delete/{note_id}', cid=cid)
 
-    def add_note(self, note_title: str, note_content: str, group_id: int, custom_attributes: dict = None,
-                 cid: int = None) -> ApiResponse:
-        """Creates a new note. Case ID and group note ID need to match the case in which the note is stored.
+    def add_note(self, note_title: str, note_content: str, directory_id: int, custom_attributes: dict = None,
+                 cid: int = None, **kwargs) -> ApiResponse:
+        """Creates a new note. Case ID and directory note ID need to match the case in which the note is stored.
         
         Custom_attributes is an undefined structure when the call is made. This method does not
         allow to push a new attribute structure. The submitted structure must follow the one defined
@@ -595,7 +601,7 @@ class Case(object):
           cid: Case ID
           note_title: Title of the note
           note_content: Content of the note
-          group_id: Target group to attach the note to
+          directory_id: Target directory to attach the note to
           custom_attributes: Custom attributes of the note
 
         Returns:
@@ -604,13 +610,17 @@ class Case(object):
         """
         cid = self._assert_cid(cid)
 
+        if kwargs.get('group_id') is not None:
+            warnings.warn("group_id argument is deprecated, use directory_id instead", DeprecationWarning)
+            directory_id = kwargs.get('group_id')
+
         if custom_attributes is not None and not isinstance(custom_attributes, dict):
             return ClientApiError(f'Got type {type(custom_attributes)} for custom_attributes but dict was expected.')
 
         body = {
             "note_title": note_title,
             "note_content": note_content,
-            "group_id": group_id,
+            "directory_id": directory_id,
             "custom_attributes": custom_attributes if custom_attributes else {},
             "cid": cid
         }
