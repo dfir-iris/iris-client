@@ -269,11 +269,11 @@ class CaseTest(InitIrisClientTest):
         assert bool(assert_api_resp(ret)) is True
 
         data = get_data_from_resp(ret)
-        group_id = parse_api_data(data, 'group_id')
-        assert type(group_id) == int
+        dir_id = parse_api_data(data, 'id')
+        assert type(dir_id) == int
 
         ret = self.case.add_note(note_title=note_title, note_content=note_content, custom_attributes={},
-                                 group_id=group_id)
+                                 directory_id=dir_id)
         assert bool(assert_api_resp(ret)) is True
 
         data = get_data_from_resp(ret)
@@ -293,28 +293,28 @@ class CaseTest(InitIrisClientTest):
 
         data = get_data_from_resp(ret)
         note_id = parse_api_data(data, 'note_id')
-        group_id = parse_api_data(data, 'group_id')
+        group_id = parse_api_data(data, 'directory_id')
         assert parse_api_data(data, 'note_content') == "New dummy content"
         assert parse_api_data(data, 'note_title') == "New dummy"
         assert type(note_id) == int
         assert type(parse_api_data(data, 'note_creationdate')) == str
         assert type(parse_api_data(data, 'note_lastupdate')) == str
         assert type(group_id) == int
-        assert parse_api_data(data, 'group_title') == note_title
+        assert type(parse_api_data(data, 'directory')) == dict
 
         ret = self.case.delete_note(note_id)
         assert bool(assert_api_resp(ret)) is True
 
-        ret = self.case.delete_notes_group(group_id=group_id)
+        ret = self.case.delete_notes_directory(directory_id=group_id)
         assert bool(assert_api_resp(ret)) is True
 
-    def test_add_note_invalid_group(self):
+    def test_add_note_invalid_directory(self):
         """ """
         note_title = "Dummy title"
         note_content = "# Dummy content with markdown\n## Very dummy"
 
         ret = self.case.add_note(note_title=note_title, note_content=note_content,
-                                 custom_attributes={"Test": {"Test":"Test"}}, group_id=111555411)
+                                 custom_attributes={"Test": {"Test":"Test"}}, directory_id=111555411)
         assert bool(assert_api_resp(ret)) is False
 
     def test_update_note_invalid_id(self):

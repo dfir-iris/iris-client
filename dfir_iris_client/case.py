@@ -620,7 +620,7 @@ class Case(object):
         return self._s.pi_get(f'case/notes/{note_id}', cid=cid)
 
     def update_note(self, note_id: int, note_title: str = None, note_content: str = None,
-                    custom_attributes: dict = None, cid: int = None) -> ApiResponse:
+                    custom_attributes: dict = None, directory_id: int = None, cid: int = None) -> ApiResponse:
         """Updates a note. note_id needs to be a valid existing note in the target case.
         Only the content of the set fields is replaced.
         
@@ -633,6 +633,7 @@ class Case(object):
           note_id: Name of the note to update
           note_content: Content of the note
           note_title: Title of the note
+          directory_id: Target directory to attach the note to - set to None to keep the current directory
           custom_attributes: Custom attributes of the note
 
         Returns:
@@ -659,6 +660,9 @@ class Case(object):
             "custom_attributes": custom_attributes,
             "cid": cid
         }
+
+        if directory_id is not None:
+            body['directory_id'] = directory_id
 
         return self._s.pi_post(f'case/notes/update/{note_id}', data=body)
 
@@ -709,11 +713,10 @@ class Case(object):
             "note_title": note_title,
             "note_content": note_content,
             "directory_id": directory_id,
-            "custom_attributes": custom_attributes if custom_attributes else {},
-            "cid": cid
+            "custom_attributes": custom_attributes if custom_attributes else {}
         }
 
-        return self._s.pi_post(f'case/notes/add', data=body)
+        return self._s.pi_post(f'case/notes/add', data=body, cid=cid)
 
     def search_notes(self, search_term: str, cid: int = None) -> ApiResponse:
         """Searches in notes. Case ID and group note ID need to match the case in which the notes are stored.
