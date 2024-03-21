@@ -843,6 +843,24 @@ class CaseTest(InitIrisClientTest):
         ret = self.case.delete_event(event_id=parse_api_data(event, 'event_id'))
         assert assert_api_resp(ret, soft_fail=False)
 
+    def test_add_event_with_parent(self):
+        """ """
+        ret = self.case.add_event(title='dummy parent event', date_time=datetime.datetime.now(), parent_event_id=None)
+        assert assert_api_resp(ret, soft_fail=False)
+        parent_event = get_data_from_resp(ret)
+        assert type(parent_event) == dict
+        parent_event_id = parse_api_data(parent_event, 'event_id')
+
+        ret = self.case.add_event(title='dummy event', date_time=datetime.datetime.now(),
+                                  parent_event_id=parent_event_id)
+        assert assert_api_resp(ret, soft_fail=False)
+        event = get_data_from_resp(ret)
+
+        ret = self.case.delete_event(event_id=parse_api_data(parent_event, 'event_id'))
+        assert assert_api_resp(ret, soft_fail=False)
+        ret = self.case.delete_event(event_id=parse_api_data(event, 'event_id'))
+        assert assert_api_resp(ret, soft_fail=False)
+
     def test_add_event_invalid_date(self):
         """ """
         ret = self.case.add_event(title='dummy event', date_time="not a date")

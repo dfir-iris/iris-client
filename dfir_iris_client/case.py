@@ -1284,7 +1284,7 @@ class Case(object):
                   source: str = None, linked_assets: list = None, linked_iocs: list = None,
                   category: Union[int, str] = None, tags: list = None, color: str = None, display_in_graph: bool = None,
                   display_in_summary: bool = None, custom_attributes: str = None, timezone_string: str = None,
-                  sync_ioc_with_assets: bool = False, cid: int = None) -> ApiResponse:
+                  sync_ioc_with_assets: bool = False, parent_event_id: int = None, cid: int = None) -> ApiResponse:
         """
         Adds a new event to the timeline.
         
@@ -1312,6 +1312,7 @@ class Case(object):
           custom_attributes: Custom attributes of the event
           timezone_string: Timezone in format +XX:XX or -XX:XX. If none, +00:00 is used
           sync_ioc_with_assets: Set to true to sync the IOC with the assets
+          parent_event_id: Event ID of the parent
           cid: Case ID
 
         Returns:
@@ -1357,6 +1358,9 @@ class Case(object):
             "cid": cid
         }
 
+        if parent_event_id:
+            body['parent_event_id'] = parent_event_id
+
         return self._s.pi_post(f'case/timeline/events/add', data=body)
 
     def update_event(self, event_id: int, title: str = None, date_time: datetime.datetime = None, content: str = None,
@@ -1364,7 +1368,7 @@ class Case(object):
                      category: Union[int, str] = None, tags: list = None,
                      color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
                      custom_attributes: dict = None, cid: int = None, timezone_string: str = None,
-                     sync_ioc_with_assets: bool = False) -> ApiResponse:
+                     sync_ioc_with_assets: bool = False, parent_event_id: int = None) -> ApiResponse:
         """
         Updates an event of the timeline. event_id needs to be an existing event in the target case.
         
@@ -1394,6 +1398,7 @@ class Case(object):
           custom_attributes: Custom attributes of the event
           timezone_string: Timezone in format +XX:XX or -XX:XX. If none, +00:00 is used
           sync_ioc_with_assets: Set to true to sync the IOC with the assets
+          parent_event_id: Event ID of the parent - set to None for no parent
           cid: Case ID
 
         Returns:
@@ -1444,6 +1449,9 @@ class Case(object):
             "event_sync_iocs_assets": sync_ioc_with_assets if sync_ioc_with_assets is True else False,
             "cid": cid
         }
+
+        if parent_event_id:
+            body['parent_event_id'] = parent_event_id
 
         return self._s.pi_post(f'case/timeline/events/update/{event_id}', data=body)
 
