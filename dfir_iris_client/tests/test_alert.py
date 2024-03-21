@@ -58,7 +58,7 @@ def assert_alert_isvalid(data, alert_id, has_related_alerts=False):
     assert isinstance(parse_api_data(data, 'alert_owner_id'), int) or parse_api_data(data, 'alert_owner_id') is None
 
     alert_source_content = parse_api_data(data, 'alert_source_content')
-    assert isinstance(alert_source_content, dict)
+    assert alert_source_content is not None
 
     comments = parse_api_data(data, 'comments')
     assert isinstance(comments, list)

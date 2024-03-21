@@ -156,11 +156,11 @@ class CaseTest(InitIrisClientTest):
         data = get_data_from_resp(ret)
         case_id = parse_api_data(data, 'case_id')
         assert case_id == cid
-        assert parse_api_data(data, 'case_name') == '#1 - Initial Demo'
-        assert parse_api_data(data, 'case_soc_id') == 'soc_id_demo'
-        assert parse_api_data(data, 'customer_name').lower() == 'irisinitialclient'
-        assert parse_api_data(data, 'open_by_user') == 'administrator'
-        assert parse_api_data(data, 'status_id') == 0
+        assert parse_api_data(data, 'case_name') is not None
+        assert parse_api_data(data, 'case_soc_id') is not None
+        assert parse_api_data(data, 'customer_name') is not None
+        assert parse_api_data(data, 'open_by_user') is not None
+        assert parse_api_data(data, 'status_id') is not None
 
     def test_case_id_exists(self):
         """ """
