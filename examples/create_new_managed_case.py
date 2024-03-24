@@ -80,38 +80,38 @@ assert_api_resp(status, soft_fail=False)
 
 log.info(f'Asset updated. Data :  {status_asset.as_json()}')
 
-# Add some notes groups
-status_gp1 = case.add_notes_group('API group 1')
-assert_api_resp(status_gp1, soft_fail=False)
+# Add some notes directories
+status_dir1 = case.add_notes_directory('API Directory 1')
+assert_api_resp(status_dir1, soft_fail=False)
 
-log.info(f'Created API group 1 notes group')
-
-
-status_gp2 = case.add_notes_group('API group 2')
-assert_api_resp(status_gp2, soft_fail=False)
-
-log.info(f'Created API group 2 notes group')
+log.info(f'Created API directory 1 notes directory')
 
 
-status_gp3 = case.add_notes_group('API group 3')
-assert_api_resp(status_gp3, soft_fail=False)
+status_dir2 = case.add_notes_directory('API Directory 2')
+assert_api_resp(status_dir2, soft_fail=False)
 
-log.info(f'Created API group 3 notes group')
+log.info(f'Created API directory 2 notes directory')
+
+
+status_dir3 = case.add_notes_directory('API Directory 3')
+assert_api_resp(status_dir3, soft_fail=False)
+
+log.info(f'Created API directory 3 notes group')
 
 # Get the group_id of Group 2 and add some notes
-group_2_data = get_data_from_resp(status_gp2)
-group_2_id = parse_api_data(data=group_2_data, path='group_id')
+dir_2_data = get_data_from_resp(status_dir2)
+dir_2_id = parse_api_data(data=dir_2_data, path='id')
 
-status_note = case.add_note(note_title='API note 1 for group 2',
+status_note = case.add_note(note_title='API note 1 for directory 2',
                             note_content='Anything you want really',
-                            group_id=group_2_id)
+                            directory_id=dir_2_id)
 assert_api_resp(status_note, soft_fail=False)
 log.info(f'Created note API note 1 for group 2')
 
 
-status_note = case.add_note(note_title='API note 2 for group 2',
+status_note = case.add_note(note_title='API note 2 for directory 2',
                             note_content='Anything you want really',
-                            group_id=group_2_id)
+                            directory_id=dir_2_id)
 assert_api_resp(status_note, soft_fail=False)
 log.info(f'Created note API note 2 for group 2')
 
