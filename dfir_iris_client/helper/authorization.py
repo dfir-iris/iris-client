@@ -25,5 +25,19 @@ class CaseAccessLevel(enum.Enum):
 
 class Permissions(enum.Enum):
     standard_user = 0x1
-
     server_administrator = 0x2
+
+    alerts_read = 0x4
+    alerts_write = 0x8
+    alerts_delete = 0x10
+
+    search_across_cases = 0x20
+
+    customers_read = 0x40
+    customers_write = 0x80
+
+    case_templates_read = 0x100
+    case_templates_write = 0x200
+
+    activities_read = 0x400
+    all_activities_read = 0x800
