@@ -52,7 +52,7 @@ class ClientSession(object):
     Returns:
 
     """
-    def __init__(self, apikey=None, host=None, agent="iris-client", ssl_verify=True, proxy=None, timeout=120):
+    def __init__(self, apikey=None, host=None, agent="iris-client", ssl_verify=True, proxy=None, timeout=120, api_key_header=None, additional_headers=None):
         """
         Initialize the ClientSession. APIKey validity is verified as well as API compatibility between the client
         and the server.
@@ -70,6 +70,8 @@ class ClientSession(object):
             ssl_verify: Set or unset SSL verification
             proxy: Proxy parameters - For future use only
             timeout: Default timeout for requests
+            api_key_header: Header to use for the API key, can either be 'Authorization' or 'X-IRIS-AUTH'. Defaults to 'Authorization' when not set
+            additional_headers: Additional headers to pass in the request
         """
         self._apikey = apikey
         self._host = host
@@ -83,6 +85,12 @@ class ClientSession(object):
 
         if not self._ssl_verify:
             requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+
+        if api_key_header and api_key_header not in ['Authorization', 'X-IRIS-AUTH']:
+            raise Exception("api_key_header can only be 'Authorization' or 'X-IRIS-AUTH'")
+        self._api_key_header = api_key_header or 'Authorization'
+        self._addition_headers = additional_headers
 
         self._check_apikey_validity()
 
@@ -216,9 +224,12 @@ class ClientSession(object):
 
             headers = {
                 'Content-Type': "application/json",
-                'Authorization': "Bearer " + self._apikey,
+                self._api_key_header: "Bearer " + self._apikey,
                 'User-Agent': self._agent
                 }
+            if self._addition_headers:
+                headers = {**headers, **self._addition_headers}
+
             if type == "POST":
                 log.debug(f'POST : {self._pi_uri(uri)}')
 
@@ -271,9 +282,11 @@ class ClientSession(object):
           ApiResponse object
         """
         headers = {
-            'Authorization': "Bearer " + self._apikey,
+            self._api_key_header: "Bearer " + self._apikey,
             'User-Agent': self._agent
         }
+        if self._addition_headers:
+            headers = {**headers, **self._addition_headers}
 
         if cid is None:
             raise ValueError('cid is mandatory when uploading files')
