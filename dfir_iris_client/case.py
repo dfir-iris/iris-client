@@ -1278,7 +1278,7 @@ class Case(object):
         filter_str = {} if filter_str is None else filter_str
         filter_uri = urllib.parse.quote(json.dumps(filter_str))
 
-        return self._s.pi_get(f'case/timeline/advanced-filter?q={filter_uri}&', cid=cid)
+        return self._s.pi_get(f'case/timeline/advanced-filter?cid={cid}&q={filter_uri}')
 
     def add_event(self, title: str, date_time: datetime.datetime, content: str = None, raw_content: str = None,
                   source: str = None, linked_assets: list = None, linked_iocs: list = None,
