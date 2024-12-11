@@ -224,10 +224,10 @@ class Alert(object):
             uri += f"&alert_customer_id={alert_customer_id}"
 
         if alert_start_date:
-            uri += f"&alert_start_date={alert_start_date}"
+            uri += f"&source_start_date={alert_start_date}"
 
         if alert_end_date:
-            uri += f"&alert_end_date={alert_end_date}"
+            uri += f"&source_end_date={alert_end_date}"
 
         if alert_assets:
             uri += f"&alert_assets={alert_assets}"
