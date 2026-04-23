@@ -112,7 +112,7 @@ class InitIrisClientTest(unittest.TestCase):
             assert "Permission denied" in str(e)
 
 
-def create_standard_user(session, suffix: str = None):
+def create_standard_user(session, suffix: str | None = None):
     """
     Create a new standard user
     """
@@ -142,7 +142,7 @@ def get_standard_user_session(session):
                          host=API_URL, ssl_verify=False)
 
 
-def delete_standard_user_auto(session, suffix: str = None):
+def delete_standard_user_auto(session, suffix: str | None = None):
     """
     Delete user
     """

@@ -52,7 +52,7 @@ class Case(object):
     _task_object = 'tasks'
     _evidence_object = 'evidences'
 
-    def __init__(self, session: ClientSession, case_id: int = None):
+    def __init__(self, session: ClientSession, case_id: int | None = None):
         self._s = session
         self._cid = case_id
 
@@ -83,7 +83,7 @@ class Case(object):
         return self._s.pi_get(f'manage/cases/{cid}')
 
     def add_case(self, case_name: str, case_description: str, case_customer: Union[str, int],
-                 case_classification: Union[str, int], soc_id: str, custom_attributes: dict = None,
+                 case_classification: Union[str, int], soc_id: str, custom_attributes: dict | None = None,
                  create_customer=False) -> ApiResponse:
         """Creates a new case. If create_customer is set to true and the customer doesn't exist,
         it is created. Otherwise an error is returned.
@@ -153,7 +153,7 @@ class Case(object):
 
         return resp
 
-    def set_case_outcome_status(self, outcome_status: Union[str, int], case_id: int = None) -> ApiResponse:
+    def set_case_outcome_status(self, outcome_status: Union[str, int], case_id: int | None = None) -> ApiResponse:
         """Sets the outcome status of a case
 
         Args:
@@ -181,10 +181,10 @@ class Case(object):
 
         return self._s.pi_post(f'case/update-status', data=body, cid=case_id)
 
-    def update_case(self, case_id: int = None, case_name: str = None, case_description: str = None,
-                    case_classification: Union[str, int] = None, case_owner: Union[str, int] = None,
-                    soc_id: str = None, case_tags: List[str] = None,
-                    custom_attributes: dict = None) -> ApiResponse:
+    def update_case(self, case_id: int | None = None, case_name: str | None = None,
+                    case_description: str | None = None, case_classification: str | int | None = None,
+                    case_owner: str | int | None = None, soc_id: str | None = None, case_tags: List[str] | None = None,
+                    custom_attributes: dict | None = None) -> ApiResponse:
         """Updates an existing case. If create_customer is set to true and the customer doesn't exist,
         it is created. Otherwise, an error is returned.
 
@@ -279,7 +279,7 @@ class Case(object):
 
         return resp
 
-    def reopen_case(self, case_id: int = None) -> ApiResponse:
+    def reopen_case(self, case_id: int | None = None) -> ApiResponse:
         """Reopens a case based on its ID
 
         Args:
@@ -295,7 +295,7 @@ class Case(object):
 
         return resp
 
-    def close_case(self, case_id: int = None) -> ApiResponse:
+    def close_case(self, case_id: int | None = None) -> ApiResponse:
         """Closes a case based on its ID
 
         Args:
@@ -311,7 +311,7 @@ class Case(object):
 
         return resp
 
-    def delete_case(self, cid: int = None) -> ApiResponse:
+    def delete_case(self, cid: int | None = None) -> ApiResponse:
         """Deletes a case based on its ID. All objects associated to the case are deleted. This includes :
             - assets,
             - iocs that are only referenced in this case
@@ -387,7 +387,7 @@ class Case(object):
 
         return cid
 
-    def get_summary(self, cid: int = None) -> ApiResponse:
+    def get_summary(self, cid: int | None = None) -> ApiResponse:
         """
         Returns the summary of the specified case id.
 
@@ -401,7 +401,7 @@ class Case(object):
         cid = self._assert_cid(cid)
         return self._s.pi_get(f'case/summary/fetch', cid=cid)
 
-    def set_summary(self, summary_content: str = None, cid: int = None) -> ApiResponse:
+    def set_summary(self, summary_content: str | None = None, cid: int | None = None) -> ApiResponse:
         """Sets the summary of the specified case id.
         
         !!! warning
@@ -426,7 +426,7 @@ class Case(object):
         return self._s.pi_post('case/summary/update', data=body)
 
     @deprecated('Use list_notes_directories method', version="2.0.1", action="error")
-    def list_notes_groups(self, cid: int = None) -> ApiResponse:
+    def list_notes_groups(self, cid: int | None = None) -> ApiResponse:
         """
         Returns a list of notes groups of the target cid case
 
@@ -440,7 +440,7 @@ class Case(object):
         cid = self._assert_cid(cid)
         return self._s.pi_get('case/notes/groups/list', cid=cid)
 
-    def list_notes_directories(self, cid: int = None) -> ApiResponse:
+    def list_notes_directories(self, cid: int | None = None) -> ApiResponse:
         """
         Returns a list of notes groups of the target cid case
 
@@ -455,7 +455,7 @@ class Case(object):
         return self._s.pi_get('case/notes/directories/filter', cid=cid)
 
     @deprecated('Use get_notes_directory method', version="2.0.1", action="error")
-    def get_notes_group(self, group_id: int, cid: int = None) -> ApiResponse:
+    def get_notes_group(self, group_id: int, cid: int | None = None) -> ApiResponse:
         """
         Returns a notes group based on its ID. The group ID needs to match the CID where it is stored.
 
@@ -471,7 +471,7 @@ class Case(object):
 
         return self._s.pi_get(f'case/notes/groups/{group_id}', cid=cid)
 
-    def get_notes_directory(self, directory_id: int, cid: int = None) -> ApiResponse:
+    def get_notes_directory(self, directory_id: int, cid: int | None = None) -> ApiResponse:
         """
         Returns a notes group based on its ID. The group ID needs to match the CID where it is stored.
 
@@ -488,7 +488,7 @@ class Case(object):
         return self._s.pi_get(f'case/notes/directories/{directory_id}', cid=cid)
 
     @deprecated('Use add_notes_directory method', version="2.0.1", action="error")
-    def add_notes_group(self, group_title: str = None, cid: int = None) -> ApiResponse:
+    def add_notes_group(self, group_title: str | None = None, cid: int | None = None) -> ApiResponse:
         """Creates a new notes group in the target cid case.
         Group_title can be an existing group, there is no uniqueness.
 
@@ -507,8 +507,8 @@ class Case(object):
         }
         return self._s.pi_post('case/notes/groups/add', data=body)
 
-    def add_notes_directory(self, directory_name: str = None, parent_directory_id: int = None,
-                            cid: int = None) -> ApiResponse:
+    def add_notes_directory(self, directory_name: str | None = None, parent_directory_id: int | None = None,
+                            cid: int | None = None) -> ApiResponse:
         """Creates a new notes directory in the target cid case.
         directory_title can be an existing directory, there is no uniqueness.
 
@@ -530,7 +530,7 @@ class Case(object):
         return self._s.pi_post('case/notes/directories/add', data=body, cid=cid)
 
     @deprecated('Use update_notes_directory method', version="2.0.1", action="error")
-    def update_notes_group(self, group_id: int, group_title: str, cid: int = None) -> ApiResponse:
+    def update_notes_group(self, group_id: int, group_title: str, cid: int | None = None) -> ApiResponse:
         """Updates a notes group in the target cid case.
         `group_id` need to be an existing group in the target case.
         `group_title` can be an existing group, there is no uniqueness.
@@ -552,7 +552,7 @@ class Case(object):
         return self._s.pi_post('case/notes/groups/update', data=body, cid=cid)
 
     def update_notes_directory(self, directory_id: int, directory_name: str,
-                               parent_directory_id: int = None, cid: int = None) -> ApiResponse:
+                               parent_directory_id: int | None = None, cid: int | None = None) -> ApiResponse:
         """Updates a notes directory in the target cid case.
         `directory_id` need to be an existing directory in the target case.
         `directory_title` can be an existing directory, there is no uniqueness.
@@ -574,7 +574,7 @@ class Case(object):
         return self._s.pi_post(f'case/notes/directories/update/{directory_id}', data=body, cid=cid)
 
     @deprecated('Use delete_notes_directory method', version="2.0.1", action="error")
-    def delete_notes_group(self, group_id: int, cid: int = None) -> ApiResponse:
+    def delete_notes_group(self, group_id: int, cid: int | None = None) -> ApiResponse:
         """Deletes a notes group. All notes in the target groups are deleted ! There is not way to get the notes back.
          Case ID needs to match the case where the group is stored.
 
@@ -589,7 +589,7 @@ class Case(object):
         cid = self._assert_cid(cid)
         return self._s.pi_post(f'case/notes/groups/delete/{group_id}', cid=cid)
 
-    def delete_notes_directory(self, directory_id: int, cid: int = None) -> ApiResponse:
+    def delete_notes_directory(self, directory_id: int, cid: int | None = None) -> ApiResponse:
         """Deletes a notes directory. All notes in the target directory are deleted ! There is not way to get the notes back.
          Case ID needs to match the case where the directory is stored.
 
@@ -604,7 +604,7 @@ class Case(object):
         cid = self._assert_cid(cid)
         return self._s.pi_post(f'case/notes/directories/delete/{directory_id}', cid=cid)
 
-    def get_note(self, note_id: int, cid: int = None) -> ApiResponse:
+    def get_note(self, note_id: int, cid: int | None = None) -> ApiResponse:
         """Fetches a note. note_id needs to be a valid existing note in the target case.
 
         Args:
@@ -619,8 +619,9 @@ class Case(object):
 
         return self._s.pi_get(f'case/notes/{note_id}', cid=cid)
 
-    def update_note(self, note_id: int, note_title: str = None, note_content: str = None,
-                    custom_attributes: dict = None, directory_id: int = None, cid: int = None) -> ApiResponse:
+    def update_note(self, note_id: int, note_title: str | None = None, note_content: str | None = None,
+                    custom_attributes: dict | None = None, directory_id: int | None = None,
+                    cid: int | None = None) -> ApiResponse:
         """Updates a note. note_id needs to be a valid existing note in the target case.
         Only the content of the set fields is replaced.
         
@@ -666,7 +667,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/notes/update/{note_id}', data=body)
 
-    def delete_note(self, note_id: int, cid: int = None) -> ApiResponse:
+    def delete_note(self, note_id: int, cid: int | None = None) -> ApiResponse:
         """Deletes a note. note_id needs to be a valid existing note in the target case.
 
         Args:
@@ -681,8 +682,8 @@ class Case(object):
 
         return self._s.pi_post(f'case/notes/delete/{note_id}', cid=cid)
 
-    def add_note(self, note_title: str, note_content: str, directory_id: int, custom_attributes: dict = None,
-                 cid: int = None, **kwargs) -> ApiResponse:
+    def add_note(self, note_title: str, note_content: str, directory_id: int, custom_attributes: dict | None = None,
+                 cid: int | None = None, **kwargs) -> ApiResponse:
         """Creates a new note. Case ID and directory note ID need to match the case in which the note is stored.
         
         Custom_attributes is an undefined structure when the call is made. This method does not
@@ -718,7 +719,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/notes/add', data=body, cid=cid)
 
-    def search_notes(self, search_term: str, cid: int = None) -> ApiResponse:
+    def search_notes(self, search_term: str, cid: int | None = None) -> ApiResponse:
         """Searches in notes. Case ID and group note ID need to match the case in which the notes are stored.
          Only the titles and notes ID of the matching notes are return, not the actual content.
          Use % for wildcard.
@@ -741,7 +742,7 @@ class Case(object):
         return self._s.pi_post(f'case/notes/search', data=body)
 
     def trigger_manual_hook(self, hook_ui_name: str, module_name: str, targets: list, target_type: str,
-                            cid: int = None) -> ApiResponse:
+                            cid: int | None = None) -> ApiResponse:
         """Triggers a module hook call. These can only be used with manual hooks. The request is sent to the target
         module and processed asynchronously. The server replies immediately after queuing the task. Success feedback
         from this endpoint does not implies the hook processing was successful.
@@ -770,7 +771,7 @@ class Case(object):
 
         return self._s.pi_post(f'dim/hooks/call', data=body)
 
-    def list_assets(self, cid: int = None) -> ApiResponse:
+    def list_assets(self, cid: int | None = None) -> ApiResponse:
         """
         Returns a list of all assets of the target case.
 
@@ -786,9 +787,10 @@ class Case(object):
         return self._s.pi_get('case/assets/list', cid=cid)
 
     def add_asset(self, name: str, asset_type: Union[str, int], analysis_status: Union[str, int],
-                  compromise_status: Union[str, int] = None, tags: List[str] = None,
-                  description: str = None, domain: str = None, ip: str = None, additional_info: str = None,
-                  ioc_links: List[int] = None, custom_attributes: dict = None, cid: int = None,
+                  compromise_status: str | int | None = None, tags: List[str] | None = None,
+                  description: str | None = None, domain: str | None = None, ip: str | None = None,
+                  additional_info: str | None = None,
+                  ioc_links: List[int] | None = None, custom_attributes: dict | None = None, cid: int | None = None,
                   **kwargs) -> ApiResponse:
         """Adds an asset to the target case id.
         
@@ -883,7 +885,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/assets/add', data=body)
 
-    def get_asset(self, asset_id: int, cid: int = None) -> ApiResponse:
+    def get_asset(self, asset_id: int, cid: int | None = None) -> ApiResponse:
         """
         Returns an asset information from its ID.
 
@@ -899,7 +901,7 @@ class Case(object):
 
         return self._s.pi_get(f'case/assets/{asset_id}', cid=cid)
 
-    def asset_exists(self, asset_id: int, cid: int = None) -> bool:
+    def asset_exists(self, asset_id: int, cid: int | None = None) -> bool:
         """
         Returns true if asset_id exists in the context of the current case or cid.
         This method is an overlay of get_asset and thus not performant.
@@ -917,11 +919,13 @@ class Case(object):
 
         return resp.is_success()
 
-    def update_asset(self, asset_id: int, name: str = None, asset_type: Union[str, int] = None, tags: List[str] = None,
-                     analysis_status: Union[str, int] = None, description: str = None, domain: str = None,
-                     ip: str = None, additional_info: str = None, ioc_links: List[int] = None,
-                     compromise_status: Union[str, int] = None,
-                     custom_attributes: dict = None, cid: int = None, no_sync=False, **kwargs) -> ApiResponse:
+    def update_asset(self, asset_id: int, name: str | None = None, asset_type: str | int | None = None,
+                     tags: List[str] | None = None, analysis_status: str | int | None = None,
+                     description: str | None = None, domain: str | None = None,
+                     ip: str | None = None, additional_info: str | None = None, ioc_links: List[int] | None = None,
+                     compromise_status: str | int | None = None,
+                     custom_attributes: dict | None = None, cid: int | None = None,
+                     no_sync=False, **kwargs) -> ApiResponse:
         """
         Updates an asset. asset_id needs to be an existing asset in the target case cid.
         
@@ -1026,7 +1030,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/assets/update/{asset_id}', data=body)
 
-    def delete_asset(self, asset_id: int, cid: int = None) -> ApiResponse:
+    def delete_asset(self, asset_id: int, cid: int | None = None) -> ApiResponse:
         """Deletes an asset identified by asset_id. CID must match the case in which the asset is stored.
 
         Args:
@@ -1041,7 +1045,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/assets/delete/{asset_id}', cid=cid)
 
-    def list_iocs(self, cid: int = None) -> ApiResponse:
+    def list_iocs(self, cid: int | None = None) -> ApiResponse:
         """
         Returns a list of all iocs of the target case.
 
@@ -1056,9 +1060,9 @@ class Case(object):
 
         return self._s.pi_get('case/ioc/list', cid=cid)
 
-    def add_ioc(self, value: str, ioc_type: Union[str, int], description: str = None,
-                ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
-                cid: int = None) -> ApiResponse:
+    def add_ioc(self, value: str, ioc_type: Union[str, int], description: str | None = None,
+                ioc_tlp: str | int | None = None, ioc_tags: list | None = None, custom_attributes: dict | None = None,
+                cid: int | None = None) -> ApiResponse:
         """
         Adds an ioc to the target case id.
         
@@ -1124,7 +1128,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/ioc/add', data=body)
 
-    def get_ioc(self, ioc_id: int, cid: int = None) -> ApiResponse:
+    def get_ioc(self, ioc_id: int, cid: int | None = None) -> ApiResponse:
         """
         Returns an IOC.  ioc_id needs to be an existing ioc in the provided case ID.
 
@@ -1140,9 +1144,9 @@ class Case(object):
 
         return self._s.pi_get(f'case/ioc/{ioc_id}', cid=cid)
 
-    def update_ioc(self, ioc_id: int, value: str = None, ioc_type: Union[str, int] = None, description: str = None,
-                   ioc_tlp: Union[str, int] = None, ioc_tags: list = None, custom_attributes: dict = None,
-                   cid: int = None) -> ApiResponse:
+    def update_ioc(self, ioc_id: int, value: str | None = None, ioc_type: str | int | None = None,
+                   description: str | None = None, ioc_tlp: str | int | None = None, ioc_tags: list | None = None,
+                   custom_attributes: dict | None = None, cid: int | None = None) -> ApiResponse:
         """
         Updates an existing IOC. ioc_id needs to be an existing ioc in the provided case ID.
         
@@ -1212,7 +1216,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/ioc/update/{ioc_id}', data=body)
 
-    def delete_ioc(self, ioc_id: int, cid: int = None) -> ApiResponse:
+    def delete_ioc(self, ioc_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes an IOC from its ID. CID must match the case in which the ioc is stored.
 
@@ -1228,7 +1232,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/ioc/delete/{ioc_id}', cid=cid)
 
-    def get_event(self, event_id: int, cid: int = None) -> ApiResponse:
+    def get_event(self, event_id: int, cid: int | None = None) -> ApiResponse:
         """
         Returns an event from the timeline
 
@@ -1244,7 +1248,7 @@ class Case(object):
 
         return self._s.pi_get(f'case/timeline/events/{event_id}', cid=cid)
 
-    def list_events(self, filter_by_asset: int = 0, cid: int = None) -> ApiResponse:
+    def list_events(self, filter_by_asset: int = 0, cid: int | None = None) -> ApiResponse:
         """
         Returns a list of events from the timeline. filter_by_asset can be used to return only the events
         linked to a specific asset. In case the asset doesn't exist, an empty timeline is returned.
@@ -1261,7 +1265,7 @@ class Case(object):
 
         return self._s.pi_get(f'case/timeline/events/list/filter/{filter_by_asset}', cid=cid)
 
-    def filter_events(self, filter_str: dict = None, cid: int = None) -> ApiResponse:
+    def filter_events(self, filter_str: dict | None = None, cid: int | None = None) -> ApiResponse:
         """
         Returns a list of events from the timeline, filtered with the same query types used in
         the UI.
@@ -1280,11 +1284,14 @@ class Case(object):
 
         return self._s.pi_get(f'case/timeline/advanced-filter?q={filter_uri}&', cid=cid)
 
-    def add_event(self, title: str, date_time: datetime.datetime, content: str = None, raw_content: str = None,
-                  source: str = None, linked_assets: list = None, linked_iocs: list = None,
-                  category: Union[int, str] = None, tags: list = None, color: str = None, display_in_graph: bool = None,
-                  display_in_summary: bool = None, custom_attributes: str = None, timezone_string: str = None,
-                  sync_ioc_with_assets: bool = False, parent_event_id: int = None, cid: int = None) -> ApiResponse:
+    def add_event(self, title: str, date_time: datetime.datetime, content: str | None = None,
+                  raw_content: str | None = None, source: str | None = None, linked_assets: list | None = None,
+                  linked_iocs: list | None = None, category: int | str | None = None, tags: list | None = None,
+                  color: str | None = None, display_in_graph: bool | None = None,
+                  display_in_summary: bool | None = None,
+                  custom_attributes: str | None = None, timezone_string: str | None = None,
+                  sync_ioc_with_assets: bool = False, parent_event_id: int | None = None,
+                  cid: int | None = None) -> ApiResponse:
         """
         Adds a new event to the timeline.
         
@@ -1363,12 +1370,14 @@ class Case(object):
 
         return self._s.pi_post(f'case/timeline/events/add', data=body)
 
-    def update_event(self, event_id: int, title: str = None, date_time: datetime.datetime = None, content: str = None,
-                     raw_content: str = None, source: str = None, linked_assets: list = None, linked_iocs: list = None,
-                     category: Union[int, str] = None, tags: list = None,
-                     color: str = None, display_in_graph: bool = None, display_in_summary: bool = None,
-                     custom_attributes: dict = None, cid: int = None, timezone_string: str = None,
-                     sync_ioc_with_assets: bool = False, parent_event_id: int = None) -> ApiResponse:
+    def update_event(self, event_id: int, title: str | None = None, date_time: datetime.datetime | None = None,
+                     content: str | None = None, raw_content: str | None = None, source: str | None = None,
+                     linked_assets: list | None = None, linked_iocs: list | None = None,
+                     category: int | str | None = None, tags: list | None = None,
+                     color: str | None = None, display_in_graph: bool | None = None,
+                     display_in_summary: bool | None = None,
+                     custom_attributes: dict | None = None, cid: int | None = None, timezone_string: str | None = None,
+                     sync_ioc_with_assets: bool = False, parent_event_id: int | None = None) -> ApiResponse:
         """
         Updates an event of the timeline. event_id needs to be an existing event in the target case.
         
@@ -1455,7 +1464,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/timeline/events/update/{event_id}', data=body)
 
-    def delete_event(self, event_id: int, cid: int = None) -> ApiResponse:
+    def delete_event(self, event_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes an event from its ID. CID must match the case in which the event is stored
 
@@ -1471,7 +1480,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/timeline/events/delete/{event_id}', cid=cid)
 
-    def add_task_log(self, message: str, cid: int = None) -> ApiResponse:
+    def add_task_log(self, message: str, cid: int | None = None) -> ApiResponse:
         """
         Adds a new task log that will appear under activities
 
@@ -1491,7 +1500,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/tasklog/add', data=data)
 
-    def list_tasks(self, cid: int = None) -> ApiResponse:
+    def list_tasks(self, cid: int | None = None) -> ApiResponse:
         """
         Returns a list of tasks linked to the provided case.
 
@@ -1506,7 +1515,7 @@ class Case(object):
 
         return self._s.pi_get(f'case/tasks/list', cid=cid)
 
-    def get_task(self, task_id: int, cid: int = None) -> ApiResponse:
+    def get_task(self, task_id: int, cid: int | None = None) -> ApiResponse:
         """
         Returns a task from its ID. task_id needs to be a valid task in the target case.
 
@@ -1522,8 +1531,9 @@ class Case(object):
 
         return self._s.pi_get(f'case/tasks/{task_id}', cid=cid)
 
-    def add_task(self, title: str, status: Union[str, int], assignees: List[Union[str, int]], description: str = None,
-                 tags: list = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
+    def add_task(self, title: str, status: Union[str, int], assignees: List[Union[str, int]],
+                 description: str | None = None, tags: list | None = None, custom_attributes: dict | None = None,
+                 cid: int | None = None) -> ApiResponse:
         """
         Adds a new task to the target case.
         
@@ -1589,9 +1599,10 @@ class Case(object):
 
         return self._s.pi_post(f'case/tasks/add', data=body)
 
-    def update_task(self, task_id: int, title: str = None, status: Union[str, int] = None,
-                    assignees: List[Union[int, str]] = None, description: str = None, tags: list = None,
-                    custom_attributes: dict = None, cid: int = None) -> ApiResponse:
+    def update_task(self, task_id: int, title: str | None = None, status: str | int | None = None,
+                    assignees: List[Union[int, str]] | None = None, description: str | None = None,
+                    tags: list | None = None,
+                    custom_attributes: dict | None = None, cid: int | None = None) -> ApiResponse:
         """
         Updates a task. task_id needs to be a valid task in the target case.
         
@@ -1669,7 +1680,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/tasks/update/{task_id}', data=body)
 
-    def delete_task(self, task_id: int, cid: int = None) -> ApiResponse:
+    def delete_task(self, task_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes a task from its ID. CID must match the case in which the task is stored.
 
@@ -1685,7 +1696,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/tasks/delete/{task_id}', cid=cid)
 
-    def list_evidences(self, cid: int = None) -> ApiResponse:
+    def list_evidences(self, cid: int | None = None) -> ApiResponse:
         """
         Returns a list of evidences.
 
@@ -1700,7 +1711,7 @@ class Case(object):
 
         return self._s.pi_get(f'case/evidences/list', cid=cid)
 
-    def get_evidence(self, evidence_id: int, cid: int = None) -> ApiResponse:
+    def get_evidence(self, evidence_id: int, cid: int | None = None) -> ApiResponse:
         """
         Returns an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
 
@@ -1716,8 +1727,9 @@ class Case(object):
 
         return self._s.pi_get(f'case/evidences/{evidence_id}', cid=cid)
 
-    def add_evidence(self, filename: str, file_size: int, description: str = None,
-                     file_hash: str = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
+    def add_evidence(self, filename: str, file_size: int, description: str | None = None,
+                     file_hash: str | None = None, custom_attributes: dict | None = None,
+                     cid: int | None = None) -> ApiResponse:
         """
         Adds a new evidence to the target case.
         
@@ -1753,8 +1765,9 @@ class Case(object):
 
         return self._s.pi_post(f'case/evidences/add', data=body)
 
-    def update_evidence(self, evidence_id: int, filename: str = None, file_size: int = None, description: str = None,
-                        file_hash: str = None, custom_attributes: dict = None, cid: int = None) -> ApiResponse:
+    def update_evidence(self, evidence_id: int, filename: str | None = None, file_size: int | None = None,
+                        description: str | None = None, file_hash: str | None = None,
+                        custom_attributes: dict | None = None, cid: int | None = None) -> ApiResponse:
         """
         Updates an evidence of the matching case. evidence_id needs to be an existing evidence in the target case.
         
@@ -1798,7 +1811,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/evidences/update/{evidence_id}', data=body)
 
-    def delete_evidence(self, evidence_id: int, cid: int = None):
+    def delete_evidence(self, evidence_id: int, cid: int | None = None):
         """
         Deletes an evidence from its ID. evidence_id needs to be an existing evidence in the target case.
 
@@ -1839,8 +1852,9 @@ class Case(object):
 
         return self._s.pi_get(f'global/tasks/{task_id}', cid=1)
 
-    def add_global_task(self, title: str, status: Union[str, int], assignee: Union[str, int], description: str = None,
-                        tags: list = None) -> ApiResponse:
+    def add_global_task(self, title: str, status: Union[str, int], assignee: Union[str, int],
+                        description: str | None = None,
+                        tags: list | None = None) -> ApiResponse:
         """
         Adds a new task.
         
@@ -1891,9 +1905,9 @@ class Case(object):
 
         return self._s.pi_post(f'global/tasks/add', data=body)
 
-    def update_global_task(self, task_id: int, title: str = None, status: Union[str, int] = None,
-                           assignee: Union[int, str] = None, description: str = None,
-                           tags: list = None) -> ApiResponse:
+    def update_global_task(self, task_id: int, title: str | None = None, status: str | int | None = None,
+                           assignee: int | str | None = None, description: str | None = None,
+                           tags: list | None = None) -> ApiResponse:
         """
         Updates a task. task_id needs to be an existing task in the database.
         
@@ -1965,7 +1979,7 @@ class Case(object):
 
         return self._s.pi_post(f'global/tasks/delete/{task_id}', cid=1)
 
-    def list_ds_tree(self, cid: int = None) -> ApiResponse:
+    def list_ds_tree(self, cid: int | None = None) -> ApiResponse:
         """
         Returns the tree of the Datastore
 
@@ -1981,8 +1995,8 @@ class Case(object):
         return self._s.pi_get(f'datastore/list/tree', cid=cid)
 
     def add_ds_file(self, parent_id: int, file_stream: BinaryIO, filename: str, file_description: str,
-                    file_is_ioc: bool = False, file_is_evidence: bool = False, file_password: str = None,
-                    file_tags: list[str] = None, cid: int = None) -> ApiResponse:
+                    file_is_ioc: bool = False, file_is_evidence: bool = False, file_password: str | None = None,
+                    file_tags: list[str] | None = None, cid: int | None = None) -> ApiResponse:
         """
         Adds a file to the Datastore.
 
@@ -2018,7 +2032,7 @@ class Case(object):
 
         return self._s.pi_post_files(f'datastore/file/add/{parent_id}', files=files, data=data, cid=cid)
 
-    def get_ds_file_info(self, file_id: int, cid: int = None) -> ApiResponse:
+    def get_ds_file_info(self, file_id: int, cid: int | None = None) -> ApiResponse:
         """
         Returns information from file of the Datastore.
 
@@ -2034,10 +2048,10 @@ class Case(object):
 
         return self._s.pi_get(f'datastore/file/info/{file_id}', cid=cid)
 
-    def update_ds_file(self, file_id: int, file_name: str = None, file_description: str = None,
-                       file_is_ioc: bool = False, file_is_evidence: bool = False, file_password: str = None,
-                       file_tags: list[str] = None,
-                       cid: int = None) -> ApiResponse:
+    def update_ds_file(self, file_id: int, file_name: str | None = None, file_description: str | None = None,
+                       file_is_ioc: bool = False, file_is_evidence: bool = False, file_password: str | None = None,
+                       file_tags: list[str] | None = None,
+                       cid: int | None = None) -> ApiResponse:
         """
         Updates a file in the Datastore.
 
@@ -2080,7 +2094,7 @@ class Case(object):
 
         return self._s.pi_post_files(f'datastore/file/update/{file_id}', data=data, cid=cid)
 
-    def delete_ds_file(self, file_id: int, cid: int = None) -> ApiResponse:
+    def delete_ds_file(self, file_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes a file from the Datastore.
 
@@ -2096,7 +2110,7 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/file/delete/{file_id}', cid=cid)
 
-    def download_ds_file(self, file_id: int, cid: int = None) -> Response:
+    def download_ds_file(self, file_id: int, cid: int | None = None) -> Response:
         """
         Downloads a file from the Datastore.
 
@@ -2112,7 +2126,7 @@ class Case(object):
 
         return self._s.pi_get(f'datastore/file/view/{file_id}', cid=cid, no_wrap=True)
 
-    def move_ds_file(self, file_id: int, parent_id: int, cid: int = None) -> ApiResponse:
+    def move_ds_file(self, file_id: int, parent_id: int, cid: int | None = None) -> ApiResponse:
         """
         Moves a file from a folder to another.
 
@@ -2133,7 +2147,7 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/file/move/{file_id}', data=data, cid=cid)
 
-    def add_ds_folder(self, parent_id: int, folder_name: str, cid: int = None) -> ApiResponse:
+    def add_ds_folder(self, parent_id: int, folder_name: str, cid: int | None = None) -> ApiResponse:
         """
         Adds a folder to the Datastore.
 
@@ -2155,7 +2169,7 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/folder/add', data=data, cid=cid)
 
-    def delete_ds_folder(self, folder_id: int, cid: int = None) -> ApiResponse:
+    def delete_ds_folder(self, folder_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes a folder from the Datastore.
 
@@ -2171,7 +2185,7 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/folder/delete/{folder_id}', cid=cid)
 
-    def rename_ds_folder(self, folder_id: int, new_name: str, cid: int = None) -> ApiResponse:
+    def rename_ds_folder(self, folder_id: int, new_name: str, cid: int | None = None) -> ApiResponse:
         """
         Renames a folder in the Datastore.
 
@@ -2193,7 +2207,7 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/folder/rename/{folder_id}', data=data, cid=cid)
 
-    def move_ds_folder(self, folder_id: int, parent_id: int, cid: int = None) -> ApiResponse:
+    def move_ds_folder(self, folder_id: int, parent_id: int, cid: int | None = None) -> ApiResponse:
         """
         Moves a folder from a folder to another.
 
@@ -2214,7 +2228,7 @@ class Case(object):
 
         return self._s.pi_post(f'datastore/folder/move/{folder_id}', data=data, cid=cid)
 
-    def _add_object_comment(self, object_name: str, object_id: int, comment: str, cid: int = None):
+    def _add_object_comment(self, object_name: str, object_id: int, comment: str, cid: int | None = None):
         """ Adds a comment to an object.
 
         Args:
@@ -2234,7 +2248,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/{object_name}/{object_id}/comments/add', data=data, cid=cid)
 
-    def _list_object_comment(self, object_name: str, object_id: int, cid: int = None):
+    def _list_object_comment(self, object_name: str, object_id: int, cid: int | None = None):
         """ List comments of an object.
 
         Args:
@@ -2249,7 +2263,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/{object_name}/{object_id}/comments/list', cid=cid)
 
-    def _delete_object_comment(self, object_name: str, object_id: int, comment_id: int, cid: int = None):
+    def _delete_object_comment(self, object_name: str, object_id: int, comment_id: int, cid: int | None = None):
         """ Deletes a comment of an object.
 
         Args:
@@ -2265,7 +2279,8 @@ class Case(object):
 
         return self._s.pi_post(f'case/{object_name}/{object_id}/comments/{comment_id}/delete', cid=cid)
 
-    def _update_object_comment(self, object_name: str, object_id: int, comment_id: int, comment: str, cid: int = None):
+    def _update_object_comment(self, object_name: str, object_id: int,
+                               comment_id: int, comment: str, cid: int | None = None):
         """ Updates a comment of an object.
 
         Args:
@@ -2286,7 +2301,7 @@ class Case(object):
 
         return self._s.pi_post(f'case/{object_name}/{object_id}/comments/{comment_id}/edit', data=data, cid=cid)
 
-    def add_asset_comment(self, asset_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def add_asset_comment(self, asset_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Adds a comment to an asset.
 
@@ -2301,7 +2316,7 @@ class Case(object):
         """
         return self._add_object_comment(self._asset_object, asset_id, comment, cid=cid)
 
-    def list_asset_comments(self, asset_id: int, cid: int = None) -> ApiResponse:
+    def list_asset_comments(self, asset_id: int, cid: int | None = None) -> ApiResponse:
         """
         List comments of an asset.
 
@@ -2315,7 +2330,7 @@ class Case(object):
         """
         return self._list_object_comment(self._asset_object, asset_id, cid=cid)
 
-    def delete_asset_comment(self, asset_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+    def delete_asset_comment(self, asset_id: int, comment_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes a comment of an asset.
 
@@ -2330,7 +2345,7 @@ class Case(object):
         """
         return self._delete_object_comment(self._asset_object, asset_id, comment_id, cid=cid)
 
-    def update_asset_comment(self, asset_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def update_asset_comment(self, asset_id: int, comment_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Updates a comment of an asset.
 
@@ -2346,7 +2361,7 @@ class Case(object):
         """
         return self._update_object_comment(self._asset_object, asset_id, comment_id, comment, cid=cid)
 
-    def add_note_comment(self, note_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def add_note_comment(self, note_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Adds a comment to a note.
 
@@ -2361,7 +2376,7 @@ class Case(object):
         """
         return self._add_object_comment(self._note_object, note_id, comment, cid=cid)
 
-    def list_note_comments(self, note_id: int, cid: int = None) -> ApiResponse:
+    def list_note_comments(self, note_id: int, cid: int | None = None) -> ApiResponse:
         """
         List comments of a note.
 
@@ -2375,7 +2390,7 @@ class Case(object):
         """
         return self._list_object_comment(self._note_object, note_id, cid=cid)
 
-    def delete_note_comment(self, note_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+    def delete_note_comment(self, note_id: int, comment_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes a comment of a note.
 
@@ -2390,7 +2405,7 @@ class Case(object):
         """
         return self._delete_object_comment(self._note_object, note_id, comment_id, cid=cid)
 
-    def update_note_comment(self, note_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def update_note_comment(self, note_id: int, comment_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Updates a comment of a note.
 
@@ -2406,7 +2421,7 @@ class Case(object):
         """
         return self._update_object_comment(self._note_object, note_id, comment_id, comment, cid=cid)
 
-    def add_task_comment(self, task_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def add_task_comment(self, task_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Adds a comment to a task.
 
@@ -2421,7 +2436,7 @@ class Case(object):
         """
         return self._add_object_comment(self._task_object, task_id, comment, cid=cid)
 
-    def list_task_comments(self, task_id: int, cid: int = None) -> ApiResponse:
+    def list_task_comments(self, task_id: int, cid: int | None = None) -> ApiResponse:
         """
         List comments of a task.
 
@@ -2435,7 +2450,7 @@ class Case(object):
         """
         return self._list_object_comment(self._task_object, task_id, cid=cid)
 
-    def delete_task_comment(self, task_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+    def delete_task_comment(self, task_id: int, comment_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes a comment of a task.
 
@@ -2450,7 +2465,7 @@ class Case(object):
         """
         return self._delete_object_comment(self._task_object, task_id, comment_id, cid=cid)
 
-    def update_task_comment(self, task_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def update_task_comment(self, task_id: int, comment_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Updates a comment of a task.
 
@@ -2466,7 +2481,7 @@ class Case(object):
         """
         return self._update_object_comment(self._task_object, task_id, comment_id, comment, cid=cid)
 
-    def add_event_comment(self, event_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def add_event_comment(self, event_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Adds a comment to an event.
 
@@ -2481,7 +2496,7 @@ class Case(object):
         """
         return self._add_object_comment(self._event_object, event_id, comment, cid=cid)
 
-    def list_event_comments(self, event_id: int, cid: int = None) -> ApiResponse:
+    def list_event_comments(self, event_id: int, cid: int | None = None) -> ApiResponse:
         """
         List comments of an event.
 
@@ -2495,7 +2510,7 @@ class Case(object):
         """
         return self._list_object_comment(self._event_object, event_id, cid=cid)
 
-    def delete_event_comment(self, event_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+    def delete_event_comment(self, event_id: int, comment_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes a comment of an event.
 
@@ -2510,7 +2525,7 @@ class Case(object):
         """
         return self._delete_object_comment(self._event_object, event_id, comment_id, cid=cid)
 
-    def update_event_comment(self, event_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def update_event_comment(self, event_id: int, comment_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Updates a comment of an event.
 
@@ -2526,7 +2541,7 @@ class Case(object):
         """
         return self._update_object_comment(self._event_object, event_id, comment_id, comment, cid=cid)
 
-    def add_evidence_comment(self, evidence_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def add_evidence_comment(self, evidence_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Adds a comment to an evidence.
 
@@ -2541,7 +2556,7 @@ class Case(object):
         """
         return self._add_object_comment(self._evidence_object, evidence_id, comment, cid=cid)
 
-    def list_evidence_comments(self, evidence_id: int, cid: int = None) -> ApiResponse:
+    def list_evidence_comments(self, evidence_id: int, cid: int | None = None) -> ApiResponse:
         """
         List comments of an evidence.
 
@@ -2555,7 +2570,7 @@ class Case(object):
         """
         return self._list_object_comment(self._evidence_object, evidence_id, cid=cid)
 
-    def delete_evidence_comment(self, evidence_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+    def delete_evidence_comment(self, evidence_id: int, comment_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes a comment of an evidence.
 
@@ -2570,7 +2585,8 @@ class Case(object):
         """
         return self._delete_object_comment(self._evidence_object, evidence_id, comment_id, cid=cid)
 
-    def update_evidence_comment(self, evidence_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def update_evidence_comment(self, evidence_id: int, comment_id: int, comment: str,
+                                cid: int | None = None) -> ApiResponse:
         """
         Updates a comment of an evidence.
 
@@ -2586,7 +2602,7 @@ class Case(object):
         """
         return self._update_object_comment(self._evidence_object, evidence_id, comment_id, comment, cid=cid)
 
-    def add_ioc_comment(self, ioc_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def add_ioc_comment(self, ioc_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Adds a comment to an ioc.
 
@@ -2601,7 +2617,7 @@ class Case(object):
         """
         return self._add_object_comment(self._ioc_object, ioc_id, comment, cid=cid)
 
-    def list_ioc_comments(self, ioc_id: int, cid: int = None) -> ApiResponse:
+    def list_ioc_comments(self, ioc_id: int, cid: int | None = None) -> ApiResponse:
         """
         List comments of an ioc.
 
@@ -2615,7 +2631,7 @@ class Case(object):
         """
         return self._list_object_comment(self._ioc_object, ioc_id, cid=cid)
 
-    def delete_ioc_comment(self, ioc_id: int, comment_id: int, cid: int = None) -> ApiResponse:
+    def delete_ioc_comment(self, ioc_id: int, comment_id: int, cid: int | None = None) -> ApiResponse:
         """
         Deletes a comment of an ioc.
 
@@ -2630,7 +2646,7 @@ class Case(object):
         """
         return self._delete_object_comment(self._ioc_object, ioc_id, comment_id, cid=cid)
 
-    def update_ioc_comment(self, ioc_id: int, comment_id: int, comment: str, cid: int = None) -> ApiResponse:
+    def update_ioc_comment(self, ioc_id: int, comment_id: int, comment: str, cid: int | None = None) -> ApiResponse:
         """
         Updates a comment of an ioc.
 
@@ -2646,7 +2662,7 @@ class Case(object):
         """
         return self._update_object_comment(self._ioc_object, ioc_id, comment_id, comment, cid=cid)
 
-    def download_investigation_report(self, report_id: int, cid: int = None) -> Response:
+    def download_investigation_report(self, report_id: int, cid: int | None = None) -> Response:
         """
         Download an investigation report.
 
@@ -2662,7 +2678,7 @@ class Case(object):
 
         return self._s.pi_get(f'case/report/generate-investigation/{report_id}', cid=cid, no_wrap=True)
 
-    def download_activity_report(self, report_id: int, cid: int = None) -> Response:
+    def download_activity_report(self, report_id: int, cid: int | None = None) -> Response:
         """
         Download an activity report.
 
@@ -2677,4 +2693,3 @@ class Case(object):
         cid = self._assert_cid(cid)
 
         return self._s.pi_get(f'case/report/generate-activities/{report_id}', cid=cid, no_wrap=True)
-

@@ -153,7 +153,7 @@ class ClientSession(object):
 
         return True
 
-    def _pi_uri(self, uri: str = None):
+    def _pi_uri(self, uri: str | None = None):
         """Wraps the provided uri around the URL.
 
         Args:
@@ -164,7 +164,7 @@ class ClientSession(object):
         """
         return self._host + '/' + uri
 
-    def pi_get(self, uri: str, cid: int = None, no_wrap: bool = False) -> Union[ApiResponse, Response]:
+    def pi_get(self, uri: str, cid: int | None = None, no_wrap: bool = False) -> Union[ApiResponse, Response]:
         """Adds the CID information needed by the server when issuing GET requests
         and then issue the request itself.
 
@@ -181,7 +181,7 @@ class ClientSession(object):
 
         return self._pi_request(uri, type='GET', no_wrap=no_wrap)
 
-    def pi_post(self, uri: str, data: dict = None, cid: int = None) -> ApiResponse:
+    def pi_post(self, uri: str, data: dict | None = None, cid: int | None = None) -> ApiResponse:
         """Issues a POSt request with the provided data. Simple wrapper around _pi_request
 
         Args:
@@ -198,7 +198,7 @@ class ClientSession(object):
 
         return self._pi_request(uri, type='POST', data=data)
 
-    def _pi_request(self, uri: str, type: str = None, data: dict = None,
+    def _pi_request(self, uri: str, type: str | None = None, data: dict | None = None,
                     no_wrap: bool = False) -> Union[ApiResponse, Response]:
         """Make a request (GET or POST) and handle the errors. The authentication header is added.
 
@@ -258,7 +258,7 @@ class ClientSession(object):
 
         return ApiResponse(response.content, uri=uri) if not no_wrap else response
 
-    def pi_post_files(self, uri: str, files: dict = None, data: dict = None, cid: int = None) -> ApiResponse:
+    def pi_post_files(self, uri: str, files: dict | None = None, data: dict | None = None, cid: int | None = None) -> ApiResponse:
         """Issues a POST request in multipart with the provided data.
 
         Args:

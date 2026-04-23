@@ -98,7 +98,7 @@ class ApiResponse(object):
     standard ApiResponse object.
     """
 
-    def __init__(self, response: str = None, uri: str = None):
+    def __init__(self, response: str | None = None, uri: str | None = None):
         try:
 
             self._response = json.loads(response)
@@ -142,7 +142,7 @@ class ApiResponse(object):
 
         return self._response.get('data')
 
-    def get_data_field(self, field: Union[List[str], str], index: int = None):
+    def get_data_field(self, field: Union[List[str], str], index: int | None = None):
         """
         Return the value of a field in the data section of the response
 

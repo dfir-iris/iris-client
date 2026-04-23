@@ -96,7 +96,7 @@ class Alert(object):
         return self._s.pi_post(f"alerts/delete/{alert_id}")
 
     def escalate_alert(self, alert_id: int, iocs_import_list: List[str], assets_import_list: List[str],
-                       escalation_note: str, case_title:str, case_tags: str, case_template_id: int = None,
+                       escalation_note: str, case_title: str, case_tags: str, case_template_id: int | None = None,
                        import_as_event: bool = False) -> ApiResponse:
         """Escalate an alert
 
@@ -166,11 +166,13 @@ class Alert(object):
 
         return self._s.pi_post(f"alerts/unmerge/{alert_id}", data=payload)
 
-    def filter_alerts(self, alert_title: str = None, alert_description: str = None, alert_source: str = None,
-                      alert_tags: str = None, alert_status_id: int = None, alert_severity_id: int = None,
-                      alert_classification_id: int = None, alert_customer_id: int = None, alert_start_date: str = None,
-                      alert_end_date: str = None, alert_assets: str = None, alert_iocs: str = None, alert_ids: str = None,
-                      case_id: int = None, alert_owner_id: int = None,
+    def filter_alerts(self, alert_title: str | None = None, alert_description: str | None = None,
+                      alert_source: str | None = None, alert_tags: str | None = None,
+                      alert_status_id: int | None = None, alert_severity_id: int | None = None,
+                      alert_classification_id: int | None = None, alert_customer_id: int | None = None,
+                      alert_start_date: str | None = None, alert_end_date: str | None = None,
+                      alert_assets: str | None = None, alert_iocs: str | None = None, alert_ids: str | None = None,
+                      case_id: int | None = None, alert_owner_id: int | None = None,
                       page: int = 1, per_page: int = 20, sort: str = 'desc') -> ApiResponse:
         """ Filter alerts
 
