@@ -135,7 +135,7 @@ class AdminHelper(object):
 
         return self._s.pi_post(f'manage/users/add', data=body)
 
-    def deactivate_user(self, user: [int, str] = None) -> ApiResponse:
+    def deactivate_user(self, user: int | str) -> ApiResponse:
         """
         Deactivate a user from its user ID or login. Disabled users can't log in interactively nor user their API keys.
         They do not appear in proposed user lists.
@@ -165,10 +165,10 @@ class AdminHelper(object):
 
     def update_user(self,
                     user: Union[int, str],
-                    login: str = None,
-                    name: str = None,
-                    password: str = None,
-                    email: str = None,
+                    login: str | None = None,
+                    name: str | None = None,
+                    password: str | None = None,
+                    email: str | None = None,
                     **kwargs) -> ApiResponse:
         """
         Updates a user. The user can be updated if :
@@ -219,7 +219,7 @@ class AdminHelper(object):
 
         return self._s.pi_post(f'manage/users/update/{user.get("user_id")}', data=body)
 
-    def delete_user(self, user: [int, str], **kwargs) -> ApiResponse:
+    def delete_user(self, user: int | str, **kwargs) -> ApiResponse:
         """
         Deletes a user based on its login. A user can only be deleted if it does not have any
         activities in IRIS. This is to maintain coherence in the database. The user needs to be
@@ -361,7 +361,7 @@ class AdminHelper(object):
         """
         return self._s.pi_get(f'manage/access-control/recompute-effective-users-ac')
 
-    def add_ioc_type(self, name: str, description: str, taxonomy: str = None) -> ApiResponse:
+    def add_ioc_type(self, name: str, description: str, taxonomy: str | None = None) -> ApiResponse:
         """
         Add a new IOC Type.
 
@@ -397,8 +397,8 @@ class AdminHelper(object):
         """
         return self._s.pi_post(f'manage/ioc-types/delete/{ioc_type_id}', cid=1)
 
-    def update_ioc_type(self, ioc_type_id: int, name: str = None,
-                        description: str = None, taxonomy: str = None) -> ApiResponse:
+    def update_ioc_type(self, ioc_type_id: int, name: str | None = None,
+                        description: str | None = None, taxonomy: str | None = None) -> ApiResponse:
         """
         Updates an IOC type. `ioc_type_id` needs to be a valid existing IocType ID.
 
@@ -486,8 +486,8 @@ class AdminHelper(object):
         """
         return self._s.pi_post(f'manage/case-classifications/delete/{case_classification_id}', cid=1)
 
-    def update_case_classification(self, classification_id: int, name: str = None,
-                                   name_expanded: str = None, description: str = None) -> ApiResponse:
+    def update_case_classification(self, classification_id: int, name: str | None = None,
+                                   name_expanded: str | None = None, description: str | None = None) -> ApiResponse:
         """ Updates a Case Classification. `case_classification_id` needs to be a valid existing CaseClassification ID.
 
         
@@ -534,8 +534,8 @@ class AdminHelper(object):
         return self._s.pi_post(f'manage/asset-type/delete/{asset_type_id}', cid=1)
 
     @deprecated(reason='This method is deprecated in IRIS > v1.4.3', action="error", version="2.0.0")
-    def update_asset_type(self, asset_type_id: int, name: str = None,
-                          description: str = None) -> ApiResponse:
+    def update_asset_type(self, asset_type_id: int, name: str | None = None,
+                          description: str | None = None) -> ApiResponse:
         """
         Updates an Asset type. `asset_type_id` needs to be a valid existing AssetType ID.
 
@@ -565,8 +565,8 @@ class AdminHelper(object):
         }
         return self._s.pi_post(f'manage/asset-type/update/{asset_type_id}', data=body)
 
-    def add_customer(self, customer_name: str, customer_description: str = None,
-                     customer_sla: str = None, custom_attributes: dict = {}) -> ApiResponse:
+    def add_customer(self, customer_name: str, customer_description: str | None = None,
+                     customer_sla: str | None = None, custom_attributes: dict = {}) -> ApiResponse:
         """
         Creates a new customer. A new customer can be added if:
         
@@ -691,8 +691,8 @@ class AdminHelper(object):
 
         return self._s.pi_get(f'manage/groups/{group}', cid=1)
 
-    def update_group(self, group: Union[str, int], group_name: str = None, group_description: str = None,
-                     group_permissions: List[Permissions] = None) -> ApiResponse:
+    def update_group(self, group: Union[str, int], group_name: str | None = None, group_description: str | None = None,
+                     group_permissions: List[Permissions] | None = None) -> ApiResponse:
         """
         Update a group. Cases access and members can be with
         `set_group_access` and `set_group_members` methods. Permissions must be a list of known

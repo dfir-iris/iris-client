@@ -262,7 +262,7 @@ class IrisObject(object):
     """
     object_name = "base"
 
-    def __init__(self, cid: int = None):
+    def __init__(self, cid: int | None = None):
         """
         Fetch the client session and initiate a case helper class with the provided CID.
         The CID at init is not mandatory and can be set later on with set_cid. However this needs
@@ -334,7 +334,7 @@ class IrisObject(object):
         """Set the instance to unsynced state"""
         self._is_synced = False
 
-    def init_from_id(self, id: int = None) -> IrisStatus:
+    def init_from_id(self, id: int | None = None) -> IrisStatus:
         """Every object need to implement this initialisation method. Failing to do so results in exception
 
         Args:
@@ -394,7 +394,7 @@ class IrisObject(object):
 class IrisDynamicObject(IrisObject):
     """Defines an overlay of IrisObject, by providing additional attribute needed to keep track of the partial state"""
 
-    def __init__(self,  cid: int = None):
+    def __init__(self,  cid: int | None = None):
         """Call IrisObject init and set partial state by default"""
         super().__init__(cid=cid)
         self._is_partial = False
