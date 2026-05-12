@@ -84,7 +84,7 @@ class Case(object):
 
     def add_case(self, case_name: str, case_description: str, case_customer: Union[str, int],
                  case_classification: Union[str, int], soc_id: str, custom_attributes: dict = None,
-                 create_customer=False) -> ApiResponse:
+                 create_customer=False, case_template_id : str | None =None) -> ApiResponse:
         """Creates a new case. If create_customer is set to true and the customer doesn't exist,
         it is created. Otherwise an error is returned.
         
@@ -100,6 +100,7 @@ class Case(object):
           soc_id: SOC Number
           custom_attributes: Custom attributes of the case
           create_customer: Set to true to create the customer is doesn't exists. (Default value = False)
+          case_template_id: The template ID of the case
 
         Returns:
           ApiResponse object
@@ -147,7 +148,8 @@ class Case(object):
             "classification_id": case_classification,
             "case_soc_id": soc_id,
             "case_description": case_description,
-            "custom_attributes": custom_attributes
+            "custom_attributes": custom_attributes,
+            "case_template_id": case_template_id
         }
         resp = self._s.pi_post('manage/cases/add', data=body)
 
